@@ -53,10 +53,15 @@ deploy :
 	@kubectl wait pod ngsa-memory --for condition=ready --timeout=30s
 	-kubectl apply -f deploy/loderunner
 
+	# deploy RelayRunner after the app starts
+	@kubectl wait pod loderunner --for condition=ready --timeout=30s
+	-kubectl apply -f deploy/relayrunner
+
 	# wait for the pods to start
 	@kubectl wait pod -n monitoring --for condition=ready --all --timeout=30s
 	@kubectl wait pod fluentb --for condition=ready --timeout=30s
 	@kubectl wait pod loderunner --for condition=ready --timeout=30s
+	@kubectl wait pod relayrunner --for condition=ready --timeout=30s
 
 	# display pod status
 	@kubectl get po -A | grep "default\|monitoring"
@@ -69,10 +74,12 @@ check :
 	@echo "\n"
 	@curl localhost:30000
 	@curl localhost:32000
+	@curl localhost:32080
 
 clean :
 	# delete the deployment
 	@# continue on error
+	-kubectl delete -f deploy/relayrunner --ignore-not-found=true
 	-kubectl delete -f deploy/loderunner --ignore-not-found=true
 	-kubectl delete -f deploy/ngsa-memory --ignore-not-found=true
 	-kubectl delete ns monitoring --ignore-not-found=true

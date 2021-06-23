@@ -1,6 +1,6 @@
 {
-	"name": "akdc-kind",
-	"remoteUser": "akdc",
+	"name": "relayrunner",
+	"remoteUser": "runner",
 	"image": "ghcr.io/retaildevcrews/kind:latest",
 	"runArgs": [
 		"--init",
@@ -12,7 +12,8 @@
 		30000,
 		30080,
 		30088,
-		32000
+		32000,
+		32080
 	],
 	// Install extensions
 	"extensions": [
