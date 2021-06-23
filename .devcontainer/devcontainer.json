@@ -1,7 +1,7 @@
 {
 	"name": "relayrunner",
 	"remoteUser": "runner",
-	"image": "ghcr.io/retaildevcrews/kind:latest",
+	"image": "johee/akdc-kind:nodejs",
 	"runArgs": [
 		"--init",
 		"--privileged"
