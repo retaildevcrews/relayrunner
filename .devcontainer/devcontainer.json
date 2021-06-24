@@ -13,7 +13,8 @@
 		30080,
 		30088,
 		32000,
-		32080
+		32080,
+        32088
 	],
 	// Install extensions
 	"extensions": [

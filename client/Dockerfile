@@ -1,12 +1,13 @@
 ### build the frontend
 FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:14 AS frontendbuild
+ENV NODE_ENV production
 WORKDIR /app
 
 # copy project meta data
 COPY ["package.json", "package-lock.json", "./"]
 
 # install dependencies
-RUN npm install --production
+RUN npm ci --only=production
 
 # copy app 
 COPY . ./ 
