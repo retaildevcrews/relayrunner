@@ -1,7 +1,7 @@
 {
-	"name": "akdc-kind",
-	"remoteUser": "akdc",
-	"image": "ghcr.io/retaildevcrews/kind:latest",
+	"name": "relayrunner",
+	"remoteUser": "runner",
+	"image": "johee/akdc-kind:nodejs",
 	"runArgs": [
 		"--init",
 		"--privileged"
@@ -12,7 +12,8 @@
 		30000,
 		30080,
 		30088,
-		32000
+		32000,
+		32080
 	],
 	// Install extensions
 	"extensions": [
