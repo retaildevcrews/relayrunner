@@ -27,6 +27,10 @@ nodes:
     hostPort: 32080
     listenAddress: "127.0.0.1"
     protocol: TCP
+  - containerPort: 32088
+    hostPort: 32088
+    listenAddress: "127.0.0.1"
+    protocol: TCP
   extraMounts:
   - hostPath: /prometheus
     containerPath: /prometheus

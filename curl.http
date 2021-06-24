@@ -84,5 +84,10 @@ GET http://localhost:30088/metrics HTTP/1.1
 
 ###
 
+# RelayRunner backend server
+GET http://localhost:32088/graphql HTTP/1.1
+
+###
+
 # RelayRunner static site
 GET http://localhost:32080 HTTP/1.1
