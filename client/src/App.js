@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import LoadClients from "./LoadClients"
+import LoadClientDetails from "./LoadClientDetails";
 
 function App() {
+
+  const loadclients = [
+    {
+      name: "Load-Client-ID-001",
+      version: 5.0,
+      id: 1,
+      region: "california",
+      zone: "colorado",
+      scheduler: "nev",
+      currstatus: "ready",
+      metrics: "prometheus",
+      isExecute: false,
+    },
+    {
+      name: "Load-Client-ID-002",
+      version: 5.0,
+      id: 2,
+      region: "california",
+      zone: "colorado",
+      scheduler: "nev",
+      currstatus: "unresponsive",
+      metrics: "prometheus",
+      isExecute: false,
+    },
+    {
+      name: "Load-Client-ID-003",
+      version: 5.0,
+      id: 3,
+      region: "california",
+      zone: "colorado",
+      scheduler: "nev",
+      currstatus: "busy",
+      metrics: "prometheus",
+      isExecute: false,
+    }
+  ];
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [ currClientDetails, setCurrClientDetails ] = useState(-1)
+
+  const resetCurrClientDetails = () => {
+    setCurrClientDetails(-1)
+  }
+ 
+  const handleOpen = (index) => {
+    setIsOpen(true);
+    setCurrClientDetails(index);
+  }
+
+  const handleClose = () => {
+    setIsOpen(false);
+    resetCurrClientDetails();
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <LoadClients openPopup={handleOpen} clientDetails={loadclients}/> 
+      {isOpen && <LoadClientDetails
+          clientDetails={loadclients}
+          clientIndex={currClientDetails}
+          closePopup={handleClose}
+        />}
     </div>
   );
 }
 
 export default App;
+
