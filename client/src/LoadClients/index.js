@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import LoadClientContext from '../LoadClientContext';
 
 
 import "./styles.css"
 
 const LoadClients = (props) => {
-
-  const [clients, setClients] = useState(props.clientDetails);
+  const { loadclients, handleOpen} = useContext(LoadClientContext)
+  const [clients, setClients] = useState(loadclients);
 
   function handleToggleSelected(id) {
     const newClients = clients.map((lc) => {
@@ -56,7 +57,7 @@ const LoadClients = (props) => {
                     <li key={lc.id}>
                       <button className={`loadclient ${lc.isExecute ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.openPopup(index)}></button>
+                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => handleOpen(index)}></button>
                     </li>
                   )
                 )
