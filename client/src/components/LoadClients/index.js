@@ -57,7 +57,7 @@ const LoadClients = props => {
                     <li key={lc.id}>
                       <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(index)}></button>
+                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(lc.id)}></button>
                     </li>
                   )
                 )
