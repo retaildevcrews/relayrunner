@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import LoadClientContext from '../LoadClientContext';
 
 
@@ -23,11 +23,10 @@ const LoadClients = props => {
               <h1>Load Clients</h1>
           </div>
           <div>
-            <select>
-              <option value="0">Sort By:</option>
-              <option value="1">Name</option>
-              <option value="2">Last Updated</option>
-              <option value="3">Date Created</option>
+            <select onChange={(e) => setSortType(e.target.value)}>
+              <option value="sort">Sort By:</option>
+              <option value="id">Name</option>
+              <option value="dateCreated">Date Created</option>
             </select>
           </div>
           <div id="filter">
