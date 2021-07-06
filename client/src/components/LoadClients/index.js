@@ -16,7 +16,7 @@ const LoadClients = props => {
   }
 
     return (
-        <>
+      <>
         <div className="sidenav">
           <div className="header">
           <div>
