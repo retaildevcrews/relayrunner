@@ -1,7 +1,7 @@
 import { useState } from "react";
-import LoadClients from "./LoadClients"
-import LoadClientDetails from "./LoadClientDetails";
-import LoadClientContext from "./LoadClientContext";
+import LoadClients from "../LoadClients";
+import LoadClientDetails from "../LoadClientDetails";
+import LoadClientContext from "../LoadClientContext";
 
 const loadclients = [
   {
