@@ -3,7 +3,7 @@ import LoadClients from "../LoadClients";
 import LoadClientDetails from "../LoadClientDetails";
 import LoadClientContext from "../LoadClientContext";
 
-const loadclients = [
+const loadClients = [
   {
     name: "Load-Client-ID-001",
     version: 5.0,
@@ -13,7 +13,6 @@ const loadclients = [
     scheduler: "nev",
     currstatus: "ready",
     metrics: "prometheus",
-    isExecute: false,
   },
   {
     name: "Load-Client-ID-002",
@@ -24,7 +23,6 @@ const loadclients = [
     scheduler: "nev",
     currstatus: "unresponsive",
     metrics: "prometheus",
-    isExecute: false,
   },
   {
     name: "Load-Client-ID-003",
@@ -35,7 +33,6 @@ const loadclients = [
     scheduler: "nev",
     currstatus: "busy",
     metrics: "prometheus",
-    isExecute: false,
   }
 ];
 
@@ -61,9 +58,9 @@ function App() {
   return (
     <div className="App">
       <LoadClientContext.Provider 
-        value={{ loadclients, currClientDetails, setCurrClientDetails, handleOpen, handleClose }}>
-        <LoadClients/> 
-        {isOpen && <LoadClientDetails/>}
+        value={{ loadClients }}>
+        <LoadClients handleOpen={handleOpen}/> 
+        {isOpen && <LoadClientDetails handleClose={handleClose} currClientDetails={currClientDetails}/>}
       </LoadClientContext.Provider>
     </div>
   );

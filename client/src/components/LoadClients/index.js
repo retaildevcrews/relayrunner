@@ -4,25 +4,15 @@ import LoadClientContext from '../LoadClientContext';
 
 import "./styles.css"
 
-const LoadClients = (props) => {
-  const { loadclients, handleOpen} = useContext(LoadClientContext)
-  const [clients, setClients] = useState(loadclients);
+const LoadClients = props => {
+  const { loadClients} = useContext(LoadClientContext);
+  const [excuteClients, setExecuteClients] = useState({});
 
   function handleToggleSelected(id) {
-    const newClients = clients.map((lc) => {
-      if (lc.id === id) {
-        const updatedClient = {
-          ...lc,
-          isExecute: !lc.isExecute,
-        };
-
-        return updatedClient;
-      }
-
-      return lc;
-    });
-
-    setClients(newClients);
+    setExecuteClients({
+      ...excuteClients,
+      [id]: !excuteClients[id],
+    })
   }
 
     return (
@@ -53,11 +43,11 @@ const LoadClients = (props) => {
           <div>
             <ul>
               {
-                clients.map((lc, index) => (
+                loadClients.map((lc, index) => (
                     <li key={lc.id}>
-                      <button className={`loadclient ${lc.isExecute ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
+                      <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => handleOpen(index)}></button>
+                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(index)}></button>
                     </li>
                   )
                 )

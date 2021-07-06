@@ -16,7 +16,6 @@
     overflow: auto;
   }
   .close-icon {
-    content: 'x';
     cursor: pointer;
     position: absolute;
     right: 0;
