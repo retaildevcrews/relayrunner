@@ -15,6 +15,24 @@ const LoadClients = props => {
     })
   }
 
+  const [sortData, setSortData] = useState([]);
+  const [sortType, setSortType] = useState('name');
+
+  useEffect(() => {
+    const sortArray = type => {
+      const types = {
+        id: 'id',
+        dateCreated: 'dateCreated',
+      };
+      const sortProperty = types[type];
+      const sorted = [...loadClients].sort((a, b) => a[sortProperty] - b[sortProperty]);
+      setSortData(sorted);
+    };
+
+    sortArray(sortType);
+  }, [sortType, loadClients]); 
+
+
     return (
       <>
         <div className="sidenav">
@@ -42,11 +60,11 @@ const LoadClients = props => {
           <div>
             <ul>
               {
-                loadClients.map((lc, index) => (
+                sortData.map((lc) => (
                     <li key={lc.id}>
                       <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(index)}></button>
+                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(lc.id)}></button>
                     </li>
                   )
                 )
