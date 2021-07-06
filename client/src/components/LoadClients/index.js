@@ -19,7 +19,7 @@ const LoadClients = props => {
   const [sortType, setSortType] = useState('name');
 
   useEffect(() => {
-    const sortArray = type => {
+    const sortLoadClients = type => {
       const types = {
         id: 'id',
         dateCreated: 'dateCreated',
@@ -29,7 +29,7 @@ const LoadClients = props => {
       setSortData(sorted);
     };
 
-    sortArray(sortType);
+    sortLoadClients(sortType);
   }, [sortType, loadClients]); 
 
 

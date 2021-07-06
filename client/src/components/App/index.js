@@ -14,7 +14,6 @@ const loadClients = [
     currstatus: "ready",
     metrics: "prometheus",
     dateCreated: 2019,
-    isExecute: false,
   },
   {
     name: "Load-Client-ID-002",
@@ -26,7 +25,6 @@ const loadClients = [
     currstatus: "unresponsive",
     metrics: "prometheus",
     dateCreated: 2021,
-    isExecute: false,
   },
   {
     name: "Load-Client-ID-003",
@@ -38,7 +36,6 @@ const loadClients = [
     currstatus: "busy",
     metrics: "prometheus",
     dateCreated: 2020,
-    isExecute: false,
   }
 ];
 
