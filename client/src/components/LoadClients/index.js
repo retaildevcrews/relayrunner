@@ -1,12 +1,18 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import LoadClientContext from '../LoadClientContext';
 
 
 import "./styles.css"
 
 const LoadClients = props => {
+  const SORT_TYPES = {
+    id: 'id',
+    dateCreated: 'dateCreated',
+  }
+
   const { loadClients} = useContext(LoadClientContext);
   const [excuteClients, setExecuteClients] = useState({});
+  const [sortType, setSortType] = useState(SORT_TYPES.id);
 
   function handleToggleSelected(id) {
     setExecuteClients({
@@ -15,23 +21,10 @@ const LoadClients = props => {
     })
   }
 
-  const [sortData, setSortData] = useState([]);
-  const [sortType, setSortType] = useState('name');
-
-  useEffect(() => {
-    const sortLoadClients = type => {
-      const types = {
-        id: 'id',
-        dateCreated: 'dateCreated',
-      };
-      const sortProperty = types[type];
-      const sorted = [...loadClients].sort((a, b) => a[sortProperty] - b[sortProperty]);
-      setSortData(sorted);
-    };
-
-    sortLoadClients(sortType);
-  }, [sortType, loadClients]); 
-
+  const sortByProperty = type => (a,b) => {
+    const sortProperty = SORT_TYPES[type];
+    return a[sortProperty] - b[sortProperty];
+  };
 
     return (
       <>
@@ -60,11 +53,11 @@ const LoadClients = props => {
           <div>
             <ul>
               {
-                sortData.map((lc) => (
+                loadClients.sort(sortByProperty(sortType)).map((lc, index) => (
                     <li key={lc.id}>
                       <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(lc.id)}></button>
+                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(index)}></button>
                     </li>
                   )
                 )

@@ -44,9 +44,9 @@ function App() {
   const [isOpen, setIsOpen] = useState(false)
   const [ currClientDetails, setCurrClientDetails ] = useState(-1)
 
-  const handleOpen = (id) => {
+  const handleOpen = (index) => {
     setIsOpen(true);
-    setCurrClientDetails(id - 1);
+    setCurrClientDetails(index);
   }
 
   const resetCurrClientDetails = () => {
