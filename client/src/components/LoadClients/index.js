@@ -36,8 +36,8 @@ const LoadClients = props => {
           <div>
             <select onChange={(e) => setSortType(e.target.value)}>
               <option value="sort">Sort By:</option>
-              <option value="id">Name</option>
-              <option value="dateCreated">Date Created</option>
+              <option value={SORT_TYPES.id}>Name</option>
+              <option value={SORT_TYPES.dateCreated}>Date Created</option>
             </select>
           </div>
           <div id="filter">
