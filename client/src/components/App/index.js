@@ -13,6 +13,7 @@ const loadClients = [
     scheduler: "nev",
     currstatus: "ready",
     metrics: "prometheus",
+    dateCreated: 2019,
   },
   {
     name: "Load-Client-ID-002",
@@ -23,6 +24,7 @@ const loadClients = [
     scheduler: "nev",
     currstatus: "unresponsive",
     metrics: "prometheus",
+    dateCreated: 2021,
   },
   {
     name: "Load-Client-ID-003",
@@ -33,6 +35,7 @@ const loadClients = [
     scheduler: "nev",
     currstatus: "busy",
     metrics: "prometheus",
+    dateCreated: 2020,
   }
 ];
 
@@ -41,13 +44,13 @@ function App() {
   const [isOpen, setIsOpen] = useState(false)
   const [ currClientDetails, setCurrClientDetails ] = useState(-1)
 
-  const resetCurrClientDetails = () => {
-    setCurrClientDetails(-1)
-  }
- 
   const handleOpen = (index) => {
     setIsOpen(true);
     setCurrClientDetails(index);
+  }
+
+  const resetCurrClientDetails = () => {
+    setCurrClientDetails(-1)
   }
 
   const handleClose = () => {

@@ -5,8 +5,14 @@ import LoadClientContext from '../LoadClientContext';
 import "./styles.css"
 
 const LoadClients = props => {
+  const SORT_TYPES = {
+    id: 'id',
+    dateCreated: 'dateCreated',
+  }
+
   const { loadClients} = useContext(LoadClientContext);
   const [excuteClients, setExecuteClients] = useState({});
+  const [sortType, setSortType] = useState(SORT_TYPES.id);
 
   function handleToggleSelected(id) {
     setExecuteClients({
@@ -15,19 +21,23 @@ const LoadClients = props => {
     })
   }
 
+  const sortByProperty = type => (a,b) => {
+    const sortProperty = SORT_TYPES[type];
+    return a[sortProperty] - b[sortProperty];
+  };
+
     return (
-        <>
+      <>
         <div className="sidenav">
           <div className="header">
           <div>
               <h1>Load Clients</h1>
           </div>
           <div>
-            <select>
-              <option value="0">Sort By:</option>
-              <option value="1">Name</option>
-              <option value="2">Last Updated</option>
-              <option value="3">Date Created</option>
+            <select onChange={(e) => setSortType(e.target.value)}>
+              <option value="sort">Sort By:</option>
+              <option value={SORT_TYPES.id}>Name</option>
+              <option value={SORT_TYPES.dateCreated}>Date Created</option>
             </select>
           </div>
           <div id="filter">
@@ -43,7 +53,7 @@ const LoadClients = props => {
           <div>
             <ul>
               {
-                loadClients.map((lc, index) => (
+                loadClients.sort(sortByProperty(sortType)).map((lc, index) => (
                     <li key={lc.id}>
                       <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
                       <div className="divider"></div> 
