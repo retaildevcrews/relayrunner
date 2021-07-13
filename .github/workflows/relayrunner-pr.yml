@@ -36,6 +36,35 @@ jobs:
            
             docker run --name backend -d --rm -p 80:8080 relayrunner-backend
 
+    - name: Docker Build Client
+      run: |
+        docker build -t relayrunner-client ./client
+        
+    - name: Docker Run Client
+      run: |
+           
+            docker run --name client -d --rm -p 8080:80 relayrunner-client
+
+            echo "Waiting for web server to start ..."
+        
+            wait_time=10        
+            sleep $wait_time
+            # wait up to 30 seconds for web server to start
+            while true
+            do
+                if curl localhost:80 ; then
+                    echo -e "\n web server is running"
+                    break
+                fi
+                if [ $wait_time -gt 30 ] ; then
+                  echo -e "\n timeout waiting for web server to start"
+                  exit 1
+                fi
+                
+                sleep 1
+                ((wait_time=wait_time+1))
+            done
+
     - name: Docker Tag and Push
       run: |
         # tag the repo with :dev
