@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      DOCKER_REPO: retaildevcrews/relayrunner
+      DOCKER_REPO: ghcr.io/retaildevcrews/relayrunner
 
     steps:
     - uses: actions/checkout@v2
