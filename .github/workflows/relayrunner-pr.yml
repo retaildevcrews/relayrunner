@@ -2,7 +2,7 @@ name: Build RelayRunner-PR
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, closed]
+    types: [opened, synchronize]
 
     paths:
       - 'Dockerfile'
