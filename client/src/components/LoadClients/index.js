@@ -10,7 +10,7 @@ const LoadClients = props => {
     dateCreated: 'dateCreated',
   }
 
-  const { loadClients} = useContext(LoadClientContext);
+  const { loadClients } = useContext(LoadClientContext);
   const [excuteClients, setExecuteClients] = useState({});
   const [sortType, setSortType] = useState(SORT_TYPES.id);
 
