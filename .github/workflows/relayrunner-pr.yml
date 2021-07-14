@@ -39,7 +39,7 @@ jobs:
     - name: Docker Build Client
       run: |
         docker build -t relayrunner-client ./client
-        
+
     - name: Docker Run Client
       run: |
            
