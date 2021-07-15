@@ -1,7 +1,12 @@
+#configpath {
+  width: 100vw;
+  padding-top: 148px;
+  padding-left: 10px;
+}  
 .configs {
     height: 100%;
     width: 300px;
-    position: fixed;
+    position: absolute;
     z-index: 1;
     top: 173px;
     overflow-y: auto;
@@ -10,14 +15,12 @@
   }
   hr.horizontal {
     width: 100vw;
-    height: 187px;
-    border: 2px solid gray;
-    position: fixed;
+    height: 0px;
+    border: 1px solid gray;
+    position: absolute;
+    top: 179px;
   }
-  .info {
-    padding-left: 10px;
 
-  }  
   .configs h1 {
     padding-left: 10px;
   }

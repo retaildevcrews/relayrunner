@@ -7,9 +7,11 @@ const Configs = () => {
     const { configs } = useContext(ConfigsContext);
 
     const [currConfig, setCurrConfig] = useState(-1);
-    console.log(currConfig)
 
-    
+    const config = configs.find((c) => c.id === currConfig);
+        console.log(config)
+
+
 
     const configSelect = (id) => {
         if (currConfig === id) {
@@ -19,9 +21,11 @@ const Configs = () => {
             setCurrConfig(id);
         }
     }
-
     return (
         <div className="main">
+            <div id="configpath">
+                {config && <p><b>{config.name}</b></p>}
+            </div>
             <hr className="horizontal"></hr>
             <hr className="vertical"></hr>
             <div className="configs">
