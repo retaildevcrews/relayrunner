@@ -6,9 +6,19 @@ import "./styles.css"
 const Configs = () => {
     const { configs } = useContext(ConfigsContext);
 
-    const [currConfig, setCurrConfig] = useState(0);
+    const [currConfig, setCurrConfig] = useState(-1);
+    console.log(currConfig)
 
-    const config = configs.find((c) => c.id === currConfig);
+    
+
+    const configSelect = (id) => {
+        if (currConfig === id) {
+            setCurrConfig(-1);
+        }
+        else {
+            setCurrConfig(id);
+        }
+    }
 
     return (
         <div className="main">
@@ -22,7 +32,7 @@ const Configs = () => {
                     {
                         configs.map((c) => (
                             <li key={c.id}>
-                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={() => setCurrConfig(c.id)}>{c.name}</button>
+                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={() => {configSelect(c.id)}}>{c.name}</button>
                             </li>
                         )
                         )

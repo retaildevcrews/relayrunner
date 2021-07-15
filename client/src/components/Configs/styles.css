@@ -6,12 +6,17 @@
     top: 173px;
     overflow-y: auto;
     padding: 5px 10px 5px 5px;
+    color: #424242;
   }
   hr.horizontal {
     width: 100vw;
     height: 187px;
     border: 2px solid gray;
     position: fixed;
+  }
+  .info {
+    padding-left: 10px;
+
   }  
   .configs h1 {
     padding-left: 10px;
