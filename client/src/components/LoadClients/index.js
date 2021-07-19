@@ -11,6 +11,7 @@ const LoadClients = props => {
   }
 
   const { loadClients } = useContext(LoadClientContext);
+
   const [excuteClients, setExecuteClients] = useState({});
   const [sortType, setSortType] = useState(SORT_TYPES.id);
 
