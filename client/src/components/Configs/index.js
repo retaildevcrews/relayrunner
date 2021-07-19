@@ -4,16 +4,16 @@ import ConfigsContext from '../ConfigsContext';
 import "./styles.css"
 
 const Configs = () => {
-    const { configs } = useContext(ConfigsContext);
+    const { configs, loadtests } = useContext(ConfigsContext);
 
     const [currConfig, setCurrConfig] = useState(-1);
+    const [currLoadTests, setCurrLoadTests] = useState([]);
+    const [selectedLoadTest, setSetlectedLoadTest] = useState(-1);
 
     const config = configs.find((c) => c.id === currConfig);
-        console.log(config)
+    // const loadTestPath = loadtests.find((c) => c.id === selectedLoadTest);
 
-
-
-    const configSelect = (id) => {
+    const currentConfig = (id) => {
         if (currConfig === id) {
             setCurrConfig(-1);
         }
@@ -21,16 +21,53 @@ const Configs = () => {
             setCurrConfig(id);
         }
     }
+
+    const currentLoadTests = () => {
+        if (currConfig > 0) {
+            for (let i in loadtests) {
+                if (loadtests[i].config === currConfig) {
+                    setCurrLoadTests(loadtest => {
+                        return [
+                            ...loadtest, 
+                            loadtests[i]
+                        ]
+                    });
+                    continue;
+                }
+            };
+        }
+        else {
+            setCurrLoadTests([]);
+        }
+    }
+        
+    const configSelect = (id) => {
+        currentConfig(id);
+        console.log(currConfig);
+        currentLoadTests();
+    }
+    // console.log(currLoadTests)
+    // console.log(currConfig)
+
+
+    const loadTestSelect = (id) => {
+        if (selectedLoadTest === id) {
+            setSetlectedLoadTest(-1);
+        }
+        else {
+            setSetlectedLoadTest(id);
+        }
+    }
     return (
         <div className="main">
             <div id="configpath">
-                {config && <p><b>{config.name}</b></p>}
+                {config && <p><b>{config.name} </b></p>}
+                {/* {loadTestPath && <p> > {loadTestPath.name}</p>} */}
             </div>
-            <hr className="horizontal"></hr>
-            <hr className="vertical"></hr>
+            <hr className="horizontal1"></hr>
+            <hr className="horizontal2"></hr>
             <div className="configs">
                 <h1>Configs</h1>
-                <hr></hr>
                 <div>
                     <ul>
                     {
@@ -44,6 +81,23 @@ const Configs = () => {
                     </ul>
                 </div>
             </div>
+            <hr className="vertical"></hr>
+            <div className="loadtests">
+                {currConfig > 0 && 
+                <h1>LoadTests</h1>}
+                <div>
+                    <ul>
+                    {
+                        currLoadTests.map((lt) => (
+                            <li key={lt.id}>
+                                <button className={`configslist ${lt.id === selectedLoadTest ? "selected" : ""}`} onClick={() => {loadTestSelect(lt.id)}}>{lt.name}</button>
+                            </li>
+                        )
+                        )
+                    }
+                    </ul>
+                </div>
+            </div>           
         </div>
 
     )
