@@ -9,18 +9,11 @@ const Configs = () => {
     const [currConfig, setCurrConfig] = useState(-1);
 
     const config = configs.find((c) => c.id === currConfig);
-        console.log(config)
 
-
-
-    const configSelect = (id) => {
-        if (currConfig === id) {
-            setCurrConfig(-1);
-        }
-        else {
-            setCurrConfig(id);
-        }
+    const configSelect = (id) => () => {
+        currConfig === id ? setCurrConfig(-1) : setCurrConfig(id);
     }
+    
     return (
         <div className="main">
             <div id="configpath">
@@ -36,10 +29,9 @@ const Configs = () => {
                     {
                         configs.map((c) => (
                             <li key={c.id}>
-                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={() => {configSelect(c.id)}}>{c.name}</button>
+                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={configSelect(c.id)}>{c.name}</button>
                             </li>
-                        )
-                        )
+                        ))
                     }
                     </ul>
                 </div>
