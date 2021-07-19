@@ -36,14 +36,6 @@ namespace Ngsa.Middleware.Validation
         {
             return fieldName.ToUpperInvariant() switch
             {
-                "ACTORID" => "The parameter 'actorId' should start with 'nm' and be between 7 and 11 characters in total.",
-                "GENRE" => "The parameter 'genre' should be between 3 and 20 characters.",
-                "MOVIEID" => "The parameter 'movieId' should start with 'tt' and be between 7 and 11 characters in total.",
-                "PAGENUMBER" => "The parameter 'pageNumber' should be between 1 and 10000.",
-                "PAGESIZE" => "The parameter 'pageSize' should be between 1 and 1000.",
-                "Q" => "The parameter 'q' should be between 2 and 20 characters.",
-                "RATING" => "The parameter 'rating' should be between 0.0 and 10.0.",
-                "YEAR" => "The parameter 'year' should be between 1874 and 2025.",
                 _ => $"Unknown parameter: {fieldName}",
             };
         }
@@ -59,23 +51,6 @@ namespace Ngsa.Middleware.Validation
 
             path = path.ToLowerInvariant();
 
-            if (path.StartsWith("/api/movies?") || path.StartsWith("/api/movies/?"))
-            {
-                s += "#movies-api";
-            }
-            else if (path.StartsWith("/api/movies"))
-            {
-                s += "#movies-direct-read";
-            }
-            else if (path.StartsWith("/api/actors?") || path.StartsWith("/api/actors/?"))
-            {
-                s += "#actors-api";
-            }
-            else if (path.StartsWith("/api/actors"))
-            {
-                s += "#actors-direct-read";
-            }
-
             return s;
         }
 
@@ -85,79 +60,8 @@ namespace Ngsa.Middleware.Validation
 
             string path = RequestLogger.GetPathAndQuerystring(context.Request).ToLowerInvariant();
 
-            if (path.StartsWith("/api/movies?") || path.StartsWith("/api/movies/?"))
-            {
-                category = "Movies";
-                mode = "Query";
-
-                if (path.Contains("year="))
-                {
-                    subCategory = "Year10";
-                }
-                else if (path.Contains("rating="))
-                {
-                    subCategory = "Rating10";
-                }
-                else if (path.Contains("genre="))
-                {
-                    subCategory = "Genre10";
-                }
-                else
-                {
-                    subCategory = "Movies";
-                }
-
-                if (subCategory.EndsWith("10") && path.Contains("pagesize=100"))
-                {
-                    subCategory += "0";
-                }
-            }
-            else if (path.StartsWith("/api/movies/"))
-            {
-                category = "Movies";
-                subCategory = "Movies";
-                mode = "Direct";
-
-                if (context.Request.Method == "DELETE")
-                {
-                    mode = "Delete";
-                }
-                else if (context.Request.Method == "POST" || context.Request.Method == "PUT")
-                {
-                    mode = "Upsert";
-                }
-            }
-            else if (path.StartsWith("/api/movies"))
-            {
-                category = "Movies";
-                subCategory = "Movies";
-                mode = "Query";
-            }
-            else if (path.StartsWith("/api/actors?") || path.StartsWith("/api/actors/?"))
-            {
-                category = "Actors";
-                subCategory = "Actors";
-                mode = "Query";
-            }
-            else if (path.StartsWith("/api/actors/"))
-            {
-                category = "Actors";
-                subCategory = "Actors";
-                mode = "Direct";
-            }
-            else if (path.StartsWith("/api/actors"))
-            {
-                category = "Actors";
-                subCategory = "Actors";
-                mode = "Query";
-            }
-            else if (path.StartsWith("/api/genres"))
-            {
-                category = "Genres";
-                subCategory = "Genres";
-                mode = "Query";
-            }
-            else if (path.StartsWith("/healthz"))
+            
+            if (path.StartsWith("/healthz"))
             {
                 category = "Healthz";
                 subCategory = "Healthz";
