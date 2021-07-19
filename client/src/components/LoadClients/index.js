@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import LoadClientContext from '../LoadClientContext';
+import { LoadClientContext } from '../../contexts';
 
 
 import "./styles.css"
@@ -10,7 +10,8 @@ const LoadClients = props => {
     dateCreated: 'dateCreated',
   }
 
-  const { loadClients} = useContext(LoadClientContext);
+  const { loadClients } = useContext(LoadClientContext);
+
   const [excuteClients, setExecuteClients] = useState({});
   const [sortType, setSortType] = useState(SORT_TYPES.id);
 

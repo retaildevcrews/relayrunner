@@ -1,7 +1,10 @@
 import { useState } from "react";
 import LoadClients from "../LoadClients";
 import LoadClientDetails from "../LoadClientDetails";
-import LoadClientContext from "../LoadClientContext";
+import Configs from "../Configs";
+import { ConfigsContext, LoadClientContext } from "../../contexts";
+
+import "./styles.css"
 
 const loadClients = [
   {
@@ -39,6 +42,29 @@ const loadClients = [
   }
 ];
 
+const configs = [
+  {
+    name: "Config 1",
+    description: "This is the first config",
+    id: 1,
+  },
+  {
+    name: "Config 2",
+    description: "This is the second config",
+    id: 2,
+  },
+  {
+    name: "Config 3",
+    description: "This is the third config",
+    id: 3,
+  },
+  {
+    name: "Config 4",
+    description: "This is the fourth config",
+    id: 4,
+  }
+]
+
 function App() {
 
   const [isOpen, setIsOpen] = useState(false)
@@ -65,6 +91,9 @@ function App() {
         <LoadClients handleOpen={handleOpen}/> 
         {isOpen && <LoadClientDetails handleClose={handleClose} currClientDetails={currClientDetails}/>}
       </LoadClientContext.Provider>
+      <ConfigsContext.Provider value={{ configs }}>
+        <Configs></Configs>
+      </ConfigsContext.Provider>
     </div>
   );
 }
