@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Imdb.Model;
+using Database.Model;
 using Microsoft.AspNetCore.Mvc;
 using Ngsa.Application.DataAccessLayer;
 using Ngsa.Middleware;

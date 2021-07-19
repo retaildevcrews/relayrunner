@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Imdb.Model;
+using Database.Model;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Ngsa.Application.Model;
 using Ngsa.Middleware;

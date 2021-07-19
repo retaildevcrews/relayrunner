@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Imdb.Model;
+using Database.Model;
 using Ngsa.Middleware;
 
 namespace Ngsa.Application.DataAccessLayer

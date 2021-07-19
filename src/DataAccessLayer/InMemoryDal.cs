@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Imdb.Model;
+using Database.Model;
 using Lucene.Net.Analysis.Standard;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -18,7 +18,7 @@ using Ngsa.Middleware;
 /// <summary>
 /// This code is used to support performance testing
 ///
-/// This loads the IMDb data into memory which removes the roundtrip to Cosmos
+/// This loads the Database data into memory which removes the roundtrip to Cosmos
 /// This provides higher performance and less variability which allows us to establish
 /// baseline performance metrics
 /// </summary>

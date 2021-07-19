@@ -8,7 +8,7 @@ using System.Text.Json;
 using Lucene.Net.Documents;
 using static Lucene.Net.Documents.Field;
 
-namespace Imdb.Model
+namespace Database.Model
 {
     public class Actor
     {

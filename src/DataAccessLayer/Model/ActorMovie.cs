@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Imdb.Model
+namespace Database.Model
 {
     public class ActorMovie
     {

@@ -46,8 +46,8 @@ namespace Ngsa.Application
             {
                 Config.Secrets = new Secrets
                 {
-                    CosmosCollection = "movies",
-                    CosmosDatabase = "imdb",
+                    CosmosCollection = "collection",
+                    CosmosDatabase = "database",
                     CosmosKey = "in-memory",
                     CosmosServer = "in-memory",
                 };

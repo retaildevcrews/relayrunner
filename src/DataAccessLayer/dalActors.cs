@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using Imdb.Model;
+using Database.Model;
 using Microsoft.Azure.Cosmos;
 using Ngsa.Middleware;
 
