@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import ConfigsContext from '../ConfigsContext';
+import { ConfigsContext } from '../../contexts';
 
 import "./styles.css"
 

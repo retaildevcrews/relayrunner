@@ -1,9 +1,8 @@
 import { useState } from "react";
 import LoadClients from "../LoadClients";
 import LoadClientDetails from "../LoadClientDetails";
-import LoadClientContext from "../LoadClientContext";
 import Configs from "../Configs";
-import ConfigsContext from "../ConfigsContext";
+import { ConfigsContext, LoadClientContext } from "../../contexts";
 
 import "./styles.css"
 
