@@ -78,13 +78,6 @@ namespace Ngsa.Application
                 data.Add("Instance", System.Environment.GetEnvironmentVariable("WEBSITE_ROLE_INSTANCE_ID") ?? "unknown");
                 data.Add("Version", Middleware.VersionExtension.Version);
 
-                // Run each health check
-                await GetGenresAsync(data).ConfigureAwait(false);
-                await GetActorByIdAsync("nm0000173", data).ConfigureAwait(false);
-                await GetMovieByIdAsync("tt0133093", data).ConfigureAwait(false);
-                await SearchMoviesAsync("ring", data).ConfigureAwait(false);
-                await SearchActorsAsync("nicole", data).ConfigureAwait(false);
-
                 // overall health is the worst status
                 foreach (object d in data.Values)
                 {
