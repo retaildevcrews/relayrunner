@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import ConfigsContext from '../ConfigsContext';
+import { ConfigsContext } from '../../contexts';
 
 import "./styles.css"
 
@@ -41,7 +41,7 @@ const Configs = () => {
         }
     }
         
-    const configSelect = (id) => {
+    const configSelect = (id) => () => {
         currentConfig(id);
         console.log(currConfig);
         currentLoadTests();
@@ -73,10 +73,9 @@ const Configs = () => {
                     {
                         configs.map((c) => (
                             <li key={c.id}>
-                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={() => {configSelect(c.id)}}>{c.name}</button>
+                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={configSelect(c.id)}>{c.name}</button>
                             </li>
-                        )
-                        )
+                        ))
                     }
                     </ul>
                 </div>

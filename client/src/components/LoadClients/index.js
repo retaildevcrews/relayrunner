@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import LoadClientContext from '../LoadClientContext';
+import { LoadClientContext } from '../../contexts';
 
 
 import "./styles.css"
