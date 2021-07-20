@@ -2,6 +2,7 @@
   width: 100vw;
   padding-top: 148px;
   padding-left: 10px;
+  display: flex;
 }  
 .configs {
     height: 100%;

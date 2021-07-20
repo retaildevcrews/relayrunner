@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ConfigsContext } from '../../contexts';
 
 import "./styles.css"
@@ -8,21 +8,13 @@ const Configs = () => {
 
     const [currConfig, setCurrConfig] = useState(-1);
     const [currLoadTests, setCurrLoadTests] = useState([]);
-    const [selectedLoadTest, setSetlectedLoadTest] = useState(-1);
+    const [selectedLoadTest, setSelectedLoadTest] = useState(-1);
 
-    const config = configs.find((c) => c.id === currConfig);
-    // const loadTestPath = loadtests.find((c) => c.id === selectedLoadTest);
-
-    const currentConfig = (id) => {
-        if (currConfig === id) {
-            setCurrConfig(-1);
-        }
-        else {
-            setCurrConfig(id);
-        }
-    }
-
-    const currentLoadTests = () => {
+    console.log(currLoadTests)
+    console.log(currConfig)
+    
+    useEffect(() => {
+        setCurrLoadTests([]);
         if (currConfig > 0) {
             for (let i in loadtests) {
                 if (loadtests[i].config === currConfig) {
@@ -36,33 +28,24 @@ const Configs = () => {
                 }
             };
         }
-        else {
-            setCurrLoadTests([]);
-        }
-    }
+    }, [currConfig, loadtests])
         
     const configSelect = (id) => () => {
-        currentConfig(id);
-        console.log(currConfig);
-        currentLoadTests();
+        currConfig === id ? setCurrConfig(-1) : setCurrConfig(id);
     }
-    // console.log(currLoadTests)
-    // console.log(currConfig)
-
 
     const loadTestSelect = (id) => {
-        if (selectedLoadTest === id) {
-            setSetlectedLoadTest(-1);
-        }
-        else {
-            setSetlectedLoadTest(id);
-        }
+        selectedLoadTest === id ? setSelectedLoadTest(-1) : setSelectedLoadTest(id);
     }
+
+    const config = configs.find((c) => c.id === currConfig);
+    const loadTestPath = loadtests.find((c) => c.id === selectedLoadTest);
+
     return (
         <div className="main">
             <div id="configpath">
-                {config && <p><b>{config.name} </b></p>}
-                {/* {loadTestPath && <p> > {loadTestPath.name}</p>} */}
+                {config && <p><b>{config.name} &nbsp;</b></p>}
+                {config && loadTestPath && config.id === loadTestPath.config && <p><b> > {loadTestPath.name} </b></p>}
             </div>
             <hr className="horizontal1"></hr>
             <hr className="horizontal2"></hr>
