@@ -4,38 +4,60 @@ import { ConfigsContext } from '../../contexts';
 import "./styles.css"
 
 const Configs = () => {
-    const { configs } = useContext(ConfigsContext);
+    const { configs, loadTests } = useContext(ConfigsContext);
 
-    const [currConfig, setCurrConfig] = useState(-1);
-
-    const config = configs.find((c) => c.id === currConfig);
-
+    const [currConfigId, setcurrConfigId] = useState(-1);
+    const [selectedLoadTestId, setselectedLoadTestId] = useState(-1);
+        
     const configSelect = (id) => () => {
-        currConfig === id ? setCurrConfig(-1) : setCurrConfig(id);
+        currConfigId === id ? setcurrConfigId(-1) : setcurrConfigId(id);
     }
-    
+
+    const loadTestSelect = (id) => {
+        selectedLoadTestId === id ? setselectedLoadTestId(-1) : setselectedLoadTestId(id);
+    }
+
+    const config = configs.find((c) => c.id === currConfigId);
+    const loadTestPath = loadTests.find((c) => c.id === selectedLoadTestId);
+
     return (
         <div className="main">
             <div id="configpath">
-                {config && <p><b>{config.name}</b></p>}
+                {config && <p><b>{config.name} &nbsp;</b></p>}
+                {config && loadTestPath && config.id === loadTestPath.configId && <p><b>{'> '}{loadTestPath.name} </b></p>}
             </div>
-            <hr className="horizontal"></hr>
-            <hr className="vertical"></hr>
+            <hr className="horizontal1"></hr>
+            <hr className="horizontal2"></hr>
             <div className="configs">
                 <h1>Configs</h1>
-                <hr></hr>
                 <div>
                     <ul>
                     {
                         configs.map((c) => (
                             <li key={c.id}>
-                                <button className={`configslist ${c.id === currConfig ? "selected" : ""}`} onClick={configSelect(c.id)}>{c.name}</button>
+                                <button className={`configslist ${c.id === currConfigId ? "selected" : ""}`} onClick={configSelect(c.id)}>{c.name}</button>
                             </li>
                         ))
                     }
                     </ul>
                 </div>
             </div>
+            <hr className="vertical"></hr>
+            <div className="loadtests">
+                {currConfigId > 0 && 
+                <h1>Load Tests</h1>}
+                <div>
+                    <ul>
+                    {
+                        loadTests.filter(lt => lt.configId === currConfigId).map((lt) => (
+                            <li key={lt.id}>
+                                <button className={`configslist ${lt.id === selectedLoadTestId ? "selected" : ""}`} onClick={() => {loadTestSelect(lt.id)}}>{lt.name}</button>
+                            </li>
+                        ))
+                    }
+                    </ul>
+                </div>
+            </div>           
         </div>
 
     )
