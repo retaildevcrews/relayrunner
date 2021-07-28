@@ -10,12 +10,7 @@ const Configs = () => {
   const [selectedLoadTestId, setselectedLoadTestId] = useState(-1);
 
   const configSelect = (id) => () => {
-    if (currConfigId === id) {
-      setcurrConfigId(-1);
-    }
-    else {
-      setcurrConfigId(id);
-    }
+    currConfigId === id ? setcurrConfigId(-1) : setcurrConfigId(id);
     loadTestSelect(-1);
   };
 
@@ -23,8 +18,6 @@ const Configs = () => {
 
   const config = configs.find((c) => c.id === currConfigId);
   const loadTestPath = loadTests.find((c) => c.id === selectedLoadTestId);
-
-  console.log(loadTestPath);
 
   return (
     <div className="main">
@@ -36,7 +29,7 @@ const Configs = () => {
         )}
         {loadTestPath && config.id === loadTestPath.configId && (
           <p>
-            <b>&gt; {loadTestPath.name}</b>
+            <b>{` > ${loadTestPath.name} `}</b>
           </p>
         )}
       </div>
