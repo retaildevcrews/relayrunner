@@ -4,7 +4,7 @@ import LoadClientDetails from "../LoadClientDetails";
 import Configs from "../Configs";
 import { ConfigsContext, LoadClientContext } from "../../contexts";
 
-import "./styles.css"
+import "./styles.css";
 
 const loadClients = [
   {
@@ -39,7 +39,7 @@ const loadClients = [
     currstatus: "busy",
     metrics: "prometheus",
     dateCreated: 2020,
-  }
+  },
 ];
 
 const configs = [
@@ -62,8 +62,8 @@ const configs = [
     name: "Config 4",
     description: "This is the fourth config",
     id: 4,
-  }
-]
+  },
+];
 
 const loadTests = [
   {
@@ -110,37 +110,40 @@ const loadTests = [
     name: "Load Test 9",
     configId: 1,
     id: 9,
-  }
-]
+  },
+];
 
 function App() {
-
-  const [isOpen, setIsOpen] = useState(false)
-  const [ currClientDetails, setCurrClientDetails ] = useState(-1)
+  const [isOpen, setIsOpen] = useState(false);
+  const [currClientDetails, setCurrClientDetails] = useState(-1);
 
   const handleOpen = (index) => {
     setIsOpen(true);
     setCurrClientDetails(index);
-  }
+  };
 
   const resetCurrClientDetails = () => {
-    setCurrClientDetails(-1)
-  }
+    setCurrClientDetails(-1);
+  };
 
   const handleClose = () => {
     setIsOpen(false);
     resetCurrClientDetails();
-  }
+  };
 
   return (
     <div className="App">
-      <LoadClientContext.Provider 
-        value={{ loadClients }}>
-        <LoadClients handleOpen={handleOpen}/> 
-        {isOpen && <LoadClientDetails handleClose={handleClose} currClientDetails={currClientDetails}/>}
+      <LoadClientContext.Provider value={{ loadClients }}>
+        <LoadClients handleOpen={handleOpen} />
+        {isOpen && (
+          <LoadClientDetails
+            handleClose={handleClose}
+            currClientDetails={currClientDetails}
+          />
+        )}
       </LoadClientContext.Provider>
       <ConfigsContext.Provider value={{ configs, loadTests }}>
-        <Configs></Configs>
+        <Configs />
       </ConfigsContext.Provider>
     </div>
   );

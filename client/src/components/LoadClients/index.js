@@ -1,14 +1,13 @@
-import { useContext, useState } from 'react';
-import { LoadClientContext } from '../../contexts';
+import { useContext, useState } from "react";
+import { LoadClientContext } from "../../contexts";
 
+import "./styles.css";
 
-import "./styles.css"
-
-const LoadClients = props => {
+const LoadClients = ({ handleOpen }) => {
   const SORT_TYPES = {
-    id: 'id',
-    dateCreated: 'dateCreated',
-  }
+    id: "id",
+    dateCreated: "dateCreated",
+  };
 
   const { loadClients } = useContext(LoadClientContext);
   const [excuteClients, setExecuteClients] = useState({});
@@ -18,20 +17,20 @@ const LoadClients = props => {
     setExecuteClients({
       ...excuteClients,
       [id]: !excuteClients[id],
-    })
+    });
   }
 
-  const sortByProperty = type => (a,b) => {
+  const sortByProperty = (type) => (a, b) => {
     const sortProperty = SORT_TYPES[type];
     return a[sortProperty] - b[sortProperty];
   };
 
-    return (
-      <>
-        <div className="sidenav">
-          <div className="header">
+  return (
+    <>
+      <div className="sidenav">
+        <div className="header">
           <div>
-              <h1>Load Clients</h1>
+            <h1>Load Clients</h1>
           </div>
           <div>
             <select onChange={(e) => setSortType(e.target.value)}>
@@ -48,26 +47,36 @@ const LoadClients = props => {
               <option value="3">Busy</option>
             </select>
           </div>
-          </div>
-          <hr></hr>
-          <div>
-            <ul>
-              {
-                loadClients.sort(sortByProperty(sortType)).map((lc, index) => (
-                    <li key={lc.id}>
-                      <button className={`loadclient ${excuteClients[lc.id] ? "selected" : ""}`} onClick={() => handleToggleSelected(lc.id)}>{lc.name}</button>
-                      <div className="divider"></div> 
-                      <button className={`load-client-status ${lc.currstatus}`} title={lc.currstatus} onClick={() => props.handleOpen(index)}></button>
-                    </li>
-                  )
-                )
-              }
-            </ul>
-          </div>
         </div>
-      </>
-    );
-  };
-
+        <hr />
+        <div>
+          <ul>
+            {loadClients.sort(sortByProperty(sortType)).map((lc, index) => (
+              <li key={lc.id}>
+                <button
+                  type="button"
+                  className={`loadclient ${
+                    excuteClients[lc.id] ? "selected" : ""
+                  }`}
+                  onClick={() => handleToggleSelected(lc.id)}
+                >
+                  {lc.name}
+                </button>
+                <div className="divider" />
+                <button
+                  type="button"
+                  className={`load-client-status ${lc.currstatus}`}
+                  title={lc.currstatus}
+                  aria-label={lc.currstatus}
+                  onClick={() => handleOpen(index)}
+                />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default LoadClients;
