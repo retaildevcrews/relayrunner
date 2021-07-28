@@ -3,7 +3,7 @@ import { LoadClientContext } from "../../contexts";
 
 import "./styles.css";
 
-const LoadClients = (handleOpen) => {
+const LoadClients = ({ handleOpen }) => {
   const SORT_TYPES = {
     id: "id",
     dateCreated: "dateCreated",
@@ -68,7 +68,7 @@ const LoadClients = (handleOpen) => {
                   className={`load-client-status ${lc.currstatus}`}
                   title={lc.currstatus}
                   aria-label={lc.currstatus}
-                  onClick={() => handleOpen.handleOpen(index)}
+                  onClick={() => handleOpen(index)}
                 />
               </li>
             ))}
