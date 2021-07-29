@@ -67,5 +67,66 @@ namespace Ngsa.Application
 
             return result;
         }
+
+        /// <summary>
+        /// Get Generic by Id Healthcheck
+        /// </summary>
+        /// <returns>HealthzCheck</returns>
+        private async Task<HealthzCheck> GetGenericByIdAsync(string genericId, Dictionary<string, object> data = null)
+        {
+            const string name = "getGenericById";
+            string path = "/api/generic/" + genericId;
+
+            stopwatch.Restart();
+
+            try
+            {
+                if (App.Config.AppType == AppType.App)
+                {
+                    _ = await dal.GetGenericAsync(genericId).ConfigureAwait(false);
+                }
+
+                return BuildHealthzCheck(path, MaxResponseTime / 2, null, data, name);
+            }
+            catch (Exception ex)
+            {
+                BuildHealthzCheck(path, MaxResponseTime / 2, ex, data, name);
+
+                // throw the exception so that HealthCheck logs
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Search Generic Healthcheck
+        /// </summary>
+        /// <returns>HealthzCheck</returns>
+        private async Task<HealthzCheck> SearchGenericsAsync(string query, Dictionary<string, object> data = null)
+        {
+            const string name = "searchGeneric";
+
+            GenericQueryParameters genericQuery = new GenericQueryParameters { Q = query };
+
+            string path = "/api/generic?q=" + genericQuery.Q;
+
+            stopwatch.Restart();
+
+            try
+            {
+                if (App.Config.AppType == AppType.App)
+                {
+                    _ = (await dal.GetGenericsAsync(genericQuery).ConfigureAwait(false)).ToList<Generic>();
+                }
+
+                return BuildHealthzCheck(path, MaxResponseTime, null, data, name);
+            }
+            catch (Exception ex)
+            {
+                BuildHealthzCheck(path, MaxResponseTime, ex, data, name);
+
+                // throw the exception so that HealthCheck logs
+                throw;
+            }
+        }
     }
 }

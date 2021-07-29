@@ -36,6 +36,8 @@ namespace Ngsa.Middleware.Validation
         {
             return fieldName.ToUpperInvariant() switch
             {
+                "GENERICID" => "The parameter 'genericId' should start with 'tt'.",
+                "Q" => "The parameter 'q' should be greater than 2 characters",
                 _ => $"Unknown parameter: {fieldName}",
             };
         }
@@ -51,6 +53,11 @@ namespace Ngsa.Middleware.Validation
 
             path = path.ToLowerInvariant();
 
+            if (path.StartsWith("/api/generic?") || path.StartsWith("/api/generic/?"))
+            {
+                s += "#generic-api";
+            }
+
             return s;
         }
 
@@ -60,8 +67,34 @@ namespace Ngsa.Middleware.Validation
 
             string path = RequestLogger.GetPathAndQuerystring(context.Request).ToLowerInvariant();
 
-            
-            if (path.StartsWith("/healthz"))
+            if (path.StartsWith("/api/generic?") || path.StartsWith("/api/generic/?"))
+            {
+                category = "Generic";
+                subCategory = "Generic";
+                mode = "Query";
+            }
+            else if (path.StartsWith("/api/generic/"))
+            {
+                category = "Generic";
+                subCategory = "Generic";
+                mode = "Direct";
+
+                if (context.Request.Method == "DELETE")
+                {
+                    mode = "Delete";
+                }
+                else if (context.Request.Method == "POST" || context.Request.Method == "PUT")
+                {
+                    mode = "Upsert";
+                }
+            }
+            else if (path.StartsWith("/api/generic"))
+            {
+                category = "Generic";
+                subCategory = "Generic";
+                mode = "Query";
+            }
+            else if (path.StartsWith("/healthz"))
             {
                 category = "Healthz";
                 subCategory = "Healthz";

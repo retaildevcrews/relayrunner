@@ -83,7 +83,7 @@ namespace Ngsa.Application.Controllers
             }
         }
 
-        public static async Task<IActionResult> Post(HttpRequest request, Movie m)
+        public static async Task<IActionResult> Post(HttpRequest request, Generic g)
         {
             if (request == null || !request.Path.HasValue)
             {
@@ -103,7 +103,7 @@ namespace Ngsa.Application.Controllers
                     req.Headers.Add(CorrelationVector.HeaderName, cVector.Value);
                 }
 
-                req.Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(m));
+                req.Content = new ByteArrayContent(JsonSerializer.SerializeToUtf8Bytes(g));
                 req.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
                 HttpResponseMessage resp = await Client.SendAsync(req);
@@ -112,7 +112,7 @@ namespace Ngsa.Application.Controllers
 
                 if (resp.IsSuccessStatusCode)
                 {
-                    Movie obj = JsonSerializer.Deserialize<Movie>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
+                    Generic obj = JsonSerializer.Deserialize<Generic>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
                     json = new JsonResult(obj, Options) { StatusCode = (int)resp.StatusCode };
                 }
                 else

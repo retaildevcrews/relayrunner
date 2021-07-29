@@ -392,7 +392,7 @@ namespace Ngsa.Application
 
                 // load the cache
                 Config.CacheDal = new DataAccessLayer.InMemoryDal();
-
+                
                 // create the cosomos data access layer
                 if (Config.InMemory)
                 {

@@ -78,6 +78,10 @@ namespace Ngsa.Application
                 data.Add("Instance", System.Environment.GetEnvironmentVariable("WEBSITE_ROLE_INSTANCE_ID") ?? "unknown");
                 data.Add("Version", Middleware.VersionExtension.Version);
 
+                // Run each health check
+                await GetGenericByIdAsync("tt0133093", data).ConfigureAwait(false);
+                await SearchGenericsAsync("ring", data).ConfigureAwait(false);
+
                 // overall health is the worst status
                 foreach (object d in data.Values)
                 {
