@@ -21,7 +21,7 @@ jobs:
 
     runs-on: ubuntu-20.04
     env:
-      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-app
+      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-app-template
 
     steps:
     - uses: actions/checkout@v2
@@ -39,7 +39,9 @@ jobs:
 
     - name: Docker Run and Test
       run: |
-           
+            # Install WebV to execute load test
+            dotnet tool install -g webvalidate
+            
             docker run --rm -d --name ngsacs -p 8080:8080 image --in-memory
 
             echo "Waiting for web server to start ..."
@@ -63,7 +65,10 @@ jobs:
                 ((wait_time=wait_time+1))
             done
 
-            docker run --rm --network=host ghcr.io/retaildevcrews/ngsa-lr:beta -s "http://localhost:8080" --max-errors 1 -f baseline.json
+            pushd loadtests
+            # run a test
+            webv -s "http://localhost:8080" --max-errors 1 -f baseline.json
+            popd
         
     - name: Docker Tag and Push
       run: |

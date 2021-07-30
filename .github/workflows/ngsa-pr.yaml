@@ -16,7 +16,7 @@ jobs:
 
     runs-on: ubuntu-20.04
     env:
-      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-app
+      DOCKER_REPO: ghcr.io/retaildevcrews/ngsa-app-template
 
     steps:
     - uses: actions/checkout@v2
@@ -34,7 +34,9 @@ jobs:
 
     - name: Docker Run and Test - In-Memory
       run: |
-           
+            # Install WebV to execute load test
+            dotnet tool install -g webvalidate
+            
             docker run --rm -d --name ngsacsmem -p 8080:8080 image --in-memory
 
             echo "Waiting for web server to start ..."
@@ -59,7 +61,9 @@ jobs:
             done
 
             echo "Running In-Memory benchmark and baseline"
-            docker run --rm --network=host ghcr.io/retaildevcrews/ngsa-lr:beta -s "http://localhost:8080" --max-errors 1 -f benchmark.json baseline.json
+            pushd loadtests
+            webv -s "http://localhost:8080" --max-errors 1 -f benchmark.json baseline.json
+            popd
     
     - name: Set Secrets
       run: |
@@ -96,7 +100,9 @@ jobs:
             done
 
             echo "Running Cosmos benchmark and baseline"
-            docker run --rm --network=host ghcr.io/retaildevcrews/ngsa-lr:beta -s "http://localhost:8081" --max-errors 1 -f benchmark.json baseline.json
+            pushd loadtests
+            webv -s "http://localhost:8081" --max-errors 1 -f benchmark.json baseline.json
+            popd
    
     - name: Delete Secrets
       run: |
