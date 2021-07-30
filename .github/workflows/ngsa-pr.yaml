@@ -66,48 +66,48 @@ jobs:
             webv -s "http://localhost:8080" --max-errors 1 -f benchmark.json baseline.json
             popd
     
-    - name: Set Secrets
-      run: |
-            mkdir -p /tmp/secrets
-            echo -n ${{ secrets.NGSA_PRE_COSMOS_RO_KEY}} >| /tmp/secrets/CosmosKey
-            echo -n ${{ secrets.NGSA_PRE_COSMOS_URL }} >| /tmp/secrets/CosmosUrl
-            echo -n 'collection' >| /tmp/secrets/CosmosCollection
-            echo -n 'database' >| /tmp/secrets/CosmosDatabase
+    # - name: Set Secrets
+    #   run: |
+    #         mkdir -p /tmp/secrets
+    #         echo -n ${{ secrets.NGSA_PRE_COSMOS_RO_KEY}} >| /tmp/secrets/CosmosKey
+    #         echo -n ${{ secrets.NGSA_PRE_COSMOS_URL }} >| /tmp/secrets/CosmosUrl
+    #         echo -n 'collection' >| /tmp/secrets/CosmosCollection
+    #         echo -n 'database' >| /tmp/secrets/CosmosDatabase
 
-    - name: Docker Run and Test - Cosmos
-      run: |
+    # - name: Docker Run and Test - Cosmos
+    #   run: |
            
-            docker run --rm -d --name ngsacscosmos -p 8081:8080 -v /tmp/secrets:/app/secrets:ro image --no-cache
+    #         docker run --rm -d --name ngsacscosmos -p 8081:8080 -v /tmp/secrets:/app/secrets:ro image --no-cache
 
-            echo "Waiting for web server to start ..."
+    #         echo "Waiting for web server to start ..."
         
-            wait_time=10        
-            sleep $wait_time
+    #         wait_time=10        
+    #         sleep $wait_time
 
-            # wait up to 30 seconds for web server to start
-            while true
-            do
-                if curl localhost:8081/version ; then
-                    echo -e "\n web server is running"
-                    break
-                fi
-                if [ $wait_time -gt 30 ] ; then
-                  echo -e "\n timeout waiting for web server to start"
-                  exit 1
-                fi
+    #         # wait up to 30 seconds for web server to start
+    #         while true
+    #         do
+    #             if curl localhost:8081/version ; then
+    #                 echo -e "\n web server is running"
+    #                 break
+    #             fi
+    #             if [ $wait_time -gt 30 ] ; then
+    #               echo -e "\n timeout waiting for web server to start"
+    #               exit 1
+    #             fi
                 
-                sleep 1
-                ((wait_time=wait_time+1))
-            done
+    #             sleep 1
+    #             ((wait_time=wait_time+1))
+    #         done
 
-            echo "Running Cosmos benchmark and baseline"
-            pushd loadtests
-            webv -s "http://localhost:8081" --max-errors 1 -f benchmark.json baseline.json
-            popd
+    #         echo "Running Cosmos benchmark and baseline"
+    #         pushd loadtests
+    #         webv -s "http://localhost:8081" --max-errors 1 -f benchmark.json baseline.json
+    #         popd
    
-    - name: Delete Secrets
-      run: |
-            rm -rf /tmp/secrets    
+    # - name: Delete Secrets
+    #   run: |
+    #         rm -rf /tmp/secrets    
     
     - name: Docker Tag and Push
       run: |
