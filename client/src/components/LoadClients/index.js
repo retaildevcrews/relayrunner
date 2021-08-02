@@ -3,12 +3,17 @@ import { LoadClientContext } from "../../contexts";
 
 import "./styles.css";
 
-const LoadClients = ({ handleOpen }) => {
-  const SORT_TYPES = {
-    id: "id",
-    dateCreated: "dateCreated",
-  };
 
+const SORT_TYPES = {
+  id: "id",
+  dateCreated: "dateCreated",
+};
+const sortByProperty = (type) => (a, b) => {
+  const sortProperty = SORT_TYPES[type];
+  return a[sortProperty] - b[sortProperty];
+};
+
+const LoadClients = ({ handleOpen }) => {
   const { loadClients } = useContext(LoadClientContext);
   const [excuteClients, setExecuteClients] = useState({});
   const [sortType, setSortType] = useState(SORT_TYPES.id);
@@ -19,11 +24,6 @@ const LoadClients = ({ handleOpen }) => {
       [id]: !excuteClients[id],
     });
   }
-
-  const sortByProperty = (type) => (a, b) => {
-    const sortProperty = SORT_TYPES[type];
-    return a[sortProperty] - b[sortProperty];
-  };
 
   return (
     <>
@@ -79,4 +79,4 @@ const LoadClients = ({ handleOpen }) => {
   );
 };
 
-export default LoadClients;
+export { LoadClients as default, sortByProperty };
