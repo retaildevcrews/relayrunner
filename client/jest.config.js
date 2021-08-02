@@ -3,4 +3,3 @@ module.exports = {
       '\\.(css|less)$': '<rootDir>/configs/jest/stylesMock.js',
     }
   };
-  
