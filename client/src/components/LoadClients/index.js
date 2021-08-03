@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import PropTypes from "prop-types";
 import { LoadClientContext } from "../../contexts";
 
 import "./styles.css";
@@ -76,6 +77,10 @@ const LoadClients = ({ handleOpen }) => {
       </div>
     </>
   );
+};
+
+LoadClients.propTypes = {
+  handleOpen: PropTypes.func.isRequired,
 };
 
 export { LoadClients as default, sortByProperty };
