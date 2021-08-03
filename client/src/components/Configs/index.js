@@ -9,15 +9,15 @@ const Configs = () => {
   const [currConfigId, setcurrConfigId] = useState(-1);
   const [selectedLoadTestId, setselectedLoadTestId] = useState(-1);
 
+  const loadTestSelect = (id) =>
+  selectedLoadTestId === id
+    ? setselectedLoadTestId(-1)
+    : setselectedLoadTestId(id);
+
   const configSelect = (id) => () => {
     currConfigId === id ? setcurrConfigId(-1) : setcurrConfigId(id);
     loadTestSelect(-1);
   };
-
-  const loadTestSelect = (id) =>
-    selectedLoadTestId === id
-      ? setselectedLoadTestId(-1)
-      : setselectedLoadTestId(id);
 
   const config = configs.find((c) => c.id === currConfigId);
   const loadTestPath = loadTests.find((c) => c.id === selectedLoadTestId);

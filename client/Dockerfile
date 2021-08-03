@@ -7,8 +7,7 @@ WORKDIR /app
 COPY ["package.json", "package-lock.json", "./"]
 
 # install dependencies
-# removed -only=production tag to enfore linter
-RUN npm ci
+RUN npm ci --only=production
 
 # copy app 
 COPY . ./ 
