@@ -1,7 +1,7 @@
 ### build the frontend
 FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:14 AS frontendbuild
 ENV NODE_ENV production
-WORKDIR /app
+WORKDIR /app/client
 
 # copy project meta data
 COPY ["package.json", "package-lock.json", "./"]
