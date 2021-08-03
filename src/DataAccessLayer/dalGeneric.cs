@@ -48,7 +48,7 @@ namespace Ngsa.Application.DataAccessLayer
 
             if (App.Config.Cache)
             {
-                 cache.Add(new CacheItem(key, g), cachePolicy);
+                cache.Add(new CacheItem(key, g), cachePolicy);
             }
 
             return g;
