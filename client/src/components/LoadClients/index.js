@@ -3,7 +3,6 @@ import { LoadClientContext } from "../../contexts";
 
 import "./styles.css";
 
-
 const SORT_TYPES = {
   id: "id",
   dateCreated: "dateCreated",

@@ -14,7 +14,10 @@ const Configs = () => {
     loadTestSelect(-1);
   };
 
-  const loadTestSelect = (id) => (selectedLoadTestId === id ? setselectedLoadTestId(-1) : setselectedLoadTestId(id));
+  const loadTestSelect = (id) =>
+    selectedLoadTestId === id
+      ? setselectedLoadTestId(-1)
+      : setselectedLoadTestId(id);
 
   const config = configs.find((c) => c.id === currConfigId);
   const loadTestPath = loadTests.find((c) => c.id === selectedLoadTestId);
