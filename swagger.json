@@ -1,0 +1,255 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Next Gen Symmetric Apps",
+    "version": "1.0"
+  },
+  "paths": {
+    "{urlPrefix}/api/generic": {
+      "get": {
+        "tags": [ "Generic" ],
+        "summary": "Search Generic",
+        "description": "Returns an array of `Generic` documents optionally filtered by query string parameters",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Filter by search on Generic.Property<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "matrix"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of `Generic` documents or empty array if not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Generic"
+                  }
+                },
+                "example": [
+                  {
+                    "id": "tt0234215",
+                    "partitionKey": "5",
+                    "genericId": "tt0234215",
+                    "type": "Generic",
+                    "Property": "The Matrix Reloaded",
+                    "textSearch": "the matrix reloaded"
+                  },
+                  {
+                    "id": "tt0242653",
+                    "partitionKey": "3",
+                    "genericId": "tt0242653",
+                    "type": "Generic",
+                    "property": "The Matrix Revolutions",
+                    "textSearch": "the matrix revolutions"
+                  }
+                ]
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameter",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Invalid {queryString} parameter"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "{urlPrefix}/api/generic/{genericId}": {
+      "get": {
+        "tags": [ "Generic" ],
+        "summary": "Get Generic by ID",
+        "description": "Get a single `Generic` document by genericId",
+        "parameters": [
+          {
+            "name": "genericId",
+            "in": "path",
+            "description": "`valid: begins with tt`<br><br>example: The Matrix",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "tt0133093"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`Generic`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Generic"
+                },
+                "example": {
+                  "id": "tt0133093",
+                  "partitionKey": "3",
+                  "genericId": "tt0133093",
+                  "type": "Generic",
+                  "property": "The Matrix"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid genericId",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "Invalid genericId"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "genericId not found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "genericId not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "{urlPrefix}/healthz": {
+      "get": {
+        "tags": [ "Health Check" ],
+        "summary": "Health Check (simple)",
+        "description": "Returns a text/plain health status (pass, warn or fail)",
+        "responses": {
+          "200": {
+            "description": "`string` (pass, warn or fail)",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "pass"
+              }
+            }
+          }
+        }
+      }
+    },
+    "{urlPrefix}/healthz/ietf": {
+      "get": {
+        "tags": [ "Health Check" ],
+        "summary": "Health Check (IETF)",
+        "description": "Returns an `IetfHealthCheck` document from the Health Check",
+        "responses": {
+          "200": {
+            "description": "`IetfHealthCheck`",
+            "content": {
+              "application/health+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IetfHealthCheck"
+                },
+                "example": {
+                  "status": "pass",
+                  "serviceId": "ngsa",
+                  "description": "NGSA Health Check",
+                  "instance": "0",
+                  "version": "1.0.0502.0026",
+                  "checks": {
+                    "getGenericById:responseTime": {
+                      "status": "pass",
+                      "componentId": "getGenericById",
+                      "componentType": "datastore",
+                      "observedUnit": "ms",
+                      "observedValue": 1.4,
+                      "targetValue": 400,
+                      "time": "2020-03-02T01:49:17Z"
+                    },
+                    "searchGeneric:responseTime": {
+                      "status": "pass",
+                      "componentId": "searchGeneric",
+                      "componentType": "datastore",
+                      "observedUnit": "ms",
+                      "observedValue": 38.11,
+                      "targetValue": 400,
+                      "time": "2020-03-02T01:49:17Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Generic": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "partitionKey": {
+            "type": "string"
+          },
+          "genericId": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "property": {
+            "type": "string"
+          },
+          "textSearch": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "IetfHealthCheck": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "serviceId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "checks": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
