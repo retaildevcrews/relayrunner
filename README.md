@@ -1,26 +1,35 @@
-# Kind Dev Cluster Template
+# RelayRunner App
 
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+RelayRunner App is intended to faciliate testing in controlled environments by adding the capability to update configs and load tests without restarting load clients.
 
-> Setup a Kind Dev Cluster on Codespaces Template
+## Prerequisites
 
-## Overview
+- Bash shell (tested on Visual Studio Codespaces, Mac, Ubuntu, Windows with WSL2)
+  - Will not work with WSL1 or Cloud Shell
+- Azure CLI ([download](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest))
+- Docker CLI ([download](https://docs.docker.com/install/))
+- .NET 5.0 ([download](https://docs.microsoft.com/en-us/dotnet/core/install/))
+- Visual Studio Code (optional) ([download](https://code.visualstudio.com/download))
 
-This is a template that will setup a Kubernetes developer cluster using `Kind` and `GitHub Codespaces`
+## RelayRunner Usage
 
-Create your repo from this template and add your application code
+TODO
 
-### Engineering Docs
+## Run the Application
 
-- Team Working [Agreement](.github/WorkingAgreement.md)
-- Team [Engineering Practices](.github/EngineeringPractices.md)
-- CSE Engineering Fundamentals [Playbook](https://github.com/Microsoft/code-with-engineering-playbook)
+### Using Visual Studio Codespaces
 
-## How to file issues and get help  
+> Visual Studio Codespaces is the easiest way to evaluate RelayRunner.
 
-This project uses GitHub Issues to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new issue.
+TODO: Describe opening and running a codespaces
 
-For help and questions about using this project, please open a GitHub issue.
+### Using bash shell
+
+TODO
+
+### Testing the application
+
+TODO
 
 ## Contributing
 
