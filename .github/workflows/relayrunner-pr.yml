@@ -36,6 +36,15 @@ jobs:
            
             docker run --name backend -d --rm -p 80:8080 relayrunner-backend
 
+    - name: Run Linter on Client
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Install npm packages
+      run: npm install --prefix ./client
+    - name: Run Linter on ./client 
+      run: npm run lint --prefix ./client      
+
     - name: Docker Build Client
       run: |
         docker build -t relayrunner-client ./client
