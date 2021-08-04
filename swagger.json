@@ -5,52 +5,154 @@
     "version": "1.0"
   },
   "paths": {
-    "{urlPrefix}/api/generic": {
+    "{urlPrefix}/api/loadClients": {
       "get": {
-        "tags": [ "Generic" ],
-        "summary": "Search Generic",
-        "description": "Returns an array of `Generic` documents optionally filtered by query string parameters",
+        "tags": [ "LoadClients" ],
+        "summary": "Search LoadClients",
+        "description": "Returns an array of `LoadClient` documents optionally filtered by query string parameters",
         "parameters": [
           {
             "name": "q",
             "in": "query",
-            "description": "Filter by search on Generic.Property<br><br>`valid: greater than 2 characters`",
+            "description": "Filter by search on LoadClient.Name<br><br>`valid: greater than 2 characters`",
             "required": false,
             "style": "form",
             "explode": true,
             "schema": {
               "type": "string",
-              "example": "matrix"
+              "example": "Load-Client-ID-001"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Filter by id on LoadClient.Id<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "name": "version",
+            "in": "query",
+            "description": "Filter by version on LoadClient.Version<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 5.0
+            }
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "description": "Filter by region on LoadClient.Region<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "california"
+            }
+          },
+          {
+            "name": "zone",
+            "in": "query",
+            "description": "Filter by zone on LoadClient.Zone<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "colorado"
+            }
+          },
+          {
+            "name": "sceduler",
+            "in": "query",
+            "description": "Filter by search on LoadClient.Scheduler<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "nev"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by status on LoadClient.CurrStatus<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "ready"
+            }
+          },
+          {
+            "name": "metrics",
+            "in": "query",
+            "description": "Filter by metrics on LoadClient.Metrics<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "example": "prometheus"
+            }
+          },
+          {
+            "name": "date created",
+            "in": "query",
+            "description": "Filter by date created on LoadClient.DateCreated<br><br>`valid: greater than 2 characters`",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "example": 2019
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Array of `Generic` documents or empty array if not found",
+            "description": "Array of `Load Client` documents or empty array if not found",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/Generic"
+                    "$ref": "#/components/schemas/LoadClient"
                   }
                 },
                 "example": [
                   {
-                    "id": "tt0234215",
-                    "partitionKey": "5",
-                    "genericId": "tt0234215",
-                    "type": "Generic",
-                    "Property": "The Matrix Reloaded",
-                    "textSearch": "the matrix reloaded"
+                    "name": "Load-Client-ID-001",
+                    "id": 1,
+                    "version": 5.0,
+                    "region": "california",
+                    "zone": "colorado",
+                    "scheduler": "nev",
+                    "currstatus": "ready",
+                    "metrics": "prometheus",
+                    "dateCreated": 2019
                   },
                   {
-                    "id": "tt0242653",
-                    "partitionKey": "3",
-                    "genericId": "tt0242653",
-                    "type": "Generic",
-                    "property": "The Matrix Revolutions",
-                    "textSearch": "the matrix revolutions"
+                    "name": "Load-Client-ID-002",
+                    "id": 2,
+                    "version": 5.0,
+                    "region": "california",
+                    "zone": "colorado",
+                    "scheduler": "nev",
+                    "currstatus": "unresponsive",
+                    "metrics": "prometheus",
+                    "dateCreated": 2021
                   }
                 ]
               }
@@ -63,68 +165,6 @@
                 "schema": {
                   "type": "string",
                   "example": "Invalid {queryString} parameter"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "{urlPrefix}/api/generic/{genericId}": {
-      "get": {
-        "tags": [ "Generic" ],
-        "summary": "Get Generic by ID",
-        "description": "Get a single `Generic` document by genericId",
-        "parameters": [
-          {
-            "name": "genericId",
-            "in": "path",
-            "description": "`valid: begins with tt`<br><br>example: The Matrix",
-            "required": true,
-            "style": "simple",
-            "explode": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "tt0133093"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "`Generic`",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Generic"
-                },
-                "example": {
-                  "id": "tt0133093",
-                  "partitionKey": "3",
-                  "genericId": "tt0133093",
-                  "type": "Generic",
-                  "property": "The Matrix"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid genericId",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "Invalid genericId"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "genericId not found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "genericId not found"
                 }
               }
             }
@@ -167,23 +207,23 @@
                 },
                 "example": {
                   "status": "pass",
-                  "serviceId": "ngsa",
-                  "description": "NGSA Health Check",
+                  "serviceId": "relayrunner",
+                  "description": "RelayRunner Health Check",
                   "instance": "0",
                   "version": "1.0.0502.0026",
                   "checks": {
-                    "getGenericById:responseTime": {
+                    "getLoadClientById:responseTime": {
                       "status": "pass",
-                      "componentId": "getGenericById",
+                      "componentId": "getLoadClientById",
                       "componentType": "datastore",
                       "observedUnit": "ms",
                       "observedValue": 1.4,
                       "targetValue": 400,
                       "time": "2020-03-02T01:49:17Z"
                     },
-                    "searchGeneric:responseTime": {
+                    "searchLoadClient:responseTime": {
                       "status": "pass",
-                      "componentId": "searchGeneric",
+                      "componentId": "searchLoadClient",
                       "componentType": "datastore",
                       "observedUnit": "ms",
                       "observedValue": 38.11,
@@ -201,26 +241,32 @@
   },
   "components": {
     "schemas": {
-      "Generic": {
+      "LoadClient": {
         "type": "object",
         "properties": {
           "id": {
+            "type": "integer"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "region": {
             "type": "string"
           },
-          "partitionKey": {
+          "zone": {
             "type": "string"
           },
-          "genericId": {
+          "scheduler": {
             "type": "string"
           },
-          "type": {
+          "currstatus": {
             "type": "string"
           },
-          "property": {
+          "metrics": {
             "type": "string"
           },
-          "textSearch": {
-            "type": "string"
+          "dateCreated": {
+            "type": "integer"
           }
         },
         "additionalProperties": false
