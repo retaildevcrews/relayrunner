@@ -13,7 +13,7 @@ RUN npm ci --only=production
 COPY . ./ 
 
 # build release app
-RUN npm run build
+RUN npm run build-prod
 
 
 ###########################################################
