@@ -6,6 +6,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm clean-install`
+
+Installs npm dependecies.
+
+If find any severity vulnerabilites, run `npm audit --production` to filter out false positive vulnerability reports.
+
 ### `npm start`
 
 Runs the app in the development mode.\
