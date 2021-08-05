@@ -6,11 +6,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### `npm install`
+### `npm clean-install`
 
 Installs npm dependecies.
-If using a Windows or Linux machine, run `npm install --no-optional`.
-If using Mac OS, run `npm install`.
 
 If find any severity vulnerabilites, run `npm audit --production` to filter out false positive vulnerability reports.
 
