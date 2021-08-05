@@ -13,9 +13,9 @@ namespace Ngsa.Application.DataAccessLayer
     /// </summary>
     public interface IDAL
     {
-        Task<Generic> GetGenericAsync(string genericId);
-        Task<IEnumerable<Generic>> GetGenericsAsync(GenericQueryParameters genericQueryParameters);
-        Task DeleteGenericAsync(string genericId);
-        Task<Generic> UpsertGenericAsync(Generic generic);
+        Task<LoadClient> GetLoadClientAsync(string Id);
+        Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters);
+        Task DeleteLoadClientAsync(string LoadClientId);
+        Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient);
     }
 }

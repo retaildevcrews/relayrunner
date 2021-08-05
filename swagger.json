@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "RelayRunner",
+    "title": "ngsa",
     "version": "1.0"
   },
   "paths": {
@@ -207,8 +207,8 @@
                 },
                 "example": {
                   "status": "pass",
-                  "serviceId": "relayrunner",
-                  "description": "RelayRunner Health Check",
+                  "serviceId": "ngsa",
+                  "description": "ngsa Health Check",
                   "instance": "0",
                   "version": "1.0.0502.0026",
                   "checks": {
