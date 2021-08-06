@@ -7,10 +7,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
-using Ngsa.Middleware;
-using Ngsa.Middleware.Validation;
+using RelayRunner.Middleware;
+using RelayRunner.Middleware.Validation;
 
-namespace Ngsa.Application.Controllers
+namespace RelayRunner.Application.Controllers
 {
     /// <summary>
     /// Handles query requests from the controllers

@@ -3,7 +3,7 @@
 
 using System.Net;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     public class ErrorResult
     {

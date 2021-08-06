@@ -10,17 +10,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Ngsa.Middleware;
 using Prometheus;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     /// <summary>
     /// WebHostBuilder Startup
     /// </summary>
     public class Startup
     {
-        private const string SwaggerTitle = "Next Gen Symmetric Apps";
+        private const string SwaggerTitle = "RelayRunner";
         private static string swaggerPath = "/swagger.json";
 
         /// <summary>

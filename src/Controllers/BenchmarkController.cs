@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application.Controllers
+namespace RelayRunner.Application.Controllers
 {
     /// <summary>
     /// Handle benchmark requests

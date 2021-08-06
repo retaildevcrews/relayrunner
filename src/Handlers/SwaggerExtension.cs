@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// Register swagger middleware

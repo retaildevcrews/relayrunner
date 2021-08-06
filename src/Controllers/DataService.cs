@@ -11,9 +11,9 @@ using Database.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CorrelationVector;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application.Controllers
+namespace RelayRunner.Application.Controllers
 {
     /// <summary>
     /// Handles query requests from the controllers
@@ -83,7 +83,7 @@ namespace Ngsa.Application.Controllers
             }
         }
 
-        public static async Task<IActionResult> Post(HttpRequest request, Generic g)
+        public static async Task<IActionResult> Post(HttpRequest request, LoadClient g)
         {
             if (request == null || !request.Path.HasValue)
             {
@@ -112,7 +112,7 @@ namespace Ngsa.Application.Controllers
 
                 if (resp.IsSuccessStatusCode)
                 {
-                    Generic obj = JsonSerializer.Deserialize<Generic>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
+                    LoadClient obj = JsonSerializer.Deserialize<LoadClient>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
                     json = new JsonResult(obj, Options) { StatusCode = (int)resp.StatusCode };
                 }
                 else

@@ -3,7 +3,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Ngsa.Middleware.Validation
+namespace RelayRunner.Middleware.Validation
 {
     /// <summary>
     /// Validation Error Class
@@ -69,14 +69,14 @@ namespace Ngsa.Middleware.Validation
 
             if (path.StartsWith("/api/generic?") || path.StartsWith("/api/generic/?"))
             {
-                category = "Generic";
-                subCategory = "Generic";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Query";
             }
             else if (path.StartsWith("/api/generic/"))
             {
-                category = "Generic";
-                subCategory = "Generic";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Direct";
 
                 if (context.Request.Method == "DELETE")
@@ -90,8 +90,8 @@ namespace Ngsa.Middleware.Validation
             }
             else if (path.StartsWith("/api/generic"))
             {
-                category = "Generic";
-                subCategory = "Generic";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Query";
             }
             else if (path.StartsWith("/healthz"))

@@ -13,7 +13,7 @@ using Lucene.Net.Search;
 using Lucene.Net.Store;
 using Lucene.Net.Util;
 using Microsoft.Azure.Cosmos;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
 /// <summary>
 /// This code is used to support performance testing
@@ -22,13 +22,13 @@ using Ngsa.Middleware;
 /// This provides higher performance and less variability which allows us to establish
 /// baseline performance metrics
 /// </summary>
-namespace Ngsa.Application.DataAccessLayer
+namespace RelayRunner.Application.DataAccessLayer
 {
     public class InMemoryDal : IDAL
     {
         private const LuceneVersion Version = LuceneVersion.LUCENE_48;
 
-        private const string GenericSQL = "select g.id, g.partitionKey, g.genericId, g.type, g.property, g.textSearch from g where g.id in ({0}) order by g.textSearch ASC, g.genericId ASC";
+        private const string LoadClientSQL = "select g.name, g.id, g.partitionKey, g.region, g.zone, g.scheduler, g.metrics, g.status, g.dateCreated from g";
 
         // benchmark results buffer
         private readonly string benchmarkData;
@@ -47,7 +47,7 @@ namespace Ngsa.Application.DataAccessLayer
             };
 
             // temporary storage for upsert / delete
-            GenericIndex = new Dictionary<string, Generic>();
+            LoadClientIndex = new Dictionary<string, LoadClient>();
 
             // 16 bytes
             benchmarkData = "0123456789ABCDEF";
@@ -58,18 +58,20 @@ namespace Ngsa.Application.DataAccessLayer
                 benchmarkData += benchmarkData;
             }
 
-            // load generic into Lucene index
-            foreach (Generic generic in LoadGeneric(jsonOptions))
-            {
-                writer.AddDocument(generic.ToDocument());
-            }
+            // TODO: Do we need this?
 
-            // flush the writes to the index
-            writer.Flush(true, true);
+            //// load load client into Lucene index
+            //foreach (LoadClient loadClient in LoadGeneric(jsonOptions))
+            //{
+            //    writer.AddDocument(loadClient.ToDocument());
+            //}
+
+            //// flush the writes to the index
+            //writer.Flush(true, true);
         }
 
         // used for upsert / delete
-        public static Dictionary<string, Generic> GenericIndex { get; set; }
+        public static Dictionary<string, LoadClient> LoadClientIndex { get; set; }
 
         public async Task<string> GetBenchmarkDataAsync(int size)
         {
@@ -79,41 +81,44 @@ namespace Ngsa.Application.DataAccessLayer
             }).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get Generic by ID
-        /// </summary>
-        /// <param name="genericId">ID</param>
-        /// <returns>Generic</returns>
-        public async Task<Generic> GetGenericAsync(string genericId)
-        {
-            return await Task<Generic>.Factory.StartNew(() => { return GetGeneric(genericId); }).ConfigureAwait(false);
-        }
+        // TODO
 
         /// <summary>
-        /// Get Generic By ID
+        /// Get Load Client by ID
         /// </summary>
-        /// <param name="genericId">ID</param>
-        /// <returns>Generic</returns>
-        public Generic GetGeneric(string genericId)
+        /// <param name="id">ID</param>
+        /// <returns>LoadClient</returns>
+        //public async Task<LoadClient> GetLoadClientAsync(string id)
+        //{
+        //    return await Task<LoadClient>.Factory.StartNew(() => { return GetLoadClients(id); }).ConfigureAwait(false);
+        //}
+
+        /// <summary>
+        /// Get LoadClient By ID
+        /// </summary>
+        /// <param name="id">ID</param>
+        /// <returns>LoadClient</returns>
+        public LoadClient GetGeneric(string id)
         {
-            if (genericId.StartsWith("tt"))
+            // TODO: update when decide id format
+            if (id.StartsWith("tt"))
             {
                 IndexSearcher searcher = new IndexSearcher(writer.GetReader(true));
 
-                // search by genericId
-                TopDocs hits = searcher.Search(new PhraseQuery { new Term("genericId", genericId) }, 1);
+                // search by id
+                TopDocs hits = searcher.Search(new PhraseQuery { new Term("id", id) }, 1);
 
                 if (hits.TotalHits > 0)
                 {
                     // deserialize the json from the index
-                    return JsonSerializer.Deserialize<Generic>(searcher.Doc(hits.ScoreDocs[0].Doc).GetBinaryValue("json").Bytes);
+                    return JsonSerializer.Deserialize<LoadClient>(searcher.Doc(hits.ScoreDocs[0].Doc).GetBinaryValue("json").Bytes);
                 }
                 else
                 {
-                    // handle the upserted generic
-                    if (GenericIndex.ContainsKey(genericId))
+                    // handle the upserted loadClient
+                    if (LoadClientIndex.ContainsKey(id))
                     {
-                        return GenericIndex[genericId];
+                        return LoadClientIndex[id];
                     }
                 }
             }
@@ -124,26 +129,28 @@ namespace Ngsa.Application.DataAccessLayer
         /// <summary>
         /// Get Cosmos query string based on query parameters
         /// </summary>
-        /// <param name="genericQueryParameters">query params</param>
+        /// <param name="loadClientQueryParameters">query params</param>
         /// <returns>Cosmos query string</returns>
-        public string GetGenericIds(GenericQueryParameters genericQueryParameters)
+        public string GetLoadClientIds(LoadClientQueryParameters loadClientQueryParameters)
         {
-            List<Generic> cache;
+            List<LoadClient> cache;
             string ids = string.Empty;
 
-            if (genericQueryParameters == null)
+            if (loadClientQueryParameters == null)
             {
-                cache = GetGenerics(string.Empty);
+                cache = GetLoadClients(string.Empty);
             }
             else
             {
-                cache = GetGenerics(genericQueryParameters.Q);
+                cache = GetLoadClients(loadClientQueryParameters.Q);
             }
 
-            foreach (Generic g in cache)
-            {
-                ids += $"'{g.Id}',";
-            }
+            // TODO: requires internal object id
+
+            //foreach (LoadClient g in cache)
+            //{
+            //    ids += $"'{g.id}',";
+            //}
 
             // nothing found
             if (string.IsNullOrWhiteSpace(ids))
@@ -151,39 +158,39 @@ namespace Ngsa.Application.DataAccessLayer
                 return string.Empty;
             }
 
-            return GenericSQL.Replace("{0}", ids[0..^1], StringComparison.Ordinal);
+            return LoadClientSQL.Replace("{0}", ids[0..^1], StringComparison.Ordinal);
         }
 
         /// <summary>
-        /// Get list of Generic based on query parameters
+        /// Get list of LoadClient based on query parameters
         /// </summary>
-        /// <param name="genericQueryParameters">query params</param>
-        /// <returns>List of Generic</returns>
-        public List<Generic> GetGenerics(GenericQueryParameters genericQueryParameters)
+        /// <param name="loadClientQueryParameters">query params</param>
+        /// <returns>List of LoadClient</returns>
+        public List<LoadClient> GetLoadClients(LoadClientQueryParameters loadClientQueryParameters)
         {
-            if (genericQueryParameters == null)
+            if (loadClientQueryParameters == null)
             {
-                return GetGenerics(string.Empty);
+                return GetLoadClients(string.Empty);
             }
 
-            return GetGenerics(genericQueryParameters.Q);
+            return GetLoadClients(loadClientQueryParameters.Q);
         }
 
         /// <summary>
-        /// Get List of Generic by search params
+        /// Get List of LoadClient by search params
         /// </summary>
         /// <param name="q">match property</param>
-        /// <returns>List of Generic</returns>
-        public List<Generic> GetGenerics(string q)
+        /// <returns>List of LoadClient</returns>
+        public List<LoadClient> GetLoadClients(string q)
         {
-            List<Generic> res = new List<Generic>();
+            List<LoadClient> res = new List<LoadClient>();
 
             IndexSearcher searcher = new IndexSearcher(writer.GetReader(true));
 
-            // type = Generic
+            // type = LoadClient
             BooleanQuery bq = new BooleanQuery
             {
-                { new PhraseQuery { new Term("type", "Generic") }, Occur.MUST },
+                { new PhraseQuery { new Term("type", "LoadClient") }, Occur.MUST },
             };
 
             // propertySort == property.ToLower()
@@ -204,69 +211,91 @@ namespace Ngsa.Application.DataAccessLayer
             // deserialize json from document
             for (int i = 0; i < results.ScoreDocs.Length; i++)
             {
-                res.Add(JsonSerializer.Deserialize<Generic>(searcher.Doc(results.ScoreDocs[i].Doc).GetBinaryValue("json").Bytes));
+                res.Add(JsonSerializer.Deserialize<LoadClient>(searcher.Doc(results.ScoreDocs[i].Doc).GetBinaryValue("json").Bytes));
             }
 
             return res;
         }
 
         /// <summary>
-        /// Get list of Generic based on query parameters
+        /// Get list of LoadClient based on query parameters
         /// </summary>
-        /// <param name="genericQueryParameters">query params</param>
-        /// <returns>List of Generic</returns>
-        public Task<IEnumerable<Generic>> GetGenericsAsync(GenericQueryParameters genericQueryParameters)
+        /// <param name="loadClientQueryParameters">query params</param>
+        /// <returns>List of LoadClient</returns>
+        public Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
         {
-            return Task<IEnumerable<Generic>>.Factory.StartNew(() =>
+            return Task<IEnumerable<LoadClient>>.Factory.StartNew(() =>
             {
-                return GetGenerics(genericQueryParameters);
+                return GetLoadClients(loadClientQueryParameters);
             });
         }
 
         /// <summary>
-        /// Upsert a generic
+        /// Upsert a load client
         ///
         /// Do not store in index or WebV tests will break
         /// </summary>
-        /// <param name="generic">Generic to upsert</param>
-        /// <returns>Generic</returns>
-        public async Task<Generic> UpsertGenericAsync(Generic generic)
+        /// <param name="loadClient">LoadClient to upsert</param>
+        /// <returns>LoadClient</returns>
+        public async Task<LoadClient> UpsertLoadClientsAsync(LoadClient loadClient)
         {
+            // TODO: needs internal object id
+
             await Task.Run(() =>
             {
-                if (GenericIndex.ContainsKey(generic.GenericId))
-                {
-                    generic = GenericIndex[generic.GenericId];
-                }
-                else
-                {
-                    GenericIndex.Add(generic.GenericId, generic);
-                }
+                //    if (LoadClientIndex.ContainsKey(loadClient.id))
+                //    {
+                //        loadClient = LoadClientIndex[loadClient.id];
+                //    }
+                //    else
+                //    {
+                //        LoadClientIndex.Add(loadClient.id, loadClient);
+                //    }
             }).ConfigureAwait(false);
 
-            return generic;
+            return loadClient;
         }
 
         /// <summary>
-        /// Delete the generic from temporary storage
+        /// Delete the loadClient from temporary storage
         /// </summary>
-        /// <param name="genericId">Generic ID</param>
+        /// <param name="id">LoadClient ID</param>
         /// <returns>void</returns>
-        public async Task DeleteGenericAsync(string genericId)
+        public async Task DeleteLoadClientsAsync(string id)
         {
             await Task.Run(() =>
             {
-                if (GenericIndex.ContainsKey(genericId))
+                if (LoadClientIndex.ContainsKey(id))
                 {
-                    GenericIndex.Remove(genericId);
+                    LoadClientIndex.Remove(id);
                 }
             }).ConfigureAwait(false);
         }
 
-        // load Generic List from json file
-        private static List<Generic> LoadGeneric(JsonSerializerOptions options)
+        public Task<LoadClient> GetLoadClientAsync(string id)
         {
-            return JsonSerializer.Deserialize<List<Generic>>(File.ReadAllText("src/data/generic.json"), options);
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<LoadClient>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteLoadClientAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient)
+        {
+            throw new NotImplementedException();
+        }
+
+        // load LoadClient List from json file
+        private static List<LoadClient> LoadGeneric(JsonSerializerOptions options)
+        {
+            return JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText("src/data/loadClient.json"), options);
         }
     }
 }

@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Extensions.Logging;
-using Ngsa.Application.DataAccessLayer;
+using RelayRunner.Application.DataAccessLayer;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     public enum AppType
     {

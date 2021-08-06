@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.CorrelationVector;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// Correlation Vector extensions

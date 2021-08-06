@@ -10,9 +10,9 @@ using System.Threading;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     /// <summary>
     /// Main application class
@@ -157,7 +157,7 @@ namespace Ngsa.Application
                         logger.AddFilter("Microsoft", Config.LogLevel)
                         .AddFilter("System", Config.LogLevel)
                         .AddFilter("Default", Config.LogLevel)
-                        .AddFilter("Ngsa.Application", Config.LogLevel);
+                        .AddFilter("RelayRunner.Application", Config.LogLevel);
                     }
                 });
 

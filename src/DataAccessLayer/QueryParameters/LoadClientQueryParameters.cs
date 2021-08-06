@@ -9,26 +9,28 @@ namespace RelayRunner.Middleware
     /// <summary>
     /// Query string parameters for LoadClient controller
     /// </summary>
-    public sealed class GenericQueryParameters
+    public sealed class LoadClientQueryParameters
     {
         public string Q { get; set; }
 
         /// <summary>
-        /// Validate genericId
+        /// Validate Id
         /// </summary>
-        /// <param name="genericId">id to validate</param>
+        /// <param name="id">id to validate</param>
         /// <returns>empty list on valid</returns>
-        public static List<ValidationError> ValidateGenericId(string genericId)
+        public static List<ValidationError> ValidateId(string id)
         {
+            // TODO: Need to decide on Id format
+
             List<ValidationError> errors = new List<ValidationError>();
 
-            if (!string.IsNullOrWhiteSpace(genericId) && (
-                genericId != genericId.ToLowerInvariant().Trim() ||
-                (!genericId.StartsWith("tt") && !genericId.StartsWith("zz")) ||
-                !int.TryParse(genericId[2..], out int v) ||
+            if (!string.IsNullOrWhiteSpace(id) && (
+                id != id.ToLowerInvariant().Trim() ||
+                (!id.StartsWith("tt") && !id.StartsWith("zz")) ||
+                !int.TryParse(id[2..], out int v) ||
                 v <= 0))
             {
-                errors.Add(new ValidationError { Target = "genericId", Message = ValidationError.GetErrorMessage("genericId") });
+                errors.Add(new ValidationError { Target = "id", Message = ValidationError.GetErrorMessage("id") });
             }
 
             return errors;
@@ -56,7 +58,7 @@ namespace RelayRunner.Middleware
         /// <returns>cache key</returns>
         public string GetKey()
         {
-            return $"/api/generic/{(string.IsNullOrWhiteSpace(Q) ? string.Empty : Q.ToUpperInvariant().Trim())}";
+            return $"/api/loadClient/{(string.IsNullOrWhiteSpace(Q) ? string.Empty : Q.ToUpperInvariant().Trim())}";
         }
     }
 }

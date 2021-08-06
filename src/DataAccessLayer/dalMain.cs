@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
+using Database.Model;
 using Microsoft.Azure.Cosmos;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application.DataAccessLayer
+namespace RelayRunner.Application.DataAccessLayer
 {
     /// <summary>
     /// Data Access Layer for CosmosDB
@@ -45,6 +47,26 @@ namespace Ngsa.Application.DataAccessLayer
             // create the CosmosDB client and container
             cosmosDetails.Client = OpenAndTestCosmosClient(secrets.CosmosServer, secrets.CosmosKey, secrets.CosmosDatabase, secrets.CosmosCollection).GetAwaiter().GetResult();
             cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
+        }
+
+        public Task<LoadClient> GetLoadClientAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteLoadClientAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -108,7 +130,7 @@ namespace Ngsa.Application.DataAccessLayer
         }
 
         /// <summary>
-        /// Generic function to be used by subclasses to execute arbitrary queries and return type T.
+        /// LoadClient function to be used by subclasses to execute arbitrary queries and return type T.
         /// </summary>
         /// <typeparam name="T">POCO type to which results are serialized and returned.</typeparam>
         /// <param name="queryDefinition">Query to be executed.</param>
@@ -123,7 +145,7 @@ namespace Ngsa.Application.DataAccessLayer
         }
 
         /// <summary>
-        /// Generic function to be used by subclasses to execute arbitrary queries and return type T.
+        /// LoadClient function to be used by subclasses to execute arbitrary queries and return type T.
         /// </summary>
         /// <typeparam name="T">POCO type to which results are serialized and returned.</typeparam>
         /// <param name="sql">Query to be executed.</param>

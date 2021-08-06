@@ -1,122 +1,124 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using Ngsa.Application.DataAccessLayer;
-using Ngsa.Application.Model;
-using Ngsa.Middleware;
+// TODO: Edit file once configure COSMOS
 
-namespace Ngsa.Application
-{
-    /// <summary>
-    /// Cosmos Health Check
-    /// </summary>
-    public partial class CosmosHealthCheck : IHealthCheck
-    {
-        public static readonly string ServiceId = "ngsa";
-        public static readonly string Description = "NGSA Health Check";
+//using System;
+//using System.Collections.LoadClient;
+//using System.Text.Json;
+//using System.Text.Json.Serialization;
+//using System.Threading;
+//using System.Threading.Tasks;
+//using Microsoft.Azure.Cosmos;
+//using Microsoft.Extensions.Diagnostics.HealthChecks;
+//using Microsoft.Extensions.Logging;
+//using RelayRunner.Application.DataAccessLayer;
+//using RelayRunner.Application.Model;
+//using RelayRunner.Middleware;
 
-        private static JsonSerializerOptions jsonOptions;
+//namespace RelayRunner.Application
+//{
+//    /// <summary>
+//    /// Cosmos Health Check
+//    /// </summary>
+//    public partial class CosmosHealthCheck : IHealthCheck
+//    {
+//        public static readonly string ServiceId = "ngsa";
+//        public static readonly string Description = "NGSA Health Check";
 
-        private readonly ILogger logger;
-        private readonly IDAL dal;
+//        private static JsonSerializerOptions jsonOptions;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CosmosHealthCheck"/> class.
-        /// </summary>
-        /// <param name="logger">ILogger</param>
-        /// <param name="dal">IDAL</param>
-        public CosmosHealthCheck(ILogger<CosmosHealthCheck> logger, IDAL dal)
-        {
-            // save to member vars
-            this.logger = logger;
-            this.dal = dal;
+//        private readonly ILogger logger;
+//        private readonly IDAL dal;
 
-            // setup serialization options
-            if (jsonOptions == null)
-            {
-                // ignore nulls in json
-                jsonOptions = new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    IgnoreNullValues = true,
-                    DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
-                };
+//        /// <summary>
+//        /// Initializes a new instance of the <see cref="CosmosHealthCheck"/> class.
+//        /// </summary>
+//        /// <param name="logger">ILogger</param>
+//        /// <param name="dal">IDAL</param>
+//        public CosmosHealthCheck(ILogger<CosmosHealthCheck> logger, IDAL dal)
+//        {
+//            // save to member vars
+//            this.logger = logger;
+//            this.dal = dal;
 
-                // serialize enums as strings
-                jsonOptions.Converters.Add(new JsonStringEnumConverter());
+//            // setup serialization options
+//            if (jsonOptions == null)
+//            {
+//                // ignore nulls in json
+//                jsonOptions = new JsonSerializerOptions
+//                {
+//                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+//                    IgnoreNullValues = true,
+//                    DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+//                };
 
-                // serialize TimeSpan as 00:00:00.1234567
-                jsonOptions.Converters.Add(new TimeSpanConverter());
-            }
-        }
+//                // serialize enums as strings
+//                jsonOptions.Converters.Add(new JsonStringEnumConverter());
 
-        /// <summary>
-        /// Run the health check (IHealthCheck)
-        /// </summary>
-        /// <param name="context">HealthCheckContext</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>HealthCheckResult</returns>
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-        {
-            // dictionary
-            Dictionary<string, object> data = new Dictionary<string, object>();
+//                // serialize TimeSpan as 00:00:00.1234567
+//                jsonOptions.Converters.Add(new TimeSpanConverter());
+//            }
+//        }
 
-            try
-            {
-                HealthStatus status = HealthStatus.Healthy;
+//        /// <summary>
+//        /// Run the health check (IHealthCheck)
+//        /// </summary>
+//        /// <param name="context">HealthCheckContext</param>
+//        /// <param name="cancellationToken">CancellationToken</param>
+//        /// <returns>HealthCheckResult</returns>
+//        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+//        {
+//            // dictionary
+//            Dictionary<string, object> data = new Dictionary<string, object>();
 
-                // add instance and version
-                data.Add("Instance", System.Environment.GetEnvironmentVariable("WEBSITE_ROLE_INSTANCE_ID") ?? "unknown");
-                data.Add("Version", Middleware.VersionExtension.Version);
+//            try
+//            {
+//                HealthStatus status = HealthStatus.Healthy;
 
-                // Run each health check
-                await GetGenericByIdAsync("tt0133093", data).ConfigureAwait(false);
-                await SearchGenericsAsync("ring", data).ConfigureAwait(false);
+//                // add instance and version
+//                data.Add("Instance", System.Environment.GetEnvironmentVariable("WEBSITE_ROLE_INSTANCE_ID") ?? "unknown");
+//                data.Add("Version", Middleware.VersionExtension.Version);
 
-                // overall health is the worst status
-                foreach (object d in data.Values)
-                {
-                    if (d is HealthzCheck h && h.Status != HealthStatus.Healthy)
-                    {
-                        status = h.Status;
-                    }
+//                // Run each health check
+//                await GetGenericByIdAsync("tt0133093", data).ConfigureAwait(false);
+//                await SearchGenericsAsync("ring", data).ConfigureAwait(false);
 
-                    if (status == HealthStatus.Unhealthy)
-                    {
-                        break;
-                    }
-                }
+//                // overall health is the worst status
+//                foreach (object d in data.Values)
+//                {
+//                    if (d is HealthzCheck h && h.Status != HealthStatus.Healthy)
+//                    {
+//                        status = h.Status;
+//                    }
 
-                // return the result
-                return new HealthCheckResult(status, Description, data: data);
-            }
-            catch (CosmosException ce)
-            {
-                // log and return Unhealthy
-                logger.LogError($"{ce}\nCosmosException:Healthz:{ce.StatusCode}:{ce.ActivityId}:{ce.Message}");
+//                    if (status == HealthStatus.Unhealthy)
+//                    {
+//                        break;
+//                    }
+//                }
 
-                data.Add("CosmosException", ce.Message);
+//                // return the result
+//                return new HealthCheckResult(status, Description, data: data);
+//            }
+//            catch (CosmosException ce)
+//            {
+//                // log and return Unhealthy
+//                logger.LogError($"{ce}\nCosmosException:Healthz:{ce.StatusCode}:{ce.ActivityId}:{ce.Message}");
 
-                return new HealthCheckResult(HealthStatus.Unhealthy, Description, ce, data);
-            }
-            catch (Exception ex)
-            {
-                // log and return unhealthy
-                logger.LogError($"{ex}\nException:Healthz:{ex.Message}");
+//                data.Add("CosmosException", ce.Message);
 
-                data.Add("Exception", ex.Message);
+//                return new HealthCheckResult(HealthStatus.Unhealthy, Description, ce, data);
+//            }
+//            catch (Exception ex)
+//            {
+//                // log and return unhealthy
+//                logger.LogError($"{ex}\nException:Healthz:{ex.Message}");
 
-                return new HealthCheckResult(HealthStatus.Unhealthy, Description, ex, data);
-            }
-        }
-    }
-}
+//                data.Add("Exception", ex.Message);
+
+//                return new HealthCheckResult(HealthStatus.Unhealthy, Description, ex, data);
+//            }
+//        }
+//    }
+//}

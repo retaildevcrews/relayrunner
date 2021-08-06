@@ -4,7 +4,7 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// NGSA Logger Provider

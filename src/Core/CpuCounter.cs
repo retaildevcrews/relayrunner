@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Timers;
 using Microsoft.AspNetCore.Http;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     /// <summary>
     /// Encapsulates CPU percentage

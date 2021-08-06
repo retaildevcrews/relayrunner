@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace Ngsa.Application.Model
+namespace RelayRunner.Application.Model
 {
     /// <summary>
     /// Health Check that supports IETF json

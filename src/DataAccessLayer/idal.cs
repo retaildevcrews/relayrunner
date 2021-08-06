@@ -4,18 +4,18 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Database.Model;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application.DataAccessLayer
+namespace RelayRunner.Application.DataAccessLayer
 {
     /// <summary>
     /// Data Access Layer for CosmosDB Interface
     /// </summary>
     public interface IDAL
     {
-        Task<LoadClient> GetLoadClientAsync(string Id);
+        Task<LoadClient> GetLoadClientAsync(string id);
         Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters);
-        Task DeleteLoadClientAsync(string LoadClientId);
+        Task DeleteLoadClientAsync(string id);
         Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient);
     }
 }

@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CorrelationVector;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Ngsa.Application;
-using Ngsa.Middleware.Validation;
 using Prometheus;
+using RelayRunner.Application;
+using RelayRunner.Middleware.Validation;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// Simple aspnet core middleware that logs requests to the console
@@ -158,7 +158,7 @@ namespace Ngsa.Middleware
                 Dictionary<string, object> log = new Dictionary<string, object>
                 {
                     { "Date", dt },
-                    { "LogName", "Ngsa.RequestLog" },
+                    { "LogName", "RelayRunner.RequestLog" },
                     { "StatusCode", context.Response.StatusCode },
                     { "TTFB", ttfb },
                     { "Duration", duration },

@@ -4,7 +4,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// Middleware extension to make registering Logger easy

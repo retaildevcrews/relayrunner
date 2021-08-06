@@ -11,9 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using Ngsa.Middleware;
+using RelayRunner.Middleware;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     /// <summary>
     /// Main application class
@@ -85,7 +85,7 @@ namespace Ngsa.Application
         {
             RootCommand root = new RootCommand
             {
-                Name = "Ngsa.Application",
+                Name = "RelayRunner.Application",
                 Description = "NGSA Validation App",
                 TreatUnmatchedTokensAsErrors = true,
             };

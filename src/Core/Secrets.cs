@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace Ngsa.Application
+namespace RelayRunner.Application
 {
     /// <summary>
     /// Application secrets

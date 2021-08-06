@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CorrelationVector;
 using Microsoft.Extensions.Logging;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     public class NgsaLog
     {

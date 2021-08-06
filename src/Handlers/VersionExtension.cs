@@ -4,9 +4,9 @@
 using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
-using Ngsa.Application;
+using RelayRunner.Application;
 
-namespace Ngsa.Middleware
+namespace RelayRunner.Middleware
 {
     /// <summary>
     /// Registers aspnet middleware handler that handles /version
