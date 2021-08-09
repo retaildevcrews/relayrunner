@@ -4,14 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Database.Model;
-using Lucene.Net.Analysis.Standard;
-using Lucene.Net.Index;
-using Lucene.Net.Search;
-using Lucene.Net.Store;
-using Lucene.Net.Util;
 using Microsoft.Azure.Cosmos;
 using RelayRunner.Middleware;
 
@@ -26,28 +22,23 @@ namespace RelayRunner.Application.DataAccessLayer
 {
     public class InMemoryDal : IDAL
     {
-        private const LuceneVersion Version = LuceneVersion.LUCENE_48;
-
         private const string LoadClientSQL = "select g.name, g.id, g.partitionKey, g.region, g.zone, g.scheduler, g.metrics, g.status, g.dateCreated from g";
 
         // benchmark results buffer
         private readonly string benchmarkData;
-
-        // Lucene in-memory index
-        private readonly IndexWriter writer = new IndexWriter(new RAMDirectory(), new IndexWriterConfig(Version, new StandardAnalyzer(Version)));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryDal"/> class.
         /// </summary>
         public InMemoryDal()
         {
-            JsonSerializerOptions jsonOptions = new JsonSerializerOptions
+            JsonSerializerOptions settings = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
 
-            // temporary storage for upsert / delete
-            LoadClientIndex = new Dictionary<string, LoadClient>();
+            // load the data
+            LoadLoadClients(settings);
 
             // 16 bytes
             benchmarkData = "0123456789ABCDEF";
@@ -57,21 +48,7 @@ namespace RelayRunner.Application.DataAccessLayer
             {
                 benchmarkData += benchmarkData;
             }
-
-            // TODO: Do we need this?
-
-            //// load load client into Lucene index
-            //foreach (LoadClient loadClient in LoadGeneric(jsonOptions))
-            //{
-            //    writer.AddDocument(loadClient.ToDocument());
-            //}
-
-            //// flush the writes to the index
-            //writer.Flush(true, true);
         }
-
-        // used for upsert / delete
-        public static Dictionary<string, LoadClient> LoadClientIndex { get; set; }
 
         public async Task<string> GetBenchmarkDataAsync(int size)
         {
@@ -81,46 +58,31 @@ namespace RelayRunner.Application.DataAccessLayer
             }).ConfigureAwait(false);
         }
 
-        // TODO
+        public static List<LoadClient> LoadClients { get; set; }
+
+        // O(1) dictionary for retriving by ID
+        public static Dictionary<string, LoadClient> LoadClientsIndex { get; set; } = new Dictionary<string, LoadClient>();
 
         /// <summary>
         /// Get Load Client by ID
         /// </summary>
         /// <param name="id">ID</param>
         /// <returns>LoadClient</returns>
-        //public async Task<LoadClient> GetLoadClientAsync(string id)
-        //{
-        //    return await Task<LoadClient>.Factory.StartNew(() => { return GetLoadClients(id); }).ConfigureAwait(false);
-        //}
+        public async Task<LoadClient> GetLoadClientAsync(string id)
+        {
+            return await Task<LoadClient>.Factory.StartNew(() => { return GetLoadClient(id); }).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Get LoadClient By ID
         /// </summary>
         /// <param name="id">ID</param>
         /// <returns>LoadClient</returns>
-        public LoadClient GetGeneric(string id)
+        public LoadClient GetLoadClient(string id)
         {
-            // TODO: update when decide id format
-            if (id.StartsWith("tt"))
+            if (LoadClientsIndex.ContainsKey(id))
             {
-                IndexSearcher searcher = new IndexSearcher(writer.GetReader(true));
-
-                // search by id
-                TopDocs hits = searcher.Search(new PhraseQuery { new Term("id", id) }, 1);
-
-                if (hits.TotalHits > 0)
-                {
-                    // deserialize the json from the index
-                    return JsonSerializer.Deserialize<LoadClient>(searcher.Doc(hits.ScoreDocs[0].Doc).GetBinaryValue("json").Bytes);
-                }
-                else
-                {
-                    // handle the upserted loadClient
-                    if (LoadClientIndex.ContainsKey(id))
-                    {
-                        return LoadClientIndex[id];
-                    }
-                }
+                return LoadClientsIndex[id];
             }
 
             throw new CosmosException("Not Found", System.Net.HttpStatusCode.NotFound, 404, string.Empty, 0);
@@ -145,12 +107,12 @@ namespace RelayRunner.Application.DataAccessLayer
                 cache = GetLoadClients(loadClientQueryParameters.Q);
             }
 
-            // TODO: requires internal object id
+            // TODO: depends internal object id
 
-            //foreach (LoadClient g in cache)
-            //{
-            //    ids += $"'{g.id}',";
-            //}
+            foreach (LoadClient g in cache)
+            {
+                ids += $"'{g.LoadClientId}',";
+            }
 
             // nothing found
             if (string.IsNullOrWhiteSpace(ids))
@@ -184,34 +146,9 @@ namespace RelayRunner.Application.DataAccessLayer
         public List<LoadClient> GetLoadClients(string q)
         {
             List<LoadClient> res = new List<LoadClient>();
-
-            IndexSearcher searcher = new IndexSearcher(writer.GetReader(true));
-
-            // type = LoadClient
-            BooleanQuery bq = new BooleanQuery
+            foreach (LoadClient l in LoadClients)
             {
-                { new PhraseQuery { new Term("type", "LoadClient") }, Occur.MUST },
-            };
-
-            // propertySort == property.ToLower()
-            // TODO: Replace 100 numHits limit
-            TopFieldCollector collector = TopFieldCollector.Create(new Sort(new SortField("propertySort", SortFieldType.STRING)), 100, false, false, false, false);
-
-            // add the search term
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                bq.Add(new WildcardQuery(new Term("property", $"*{q.ToLowerInvariant()}*")), Occur.MUST);
-            }
-
-            // run the search
-            searcher.Search(bq, collector);
-
-            TopDocs results = collector.GetTopDocs();
-
-            // deserialize json from document
-            for (int i = 0; i < results.ScoreDocs.Length; i++)
-            {
-                res.Add(JsonSerializer.Deserialize<LoadClient>(searcher.Doc(results.ScoreDocs[i].Doc).GetBinaryValue("json").Bytes));
+                res.Add(l);
             }
 
             return res;
@@ -239,40 +176,41 @@ namespace RelayRunner.Application.DataAccessLayer
         /// <returns>LoadClient</returns>
         public async Task<LoadClient> UpsertLoadClientsAsync(LoadClient loadClient)
         {
-            // TODO: needs internal object id
-
-            await Task.Run(() =>
+            // TODO: depends on internal object id
             {
-                //    if (LoadClientIndex.ContainsKey(loadClient.id))
-                //    {
-                //        loadClient = LoadClientIndex[loadClient.id];
-                //    }
-                //    else
-                //    {
-                //        LoadClientIndex.Add(loadClient.id, loadClient);
-                //    }
-            }).ConfigureAwait(false);
+                await Task.Run(() =>
+                {
+                    if (LoadClientsIndex.ContainsKey(loadClient.LoadClientId))
+                    {
+                        loadClient = LoadClientsIndex[loadClient.LoadClientId];
+                    }
+                    else
+                    {
+                        LoadClientsIndex.Add(loadClient.LoadClientId, loadClient);
+                    }
+                }).ConfigureAwait(false);
 
-            return loadClient;
+                return loadClient;
+            }
         }
 
         /// <summary>
         /// Delete the loadClient from temporary storage
         /// </summary>
-        /// <param name="id">LoadClient ID</param>
+        /// <param name="loadClientId">LoadClient ID</param>
         /// <returns>void</returns>
-        public async Task DeleteLoadClientsAsync(string id)
+        public async Task DeleteLoadClientAsync(string loadClientId)
         {
             await Task.Run(() =>
             {
-                if (LoadClientIndex.ContainsKey(id))
+                if (LoadClientsIndex.ContainsKey(loadClientId))
                 {
-                    LoadClientIndex.Remove(id);
+                    LoadClientsIndex.Remove(loadClientId);
                 }
             }).ConfigureAwait(false);
         }
 
-        public Task<LoadClient> GetLoadClientAsync(string id)
+        public Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient)
         {
             throw new NotImplementedException();
         }
@@ -282,20 +220,23 @@ namespace RelayRunner.Application.DataAccessLayer
             throw new NotImplementedException();
         }
 
-        public Task DeleteLoadClientAsync(string id)
+        private static void LoadLoadClients(JsonSerializerOptions settings)
         {
-            throw new NotImplementedException();
-        }
+            if (LoadClients?.Count == null)
+            {
+                // load the data from the json file
+                LoadClients = JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText("src/data/loadClients.json"), settings);
+            }
 
-        public Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient)
-        {
-            throw new NotImplementedException();
-        }
-
-        // load LoadClient List from json file
-        private static List<LoadClient> LoadGeneric(JsonSerializerOptions options)
-        {
-            return JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText("src/data/loadClient.json"), options);
+            if (LoadClientsIndex.Count == 0)
+            {
+                foreach (LoadClient l in LoadClients)
+                {
+                    // Loads an O(1) dictionary for retrieving by ID
+                    // Could also use a binary search to reduce memory usage
+                    LoadClientsIndex.Add(l.LoadClientId, l);
+                }
+            }
         }
     }
 }

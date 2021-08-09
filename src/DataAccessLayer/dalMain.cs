@@ -69,6 +69,11 @@ namespace RelayRunner.Application.DataAccessLayer
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<LoadClient>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Returnt the generic Cosmos DB results
         /// </summary>

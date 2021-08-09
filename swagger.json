@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "ngsa",
+    "title": "relayrunner",
     "version": "1.0"
   },
   "paths": {
@@ -26,13 +26,13 @@
           {
             "name": "id",
             "in": "query",
-            "description": "Filter by id on LoadClient.Id<br><br>`valid: greater than 2 characters`",
+            "description": "Filter by id on LoadClient.Id<br><br>`valid: at least 1 characters`",
             "required": false,
             "style": "form",
             "explode": true,
             "schema": {
-              "type": "integer",
-              "example": 1
+              "type": "string",
+              "example": "1"
             }
           },
           {
@@ -43,8 +43,8 @@
             "style": "form",
             "explode": true,
             "schema": {
-              "type": "integer",
-              "example": 5.0
+              "type": "string",
+              "example": "5.0"
             }
           },
           {
@@ -115,8 +115,8 @@
             "style": "form",
             "explode": true,
             "schema": {
-              "type": "integer",
-              "example": 2019
+              "type": "sting",
+              "example": "2019"
             }
           }
         ],
@@ -134,25 +134,25 @@
                 "example": [
                   {
                     "name": "Load-Client-ID-001",
-                    "id": 1,
-                    "version": 5.0,
+                    "id": "1",
+                    "version": "5.0",
                     "region": "california",
                     "zone": "colorado",
                     "scheduler": "nev",
                     "currstatus": "ready",
                     "metrics": "prometheus",
-                    "dateCreated": 2019
+                    "dateCreated": "2019"
                   },
                   {
                     "name": "Load-Client-ID-002",
-                    "id": 2,
-                    "version": 5.0,
+                    "id": "2",
+                    "version": "5.0",
                     "region": "california",
                     "zone": "colorado",
                     "scheduler": "nev",
                     "currstatus": "unresponsive",
                     "metrics": "prometheus",
-                    "dateCreated": 2021
+                    "dateCreated": "2021"
                   }
                 ]
               }
@@ -244,11 +244,14 @@
       "LoadClient": {
         "type": "object",
         "properties": {
+          "name": {
+            "type": "string"
+          },
           "id": {
-            "type": "integer"
+            "type": "string"
           },
           "version": {
-            "type": "integer"
+            "type": "string"
           },
           "region": {
             "type": "string"
@@ -266,7 +269,7 @@
             "type": "string"
           },
           "dateCreated": {
-            "type": "integer"
+            "type": "string"
           }
         },
         "additionalProperties": false

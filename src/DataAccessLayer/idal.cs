@@ -17,5 +17,6 @@ namespace RelayRunner.Application.DataAccessLayer
         Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters);
         Task DeleteLoadClientAsync(string id);
         Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient);
+        Task<IEnumerable<LoadClient>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters);
     }
 }
