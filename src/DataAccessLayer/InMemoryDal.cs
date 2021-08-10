@@ -111,7 +111,7 @@ namespace RelayRunner.Application.DataAccessLayer
 
             foreach (LoadClient g in cache)
             {
-                ids += $"'{g.LoadClientId}',";
+                ids += $"'{g.Id}',";
             }
 
             // nothing found
@@ -180,13 +180,13 @@ namespace RelayRunner.Application.DataAccessLayer
             {
                 await Task.Run(() =>
                 {
-                    if (LoadClientsIndex.ContainsKey(loadClient.LoadClientId))
+                    if (LoadClientsIndex.ContainsKey(loadClient.Id))
                     {
-                        loadClient = LoadClientsIndex[loadClient.LoadClientId];
+                        loadClient = LoadClientsIndex[loadClient.Id];
                     }
                     else
                     {
-                        LoadClientsIndex.Add(loadClient.LoadClientId, loadClient);
+                        LoadClientsIndex.Add(loadClient.Id, loadClient);
                     }
                 }).ConfigureAwait(false);
 
@@ -197,15 +197,15 @@ namespace RelayRunner.Application.DataAccessLayer
         /// <summary>
         /// Delete the loadClient from temporary storage
         /// </summary>
-        /// <param name="loadClientId">LoadClient ID</param>
+        /// <param name="id">LoadClient ID</param>
         /// <returns>void</returns>
-        public async Task DeleteLoadClientAsync(string loadClientId)
+        public async Task DeleteLoadClientAsync(string id)
         {
             await Task.Run(() =>
             {
-                if (LoadClientsIndex.ContainsKey(loadClientId))
+                if (LoadClientsIndex.ContainsKey(id))
                 {
-                    LoadClientsIndex.Remove(loadClientId);
+                    LoadClientsIndex.Remove(id);
                 }
             }).ConfigureAwait(false);
         }
@@ -234,7 +234,7 @@ namespace RelayRunner.Application.DataAccessLayer
                 {
                     // Loads an O(1) dictionary for retrieving by ID
                     // Could also use a binary search to reduce memory usage
-                    LoadClientsIndex.Add(l.LoadClientId, l);
+                    LoadClientsIndex.Add(l.Id, l);
                 }
             }
         }

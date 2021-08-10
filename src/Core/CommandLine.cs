@@ -93,7 +93,7 @@ namespace RelayRunner.Application
             // add the options
             root.AddOption(EnvVarOption(new string[] { "--app-type", "-a" }, "Application Type", AppType.App));
             root.AddOption(EnvVarOption(new string[] { "--prometheus", "-p" }, "Send metrics to Prometheus", false));
-            root.AddOption(EnvVarOption(new string[] { "--in-memory", "-m" }, "Use in-memory database", false));
+            root.AddOption(EnvVarOption(new string[] { "--in-memory", "-m" }, "Use in-memory database", true));
             root.AddOption(EnvVarOption(new string[] { "--no-cache", "-n" }, "Don't cache results", false));
             root.AddOption(EnvVarOption(new string[] { "--url-prefix" }, "URL prefix for ingress mapping", string.Empty));
             root.AddOption(EnvVarOption(new string[] { "--port" }, "Listen Port", 8080, 1, (64 * 1024) - 1));

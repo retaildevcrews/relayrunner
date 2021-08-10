@@ -14,7 +14,6 @@ namespace Database.Model
         public string Name { get; set; }
         public string Id { get; set; }
         public string PartitionKey { get; set; }
-        public string LoadClientId { get; internal set; }
         public string Version { get; set; }
         public string Region { get; set; }
         public string Zone { get; set; }

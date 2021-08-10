@@ -23,16 +23,6 @@ namespace RelayRunner.Middleware
             // TODO: Need to decide on Id format
 
             List<ValidationError> errors = new List<ValidationError>();
-
-            if (!string.IsNullOrWhiteSpace(id) && (
-                id != id.ToLowerInvariant().Trim() ||
-                (!id.StartsWith("tt") && !id.StartsWith("zz")) ||
-                !int.TryParse(id[2..], out int v) ||
-                v <= 0))
-            {
-                errors.Add(new ValidationError { Target = "id", Message = ValidationError.GetErrorMessage("id") });
-            }
-
             return errors;
         }
 
