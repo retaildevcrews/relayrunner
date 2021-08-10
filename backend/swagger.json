@@ -9,117 +9,7 @@
       "get": {
         "tags": [ "LoadClients" ],
         "summary": "Search LoadClients",
-        "description": "Returns an array of `LoadClient` documents optionally filtered by query string parameters",
-        "parameters": [
-          {
-            "name": "q",
-            "in": "query",
-            "description": "Filter by search on LoadClient.Name<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "Load-Client-ID-001"
-            }
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "description": "Filter by id on LoadClient.Id<br><br>`valid: at least 1 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "1"
-            }
-          },
-          {
-            "name": "version",
-            "in": "query",
-            "description": "Filter by version on LoadClient.Version<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "5.0"
-            }
-          },
-          {
-            "name": "region",
-            "in": "query",
-            "description": "Filter by region on LoadClient.Region<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "california"
-            }
-          },
-          {
-            "name": "zone",
-            "in": "query",
-            "description": "Filter by zone on LoadClient.Zone<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "colorado"
-            }
-          },
-          {
-            "name": "sceduler",
-            "in": "query",
-            "description": "Filter by search on LoadClient.Scheduler<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "nev"
-            }
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Filter by status on LoadClient.CurrStatus<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "ready"
-            }
-          },
-          {
-            "name": "metrics",
-            "in": "query",
-            "description": "Filter by metrics on LoadClient.Metrics<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "example": "prometheus"
-            }
-          },
-          {
-            "name": "date created",
-            "in": "query",
-            "description": "Filter by date created on LoadClient.DateCreated<br><br>`valid: greater than 2 characters`",
-            "required": false,
-            "style": "form",
-            "explode": true,
-            "schema": {
-              "type": "sting",
-              "example": "2019"
-            }
-          }
-        ],
+        "description": "Returns an array of `LoadClient` documents",
         "responses": {
           "200": {
             "description": "Array of `Load Client` documents or empty array if not found",
@@ -155,17 +45,6 @@
                     "dateCreated": "2021"
                   }
                 ]
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid parameter",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "string",
-                  "example": "Invalid {queryString} parameter"
-                }
               }
             }
           }
@@ -207,8 +86,8 @@
                 },
                 "example": {
                   "status": "pass",
-                  "serviceId": "ngsa",
-                  "description": "ngsa Health Check",
+                  "serviceId": "relayrunner",
+                  "description": "relayrunner Health Check",
                   "instance": "0",
                   "version": "1.0.0502.0026",
                   "checks": {
