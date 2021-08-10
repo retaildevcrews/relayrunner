@@ -24,9 +24,6 @@ namespace RelayRunner.Application.DataAccessLayer
     {
         private const string LoadClientSQL = "select g.name, g.id, g.partitionKey, g.region, g.zone, g.scheduler, g.metrics, g.status, g.dateCreated from g";
 
-        // benchmark results buffer
-        private readonly string benchmarkData;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryDal"/> class.
         /// </summary>
@@ -39,23 +36,6 @@ namespace RelayRunner.Application.DataAccessLayer
 
             // load the data
             LoadLoadClients(settings);
-
-            // 16 bytes
-            benchmarkData = "0123456789ABCDEF";
-
-            // 1 MB
-            while (benchmarkData.Length < 1024 * 1024)
-            {
-                benchmarkData += benchmarkData;
-            }
-        }
-
-        public async Task<string> GetBenchmarkDataAsync(int size)
-        {
-            return await Task<string>.Factory.StartNew(() =>
-            {
-                return benchmarkData[0..size];
-            }).ConfigureAwait(false);
         }
 
         public static List<LoadClient> LoadClients { get; set; }

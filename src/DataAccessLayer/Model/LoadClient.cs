@@ -2,10 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Globalization;
-using System.Text.Json;
-using Lucene.Net.Documents;
-using static Lucene.Net.Documents.Field;
 
 namespace Database.Model
 {
@@ -45,30 +41,6 @@ namespace Database.Model
         public object Clone()
         {
             return MemberwiseClone();
-        }
-
-        /// <summary>
-        /// Convert LoadClients to a Lucene Document for indexing
-        /// </summary>
-        /// <returns>Lucene Document</returns>
-        public Document ToDocument()
-        {
-            Document doc = new Document
-            {
-                new StringField("name", Name, Store.YES),
-                new StringField("id", Id, Store.YES),
-                new Int32Field("partitionKey", int.Parse(PartitionKey), Store.YES),
-                new StringField("version", Version, Store.YES),
-                new StringField("region", Region, Store.YES),
-                new StringField("zone", Zone, Store.YES),
-                new StringField("scheduler", Scheduler, Store.YES),
-                new StringField("metrics", Metrics, Store.YES),
-                new TextField("status", Status, Store.YES),
-                new StringField("dateCreated", DateCreated, Store.YES),
-            };
-
-            doc.Add(new StoredField("json", JsonSerializer.SerializeToUtf8Bytes<LoadClient>(this)));
-            return doc;
         }
     }
 }
