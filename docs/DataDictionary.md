@@ -62,7 +62,7 @@ This is an object that represents an instance of LodeRunner and it's initial sta
 | StartupArgs     |     String      | String of arguments passed to LodeRunner at start-up | |
 | StartTime       |     DateTime    | The date and time this instance was started | |
 
-`Table 03: Load Client Properties
+`Table 03: Load Client Properties`
 
 #### 2.2.3 ClientStatus Definition
 
