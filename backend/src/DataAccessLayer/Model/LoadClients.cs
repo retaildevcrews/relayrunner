@@ -5,7 +5,7 @@ using System;
 
 namespace Database.Model
 {
-    public class LoadClient : ICloneable
+    public class LoadClients : ICloneable
     {
         public string Name { get; set; }
         public string Id { get; set; }
@@ -37,7 +37,7 @@ namespace Database.Model
         /// <summary>
         /// IClonable::Clone
         /// </summary>
-        /// <returns>LoadClient as object</returns>
+        /// <returns>LoadClients as object</returns>
         public object Clone()
         {
             return MemberwiseClone();

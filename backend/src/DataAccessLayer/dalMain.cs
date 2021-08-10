@@ -49,12 +49,12 @@ namespace RelayRunner.Application.DataAccessLayer
             cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
         }
 
-        public Task<LoadClient> GetLoadClientAsync(string id)
+        public Task<LoadClients> GetLoadClientAsync(string id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
+        public Task<IEnumerable<LoadClients>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
         {
             throw new NotImplementedException();
         }
@@ -64,12 +64,12 @@ namespace RelayRunner.Application.DataAccessLayer
             throw new NotImplementedException();
         }
 
-        public Task<LoadClient> UpsertLoadClientAsync(LoadClient loadClient)
+        public Task<LoadClients> UpsertLoadClientAsync(LoadClients loadClient)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<LoadClient>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters)
+        public Task<IEnumerable<LoadClients>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters)
         {
             throw new NotImplementedException();
         }
@@ -135,7 +135,7 @@ namespace RelayRunner.Application.DataAccessLayer
         }
 
         /// <summary>
-        /// LoadClient function to be used by subclasses to execute arbitrary queries and return type T.
+        /// LoadClients function to be used by subclasses to execute arbitrary queries and return type T.
         /// </summary>
         /// <typeparam name="T">POCO type to which results are serialized and returned.</typeparam>
         /// <param name="queryDefinition">Query to be executed.</param>
@@ -150,7 +150,7 @@ namespace RelayRunner.Application.DataAccessLayer
         }
 
         /// <summary>
-        /// LoadClient function to be used by subclasses to execute arbitrary queries and return type T.
+        /// LoadClients function to be used by subclasses to execute arbitrary queries and return type T.
         /// </summary>
         /// <typeparam name="T">POCO type to which results are serialized and returned.</typeparam>
         /// <param name="sql">Query to be executed.</param>

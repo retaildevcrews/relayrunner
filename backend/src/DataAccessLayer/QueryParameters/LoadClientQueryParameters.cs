@@ -7,7 +7,7 @@ using RelayRunner.Middleware.Validation;
 namespace RelayRunner.Middleware
 {
     /// <summary>
-    /// Query string parameters for LoadClient controller
+    /// Query string parameters for LoadClients controller
     /// </summary>
     public sealed class LoadClientQueryParameters
     {

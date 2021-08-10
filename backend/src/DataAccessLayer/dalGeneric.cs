@@ -19,15 +19,15 @@
 //    public partial class CosmosDal
 //    {
 //        /// <summary>
-//        /// Retrieve a single LoadClient from CosmosDB by genericId
+//        /// Retrieve a single LoadClients from CosmosDB by genericId
 //        ///
 //        /// Uses the CosmosDB single document read API which is 1 RU if less than 1K doc size
 //        ///
 //        /// Throws an exception if not found
 //        /// </summary>
-//        /// <param name="genericId">LoadClient ID</param>
-//        /// <returns>LoadClient object</returns>
-//        public async Task<LoadClient> GetGenericAsync(string genericId)
+//        /// <param name="genericId">LoadClients ID</param>
+//        /// <returns>LoadClients object</returns>
+//        public async Task<LoadClients> GetGenericAsync(string genericId)
 //        {
 //            if (string.IsNullOrWhiteSpace(genericId))
 //            {
@@ -36,7 +36,7 @@
 
 //            string key = $"/api/generic/{genericId.ToLowerInvariant().Trim()}";
 
-//            if (App.Config.Cache && cache.Contains(key) && cache.Get(key) is LoadClient gc)
+//            if (App.Config.Cache && cache.Contains(key) && cache.Get(key) is LoadClients gc)
 //            {
 //                return gc;
 //            }
@@ -46,7 +46,7 @@
 //            // ComputePartitionKey will throw an ArgumentException if the genericId isn't valid
 //            // get a generic by ID
 
-//            LoadClient g = await cosmosDetails.Container.ReadItemAsync<LoadClient>(genericId, new PartitionKey(LoadClient.ComputePartitionKey(genericId))).ConfigureAwait(false);
+//            LoadClients g = await cosmosDetails.Container.ReadItemAsync<LoadClients>(genericId, new PartitionKey(LoadClients.ComputePartitionKey(genericId))).ConfigureAwait(false);
 
 //            if (App.Config.Cache)
 //            {
@@ -56,7 +56,7 @@
 //            return g;
 //        }
 
-//        public async Task<IEnumerable<LoadClient>> GetGenericsAsync(GenericQueryParameters genericQueryParameters)
+//        public async Task<IEnumerable<LoadClients>> GetGenericsAsync(GenericQueryParameters genericQueryParameters)
 //        {
 //            if (genericQueryParameters == null)
 //            {
@@ -65,19 +65,19 @@
 
 //            string key = genericQueryParameters.GetKey();
 
-//            if (App.Config.Cache && cache.Contains(key) && cache.Get(key) is List<LoadClient> g)
+//            if (App.Config.Cache && cache.Contains(key) && cache.Get(key) is List<LoadClients> g)
 //            {
 //                return g;
 //            }
 
 //            string sql = App.Config.CacheDal.GetGenericIds(genericQueryParameters);
 
-//            List<LoadClient> generic = new List<LoadClient>();
+//            List<LoadClients> generic = new List<LoadClients>();
 
 //            // retrieve the items
 //            if (!string.IsNullOrWhiteSpace(sql))
 //            {
-//                generic = (List<LoadClient>)await InternalCosmosDBSqlQuery<LoadClient>(sql).ConfigureAwait(false);
+//                generic = (List<LoadClients>)await InternalCosmosDBSqlQuery<LoadClients>(sql).ConfigureAwait(false);
 //            }
 
 //            if (App.Config.Cache)
@@ -92,11 +92,11 @@
 //        /// <summary>
 //        /// upsert a generic
 //        /// </summary>
-//        /// <param name="generic">LoadClient to upsert</param>
-//        /// <returns>LoadClient</returns>
-//        public async Task<LoadClient> UpsertGenericAsync(LoadClient generic)
+//        /// <param name="generic">LoadClients to upsert</param>
+//        /// <returns>LoadClients</returns>
+//        public async Task<LoadClients> UpsertGenericAsync(LoadClients generic)
 //        {
-//            ItemResponse<LoadClient> response = await cosmosDetails.Container.UpsertItemAsync(generic, new PartitionKey(generic.PartitionKey));
+//            ItemResponse<LoadClients> response = await cosmosDetails.Container.UpsertItemAsync(generic, new PartitionKey(generic.PartitionKey));
 
 //            return response.Resource;
 //        }
@@ -104,13 +104,13 @@
 //        /// <summary>
 //        /// Delete a generic by Id
 //        /// </summary>
-//        /// <param name="genericId">LoadClient ID</param>
+//        /// <param name="genericId">LoadClients ID</param>
 //        /// <returns>void</returns>
 //        public async Task DeleteGenericAsync(string genericId)
 //        {
 //            try
 //            {
-//                await cosmosDetails.Container.DeleteItemAsync<LoadClient>(genericId, new PartitionKey(LoadClient.ComputePartitionKey(genericId)));
+//                await cosmosDetails.Container.DeleteItemAsync<LoadClients>(genericId, new PartitionKey(LoadClients.ComputePartitionKey(genericId)));
 //            }
 //            catch (CosmosException cex)
 //            {

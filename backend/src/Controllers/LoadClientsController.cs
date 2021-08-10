@@ -18,13 +18,13 @@ namespace RelayRunner.Application.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    public class LoadClientController : Controller
+    public class LoadClientsController : Controller
     {
         private static readonly NgsaLog Logger = new NgsaLog
         {
-            Name = typeof(LoadClientController).FullName,
+            Name = typeof(LoadClientsController).FullName,
             ErrorMessage = "LoadClientControllerException",
-            NotFoundError = "LoadClient Not Found",
+            NotFoundError = "LoadClients Not Found",
         };
 
         private readonly IDAL dal;
@@ -32,13 +32,13 @@ namespace RelayRunner.Application.Controllers
         /// <summary>
         /// Initializes a new instance of the <see cref="LoadClientController"/> class.
         /// </summary>
-        public LoadClientController()
+        public LoadClientsController()
         {
             dal = App.Config.CosmosDal;
         }
 
         /// <summary>
-        /// Returns a JSON array of LoadClient objects
+        /// Returns a JSON array of LoadClients objects
         /// </summary>
         /// <param name="loadClientQueryParameters">query parameters</param>
         /// <returns>IActionResult</returns>
@@ -63,7 +63,7 @@ namespace RelayRunner.Application.Controllers
 
             if (App.Config.AppType == AppType.WebAPI)
             {
-                res = await DataService.Read<List<LoadClient>>(Request).ConfigureAwait(false);
+                res = await DataService.Read<List<LoadClients>>(Request).ConfigureAwait(false);
             }
             else
             {
@@ -75,7 +75,7 @@ namespace RelayRunner.Application.Controllers
         }
 
          /// <summary>
-         /// Returns a single JSON LoadClient by idParameter
+         /// Returns a single JSON LoadClients by idParameter
          /// </summary>
          /// <param name="id">ID</param>
          /// <returns>IActionResult</returns>
@@ -100,7 +100,7 @@ namespace RelayRunner.Application.Controllers
 
              if (App.Config.AppType == AppType.WebAPI)
              {
-                 res = await DataService.Read<LoadClient>(Request).ConfigureAwait(false);
+                 res = await DataService.Read<LoadClients>(Request).ConfigureAwait(false);
              }
              else
              {
@@ -132,8 +132,8 @@ namespace RelayRunner.Application.Controllers
 
         //         // TODO: based on id format tbd
 
-        //         //LoadClient gOrig = App.Config.CacheDal.GetLoadClients(id.Replace("zz", "tt"));
-        //         //LoadClient g = gOrig.DuplicateForUpsert();
+        //         //LoadClients gOrig = App.Config.CacheDal.GetLoadClients(id.Replace("zz", "tt"));
+        //         //LoadClients g = gOrig.DuplicateForUpsert();
 
         //         IActionResult res;
 
@@ -173,7 +173,7 @@ namespace RelayRunner.Application.Controllers
         //     }
         //     catch
         //     {
-        //         return NotFound($"LoadClient ID Not Found: {id}");
+        //         return NotFound($"LoadClients ID Not Found: {id}");
         //     }
         // }
 
@@ -192,7 +192,7 @@ namespace RelayRunner.Application.Controllers
         //    // TODO: update once decide id format
         //     if (list.Count > 0 || !id.StartsWith("zz"))
         //     {
-        //         Logger.LogWarning(nameof(UpsertLoadClientAsync), "Invalid LoadClient Id", NgsaLog.LogEvent400, HttpContext);
+        //         Logger.LogWarning(nameof(UpsertLoadClientAsync), "Invalid LoadClients Id", NgsaLog.LogEvent400, HttpContext);
 
         //         return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
         //     }

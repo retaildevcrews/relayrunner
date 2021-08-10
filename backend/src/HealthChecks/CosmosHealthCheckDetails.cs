@@ -4,7 +4,7 @@
 // TODO: Edit this file once configure COSMOS
 
 //using System;
-//using System.Collections.LoadClient;
+//using System.Collections.LoadClients;
 //using System.Diagnostics;
 //using System.Linq;
 //using System.Threading.Tasks;
@@ -71,7 +71,7 @@
 //        }
 
 //        /// <summary>
-//        /// Get LoadClient by Id Healthcheck
+//        /// Get LoadClients by Id Healthcheck
 //        /// </summary>
 //        /// <returns>HealthzCheck</returns>
 //        private async Task<HealthzCheck> GetGenericByIdAsync(string genericId, Dictionary<string, object> data = null)
@@ -100,7 +100,7 @@
 //        }
 
 //        /// <summary>
-//        /// Search LoadClient Healthcheck
+//        /// Search LoadClients Healthcheck
 //        /// </summary>
 //        /// <returns>HealthzCheck</returns>
 //        private async Task<HealthzCheck> SearchGenericsAsync(string query, Dictionary<string, object> data = null)
@@ -117,7 +117,7 @@
 //            {
 //                if (App.Config.AppType == AppType.App)
 //                {
-//                    _ = (await dal.GetGenericsAsync(genericQuery).ConfigureAwait(false)).ToList<LoadClient>();
+//                    _ = (await dal.GetGenericsAsync(genericQuery).ConfigureAwait(false)).ToList<LoadClients>();
 //                }
 
 //                return BuildHealthzCheck(path, MaxResponseTime, null, data, name);

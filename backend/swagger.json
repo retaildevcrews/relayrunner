@@ -5,7 +5,7 @@
     "version": "1.0"
   },
   "paths": {
-    "{urlPrefix}/api/loadClient": {
+    "{urlPrefix}/api/loadClients": {
       "get": {
         "tags": [ "LoadClients" ],
         "summary": "Search LoadClients",

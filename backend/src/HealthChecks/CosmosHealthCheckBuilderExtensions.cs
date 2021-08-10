@@ -3,7 +3,7 @@
 
 // TODO: Edit file once configure COSMOS
 
-//using System.Collections.LoadClient;
+//using System.Collections.LoadClients;
 //using Microsoft.Extensions.DependencyInjection;
 //using Microsoft.Extensions.Diagnostics.HealthChecks;
 

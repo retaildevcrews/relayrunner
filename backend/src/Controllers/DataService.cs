@@ -83,7 +83,7 @@ namespace RelayRunner.Application.Controllers
             }
         }
 
-        public static async Task<IActionResult> Post(HttpRequest request, LoadClient g)
+        public static async Task<IActionResult> Post(HttpRequest request, LoadClients g)
         {
             if (request == null || !request.Path.HasValue)
             {
@@ -112,7 +112,7 @@ namespace RelayRunner.Application.Controllers
 
                 if (resp.IsSuccessStatusCode)
                 {
-                    LoadClient obj = JsonSerializer.Deserialize<LoadClient>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
+                    LoadClients obj = JsonSerializer.Deserialize<LoadClients>(await resp.Content.ReadAsByteArrayAsync().ConfigureAwait(false), Options);
                     json = new JsonResult(obj, Options) { StatusCode = (int)resp.StatusCode };
                 }
                 else
