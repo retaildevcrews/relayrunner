@@ -39,18 +39,18 @@ Metrics are provided via a Prometheus endpoint and may be exposed by both the ap
 
 ```log
 ...
-NgsaAppSummary summaryNgsaAppSummary_sum{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 235.98999999999995
-NgsaAppSummary_count{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 51
-NgsaAppSummary{code="OK",cosmos="False",mode="Query",region="dev",zone="dev",quantile="0.9"} 7.19
+RelayRunnerSummary summaryRelayRunnerSummary_sum{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 235.98999999999995
+RelayRunnerSummary_count{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 51
+RelayRunnerSummary{code="OK",cosmos="False",mode="Query",region="dev",zone="dev",quantile="0.9"} 7.19
 ...
 # HELP dotnet_total_memory_bytes Total known allocated memory
 #TYPE dotnet_total_memory_bytes gaugedotnet_total_memory_bytes 24461168
 # HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 # TYPE process_start_time_seconds gaugeprocess_start_time_seconds 1617167164.05
-# HELP NgsaAppDuration Histogram of NGSA App request duration
-# TYPE NgsaAppDuration histogram
-NgsaAppDuration_sum{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 235.98999999999995
-NgsaAppDuration_count{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 
+# HELP RelayRunnerDuration Histogram of NGSA App request duration
+# TYPE RelayRunnerDuration histogram
+RelayRunnerDuration_sum{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 235.98999999999995
+RelayRunnerDuration_count{code="OK",cosmos="False",mode="Query",region="dev",zone="dev"} 
 ...
 ```
 
@@ -98,12 +98,12 @@ Both the NGSA app and LodeRunner emit several metrics via a Prometheus endpoint.
 <!-- markdownlint-disable MD033 -->
 |**Metric**|**Type**|**Range**|**Description**|
 | :-- | :-- | :-- | :-- |
-|NgsaAppSummary<br>LodeRunnerSummary|struct| \[code, cosmos, mode, region, zone, quartil\]|Used to calculate the average duration across request types and filter by constituent values listed in **Range**. Quartile values are used to graph values that meet the 0.95 and 0.99 confidence intervals.<br>**Example query**: avg(NgsaAppSummary{namespace="\$namespace",code="OK",service="\$service",region=~"\$region",zone="azure",quantile=~"0.95|0.99"}) by (mode, quantile)|
-|NgsaAppSummary_countLodeRunner<br>Summary_count|struct|\[code, cosmos, mode, region, zone\]|Provides a running total of requests at a given time over a duration.<br>**Example query**: TBD|
-|NgsaAppSummary_sum<br>LodeRunnerSummary_sum|struct|\[code, cosmos, mode, region, zone\]|Sum of the summary values at a given instance.<br>**Example query**: TBD|
-|NgsaAppDuration_bucket<br>LodeRunnerSummary_bucket|struct|\[code, cosmos, mode, region, zone, le\]|Used to calculate the number of requests per intervale by a given mode (Query or Direct).<br>**Example query**: sum(rate(NgsaAppDuration_bucket{namespace="\$namespace",zone="azure",region=~"\$region",service="\$service"}\[1m\])) by (mode)|
-|NgsaAppDuration_count<br>LodeRunnerDuration_count|struct|\[code, cosmos, mode, region, zone\]|Used to calculate the requests per second over a given interval. Predicates may be used to filter by any of the field values.<br>**Example query**: sum(rate(NgsaAppDuration_count{namespace='\$namespace",zone="azure",region=~"\$region",service="\$service",mode != "Metrics"}\[1m\]))|
-|NgsaAppDuration_sum<br>LodeRunnerDuration_sum|struct|\[code, cosmos, mode, region, zone\]|Provides the sum of the duration values at a given instance.<br>**Example query**: TBD|
+|RelayRunnerSummary<br>LodeRunnerSummary|struct| \[code, cosmos, mode, region, zone, quartil\]|Used to calculate the average duration across request types and filter by constituent values listed in **Range**. Quartile values are used to graph values that meet the 0.95 and 0.99 confidence intervals.<br>**Example query**: avg(RelayRunnerSummary{namespace="\$namespace",code="OK",service="\$service",region=~"\$region",zone="azure",quantile=~"0.95|0.99"}) by (mode, quantile)|
+|RelayRunnerSummary_countLodeRunner<br>Summary_count|struct|\[code, cosmos, mode, region, zone\]|Provides a running total of requests at a given time over a duration.<br>**Example query**: TBD|
+|RelayRunnerSummary_sum<br>LodeRunnerSummary_sum|struct|\[code, cosmos, mode, region, zone\]|Sum of the summary values at a given instance.<br>**Example query**: TBD|
+|RelayRunnerDuration_bucket<br>LodeRunnerSummary_bucket|struct|\[code, cosmos, mode, region, zone, le\]|Used to calculate the number of requests per intervale by a given mode (Query or Direct).<br>**Example query**: sum(rate(RelayRunnerDuration_bucket{namespace="\$namespace",zone="azure",region=~"\$region",service="\$service"}\[1m\])) by (mode)|
+|RelayRunnerDuration_count<br>LodeRunnerDuration_count|struct|\[code, cosmos, mode, region, zone\]|Used to calculate the requests per second over a given interval. Predicates may be used to filter by any of the field values.<br>**Example query**: sum(rate(RelayRunnerDuration_count{namespace='\$namespace",zone="azure",region=~"\$region",service="\$service",mode != "Metrics"}\[1m\]))|
+|RelayRunnerDuration_sum<br>LodeRunnerDuration_sum|struct|\[code, cosmos, mode, region, zone\]|Provides the sum of the duration values at a given instance.<br>**Example query**: TBD|
 
 Each of the above metrics has several field values that are used as part of the measurement.  The following table describes those sub-metric fields and their intended use:
 

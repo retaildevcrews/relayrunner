@@ -49,7 +49,7 @@ namespace RelayRunner.Middleware
             if (App.Config.Prometheus)
             {
                 requestHistogram = Metrics.CreateHistogram(
-                            "NgsaAppDuration",
+                            "RelayRunnerDuration",
                             "Histogram of NGSA App request duration",
                             new HistogramConfiguration
                             {
@@ -58,7 +58,7 @@ namespace RelayRunner.Middleware
                             });
 
                 requestSummary = Metrics.CreateSummary(
-                    "NgsaAppSummary",
+                    "RelayRunnerSummary",
                     "Summary of NGSA App request duration",
                     new SummaryConfiguration
                     {
