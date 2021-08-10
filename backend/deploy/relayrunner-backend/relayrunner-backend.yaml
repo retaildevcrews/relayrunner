@@ -10,7 +10,7 @@ spec:
   containers:
   - name: app
 
-    image: johee/relayrunner:express
+    image: ghcr.io/retaildevcrews/relayrunner:backend
     imagePullPolicy: Always
 
 ---
