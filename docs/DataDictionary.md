@@ -76,6 +76,7 @@ This object is primarily for conveying the curent status, time of that status, a
 | EntityType      |     String      | Entity type used for filtering  | |
 | LastUpdated     |     DateTime    | This shows the date and time the status was last updated | 
 | StateDuration   |     Int         | The number of seconds since the last change in state for the client | |
+| Status          |     string      | Current status of load client      | [`Starting`, `Ready`, `Testing`, `Terminating`] |
 | Message         |     string      | Additional information conveyed as part of the status update | |
 | LoadClient      |   `LoadClient`  | A nested object holding the information about the particular client in this status message | |
 
