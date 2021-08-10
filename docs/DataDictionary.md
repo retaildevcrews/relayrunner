@@ -8,7 +8,7 @@ This document is meant to list and define the entities in use in RelayRunner.
 
 ### 1.1 Primary Entities Used
 
-We have defined 5 types of data for the RelayRunner API (RRAPI).  Those are as follows:
+Below are the primary types of data for the RelayRunner API (RRAPI).  Those are as follows:
 
 | Type Name       |  Description    |  Notes                             |     RRAPI  | LodeRunner |
 | :-------------- | :-------------- | :--------------------------------- | :----------| :----------|
