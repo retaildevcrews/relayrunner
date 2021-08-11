@@ -96,11 +96,7 @@ namespace RelayRunner.Application
                 .UseEndpoints(ep =>
                 {
                     ep.MapControllers();
-
-                    if (App.Config.Prometheus)
-                    {
-                        ep.MapMetrics();
-                    }
+                    ep.MapMetrics();
                 })
                 .UseSwaggerUI(c =>
                 {

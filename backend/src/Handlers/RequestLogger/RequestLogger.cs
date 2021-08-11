@@ -46,37 +46,34 @@ namespace RelayRunner.Middleware
                 this.options = new RequestLoggerOptions();
             }
 
-            if (App.Config.Prometheus)
-            {
-                requestHistogram = Metrics.CreateHistogram(
-                            "RelayRunnerDuration",
-                            "Histogram of NGSA App request duration",
-                            new HistogramConfiguration
-                            {
-                                Buckets = Histogram.ExponentialBuckets(1, 2, 10),
-                                LabelNames = new string[] { "code", "cosmos", "mode", "region", "zone" },
-                            });
+            requestHistogram = Metrics.CreateHistogram(
+                "RelayRunnerDuration",
+                "Histogram of RelayRunner request duration",
+                new HistogramConfiguration
+                {
+                    Buckets = Histogram.ExponentialBuckets(1, 2, 10),
+                    LabelNames = new string[] { "code", "mode" },
+                });
 
-                requestSummary = Metrics.CreateSummary(
-                    "RelayRunnerSummary",
-                    "Summary of NGSA App request duration",
-                    new SummaryConfiguration
-                    {
-                        SuppressInitialValue = true,
-                        MaxAge = TimeSpan.FromMinutes(5),
-                        Objectives = new List<QuantileEpsilonPair> { new QuantileEpsilonPair(.9, .0), new QuantileEpsilonPair(.95, .0), new QuantileEpsilonPair(.99, .0), new QuantileEpsilonPair(1.0, .0) },
-                        LabelNames = new string[] { "code", "cosmos", "mode", "region", "zone" },
-                    });
+            requestSummary = Metrics.CreateSummary(
+                "RelayRunnerSummary",
+                "Summary of RelayRunner request duration",
+                new SummaryConfiguration
+                {
+                    SuppressInitialValue = true,
+                    MaxAge = TimeSpan.FromMinutes(5),
+                    Objectives = new List<QuantileEpsilonPair> { new QuantileEpsilonPair(.9, .0), new QuantileEpsilonPair(.95, .0), new QuantileEpsilonPair(.99, .0), new QuantileEpsilonPair(1.0, .0) },
+                    LabelNames = new string[] { "code", "mode" },
+                });
 
-                cpuGauge = Metrics.CreateGauge(
-                    "NgsaCpuPercent",
-                    "CPU Percent Used",
-                    new GaugeConfiguration
-                    {
-                        SuppressInitialValue = true,
-                        LabelNames = new string[] { "code", "cosmos", "mode", "region", "zone" },
-                    });
-            }
+            cpuGauge = Metrics.CreateGauge(
+                "RelayRunnerCpuPercent",
+                "CPU Percent Used",
+                new GaugeConfiguration
+                {
+                    SuppressInitialValue = true,
+                    LabelNames = new string[] { "code", "mode" },
+                });
         }
 
         public static string DataService { get; set; } = string.Empty;
@@ -209,10 +206,10 @@ namespace RelayRunner.Middleware
                 Console.WriteLine(JsonSerializer.Serialize(log));
             }
 
-            if (App.Config.Prometheus && requestHistogram != null && (mode == "Direct" || mode == "Query" || mode == "Delete" || mode == "Upsert"))
+            if (requestHistogram != null && (mode == "Direct" || mode == "Query" || mode == "Delete" || mode == "Upsert"))
             {
-                requestHistogram.WithLabels(GetPrometheusCode(context.Response.StatusCode), (!App.Config.InMemory).ToString(), mode, App.Config.Region, App.Config.Zone).Observe(duration);
-                requestSummary.WithLabels(GetPrometheusCode(context.Response.StatusCode), (!App.Config.InMemory).ToString(), mode, App.Config.Region, App.Config.Zone).Observe(duration);
+                requestHistogram.WithLabels(GetPrometheusCode(context.Response.StatusCode), mode).Observe(duration);
+                requestSummary.WithLabels(GetPrometheusCode(context.Response.StatusCode), mode).Observe(duration);
                 cpuGauge.Set(CpuCounter.CpuPercent);
             }
         }

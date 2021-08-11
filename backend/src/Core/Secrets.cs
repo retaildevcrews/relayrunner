@@ -29,7 +29,7 @@ namespace RelayRunner.Application
                 throw new ArgumentNullException(nameof(volume));
             }
 
-            // thow exception if volume doesn't exist
+            // throw exception if volume doesn't exist
             if (!Directory.Exists(volume))
             {
                 throw new Exception($"Volume '{volume}' does not exist");

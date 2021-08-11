@@ -69,8 +69,6 @@ namespace RelayRunner.Middleware
                     // return the version info
                     context.Response.ContentType = "text/plain";
 
-                    CpuCounter.AddBurstHeader(context);
-
                     await context.Response.Body.WriteAsync(responseBytes).ConfigureAwait(false);
                 }
                 else

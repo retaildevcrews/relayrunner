@@ -14,7 +14,7 @@ using RelayRunner.Middleware;
 namespace RelayRunner.Application.Controllers
 {
     /// <summary>
-    /// Handle all of the /api/generic requests
+    /// Handle all of the /api/loadClients requests
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -30,7 +30,7 @@ namespace RelayRunner.Application.Controllers
         private readonly IDAL dal;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadClientController"/> class.
+        /// Initializes a new instance of the <see cref="LoadClientsController"/> class.
         /// </summary>
         public LoadClientsController()
         {

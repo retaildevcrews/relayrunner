@@ -47,12 +47,6 @@ namespace RelayRunner.Application
                     return -1;
                 }
 
-                // display dry run message
-                if (config.DryRun)
-                {
-                    return DoDryRun();
-                }
-
                 // setup sigterm handler
                 CancellationTokenSource ctCancel = SetupSigTermHandler(host, logger);
 
@@ -86,31 +80,20 @@ namespace RelayRunner.Application
             RootCommand root = new RootCommand
             {
                 Name = "RelayRunner.Application",
-                Description = "NGSA Validation App",
+                Description = "RelayRunner Validation App",
                 TreatUnmatchedTokensAsErrors = true,
             };
 
             // add the options
             root.AddOption(EnvVarOption(new string[] { "--app-type", "-a" }, "Application Type", AppType.App));
-            root.AddOption(EnvVarOption(new string[] { "--prometheus", "-p" }, "Send metrics to Prometheus", false));
-            root.AddOption(EnvVarOption(new string[] { "--in-memory", "-m" }, "Use in-memory database", true));
-            root.AddOption(EnvVarOption(new string[] { "--no-cache", "-n" }, "Don't cache results", false));
             root.AddOption(EnvVarOption(new string[] { "--url-prefix" }, "URL prefix for ingress mapping", string.Empty));
             root.AddOption(EnvVarOption(new string[] { "--port" }, "Listen Port", 8080, 1, (64 * 1024) - 1));
-            root.AddOption(EnvVarOption(new string[] { "--cache-duration", "-d" }, "Cache for duration (seconds)", 300, 1));
-            root.AddOption(EnvVarOption(new string[] { "--burst-header" }, "Enable burst metrics header in healthz", false));
-            root.AddOption(EnvVarOption(new string[] { "--burst-service" }, "Service name for bursting metrics", string.Empty));
-            root.AddOption(EnvVarOption(new string[] { "--burst-target" }, "Target level for bursting metrics (int)", 60, 1, 100));
-            root.AddOption(EnvVarOption(new string[] { "--burst-max" }, "Max level for bursting metrics (int)", 80, 1, 100));
             root.AddOption(EnvVarOption(new string[] { "--retries" }, "Cosmos 429 retries", 10, 0));
             root.AddOption(EnvVarOption(new string[] { "--timeout" }, "Request timeout", 10, 1));
             root.AddOption(EnvVarOption(new string[] { "--data-service", "-s" }, "Data Service URL", string.Empty));
             root.AddOption(EnvVarOption(new string[] { "--secrets-volume", "-v" }, "Secrets Volume Path", "secrets"));
-            root.AddOption(EnvVarOption(new string[] { "--zone", "-z" }, "Zone for log", "dev"));
-            root.AddOption(EnvVarOption(new string[] { "--region", "-r" }, "Region for log", "dev"));
             root.AddOption(EnvVarOption(new string[] { "--log-level", "-l" }, "Log Level", LogLevel.Error));
             root.AddOption(EnvVarOption(new string[] { "--request-log-level", "-q" }, "Request Log Level", LogLevel.Information));
-            root.AddOption(new Option<bool>(new string[] { "--dry-run" }, "Validates configuration"));
 
             // validate dependencies
             root.AddValidator(ValidateDependencies);
@@ -135,9 +118,6 @@ namespace RelayRunner.Application
                 string secrets = result.Children.FirstOrDefault(c => c.Symbol.Name == "secrets-volume") is OptionResult secretsRes ? secretsRes.GetValueOrDefault<string>() : string.Empty;
                 string dataService = result.Children.FirstOrDefault(c => c.Symbol.Name == "data-service") is OptionResult dsRes ? dsRes.GetValueOrDefault<string>() : string.Empty;
                 string urlPrefix = result.Children.FirstOrDefault(c => c.Symbol.Name == "urlPrefix") is OptionResult urlRes ? urlRes.GetValueOrDefault<string>() : string.Empty;
-                string burstService = result.Children.FirstOrDefault(c => c.Symbol.Name == "burst-service") is OptionResult bsRes ? bsRes.GetValueOrDefault<string>() : string.Empty;
-                bool inMemory = result.Children.FirstOrDefault(c => c.Symbol.Name == "in-memory") is OptionResult inMemoryRes && inMemoryRes.GetValueOrDefault<bool>();
-                bool noCache = result.Children.FirstOrDefault(c => c.Symbol.Name == "no-cache") is OptionResult noCacheRes && noCacheRes.GetValueOrDefault<bool>();
 
                 // validate url-prefix
                 if (!string.IsNullOrWhiteSpace(urlPrefix))
@@ -185,50 +165,30 @@ namespace RelayRunner.Application
                     }
                 }
 
-                // validate burst-service
-                if (!string.IsNullOrWhiteSpace(burstService))
-                {
-                    burstService = burstService.Trim();
-
-                    if (burstService.Length > 64 ||
-                        burstService.Contains('\n') ||
-                        burstService.Contains('\t') ||
-                        burstService.Contains(' ') ||
-                        burstService.Contains('\r'))
-                    {
-                        msg += "--burst-service is invalid";
-                    }
-                }
-
+                // TODO: Enable once CosmosDB is setup
                 // validate secrets volume
-                if (!inMemory && appType == AppType.App)
-                {
-                    if (string.IsNullOrWhiteSpace(secrets))
-                    {
-                        msg += "--secrets-volume cannot be empty\n";
-                    }
-                    else
-                    {
-                        try
-                        {
-                            // validate secrets-volume exists
-                            if (!Directory.Exists(secrets))
-                            {
-                                msg += $"--secrets-volume ({secrets}) does not exist\n";
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            msg += $"--secrets-volume exception: {ex.Message}\n";
-                        }
-                    }
-                }
-
-                // invalid combination
-                if (inMemory && noCache)
-                {
-                    msg += "--in-memory and --no-cache are exclusive\n";
-                }
+                // if (appType == AppType.App)
+                // {
+                //     if (string.IsNullOrWhiteSpace(secrets))
+                //     {
+                //         msg += "--secrets-volume cannot be empty\n";
+                //     }
+                //     else
+                //     {
+                //         try
+                //         {
+                //             // validate secrets-volume exists
+                //             if (!Directory.Exists(secrets))
+                //             {
+                //                 msg += $"--secrets-volume ({secrets}) does not exist\n";
+                //             }
+                //         }
+                //         catch (Exception ex)
+                //         {
+                //             msg += $"--secrets-volume exception: {ex.Message}\n";
+                //         }
+                //     }
+                // }
             }
             catch
             {
@@ -393,22 +353,11 @@ namespace RelayRunner.Application
                 // load the cache
                 Config.CacheDal = new DataAccessLayer.InMemoryDal();
 
-                // create the cosomos data access layer
-                if (Config.InMemory)
-                {
-                    Config.CosmosDal = Config.CacheDal;
-                }
-                else
-                {
-                    Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
-                }
-            }
-
-            // set burst headers service name
-            if (string.IsNullOrWhiteSpace(Config.BurstService))
-            {
-                VersionExtension.Init();
-                Config.BurstService = VersionExtension.Name;
+                // create the cosmos data access layer
+                // TODO: Remove when in-memory is no longer required for setup/pre-CosmosDB
+                Config.CosmosDal = Config.CacheDal;
+                // TODO: Enable when CosmosDB is setup
+                // Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
             }
 
             SetLoggerConfig();
@@ -419,54 +368,7 @@ namespace RelayRunner.Application
         {
             RequestLogger.CosmosName = Config.CosmosName;
             RequestLogger.DataService = Config.DataService.Replace("http://", string.Empty).Replace("https://", string.Empty);
-            RequestLogger.Zone = Config.Zone;
-            RequestLogger.Region = Config.Region;
-
-            NgsaLogger.Zone = Config.Zone;
-            NgsaLogger.Region = Config.Region;
-
-            NgsaLog.Zone = Config.Zone;
-            NgsaLog.Region = Config.Region;
             NgsaLog.LogLevel = Config.LogLevel;
-        }
-
-        // Display the dry run message
-        private static int DoDryRun()
-        {
-            Console.WriteLine($"Version            {VersionExtension.Version}");
-            Console.WriteLine($"Application Type   {Config.AppType}");
-            Console.WriteLine($"Use Prometheus     {Config.Prometheus}");
-
-            if (Config.AppType == AppType.WebAPI)
-            {
-                Console.WriteLine($"Data Service       {Config.DataService}");
-                Console.WriteLine($"Request Timeout    {Config.Timeout}");
-            }
-            else
-            {
-                Console.WriteLine($"In Memory          {Config.InMemory}");
-                Console.WriteLine($"No Cache           {Config.NoCache}");
-
-                if (!Config.InMemory)
-                {
-                    Console.WriteLine($"Cosmos Server      {Config.Secrets.CosmosServer}");
-                    Console.WriteLine($"Cosmos Database    {Config.Secrets.CosmosDatabase}");
-                    Console.WriteLine($"Cosmos Collection  {Config.Secrets.CosmosCollection}");
-                    Console.WriteLine($"Cosmos Key         Length({Config.Secrets.CosmosKey.Length})");
-                    Console.WriteLine($"Cosmos Retries     {Config.Retries}");
-                    Console.WriteLine($"Request Timeout    {Config.Timeout}");
-                    Console.WriteLine($"Secrets Volume     {Config.Secrets.Volume}");
-                }
-            }
-
-            Console.WriteLine($"Region             {Config.Region}");
-            Console.WriteLine($"Zone               {Config.Zone}");
-
-            Console.WriteLine($"Log Level          {Config.LogLevel}");
-            Console.WriteLine($"Request Log Level  {Config.RequestLogLevel}");
-
-            // always return 0 (success)
-            return 0;
         }
     }
 }

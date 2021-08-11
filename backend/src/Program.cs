@@ -42,32 +42,25 @@ namespace RelayRunner.Application
         // load secrets from volume
         private static void LoadSecrets()
         {
-            if (Config.InMemory)
+            // TODO: Remove when CosmosDB is setup
+            Config.Secrets = new Secrets
             {
-                Config.Secrets = new Secrets
-                {
-                    CosmosCollection = "collection",
-                    CosmosDatabase = "database",
-                    CosmosKey = "in-memory",
-                    CosmosServer = "in-memory",
-                };
+                CosmosCollection = "collection",
+                CosmosDatabase = "database",
+                CosmosKey = "in-memory",
+                CosmosServer = "in-memory",
+            };
+            Config.CosmosName = "in-memory";
 
-                Config.CosmosName = "in-memory";
-            }
-            else
-            {
-                Config.Secrets = Secrets.GetSecretsFromVolume(Config.SecretsVolume);
-
-                // set the Cosmos server name for logging
-                Config.CosmosName = Config.Secrets.CosmosServer.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase).Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase);
-
-                int ndx = Config.CosmosName.IndexOf('.', StringComparison.OrdinalIgnoreCase);
-
-                if (ndx > 0)
-                {
-                    Config.CosmosName = Config.CosmosName.Remove(ndx);
-                }
-            }
+            // TODO: Enable when CosmosDB is setup
+            // Config.Secrets = Secrets.GetSecretsFromVolume(Config.SecretsVolume);
+            // // set the Cosmos server name for logging
+            // Config.CosmosName = Config.Secrets.CosmosServer.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase).Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase);
+            // int ndx = Config.CosmosName.IndexOf('.', StringComparison.OrdinalIgnoreCase);
+            // if (ndx > 0)
+            // {
+            //     Config.CosmosName = Config.CosmosName.Remove(ndx);
+            // }
         }
 
         // display Ascii Art
