@@ -13,10 +13,7 @@ namespace RelayRunner.Application.DataAccessLayer
     /// </summary>
     public interface IDAL
     {
-        Task<LoadClients> GetLoadClientAsync(string id);
-        Task<IEnumerable<LoadClients>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters);
-        Task DeleteLoadClientAsync(string id);
-        Task<LoadClients> UpsertLoadClientAsync(LoadClients loadClient);
-        Task<IEnumerable<LoadClients>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters);
+        Task<LoadClient> GetLoadClientAsync(string id);
+        Task<IEnumerable<LoadClient>> GetLoadClientsAsync();
     }
 }

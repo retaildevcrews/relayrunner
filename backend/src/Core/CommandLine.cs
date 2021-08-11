@@ -350,7 +350,7 @@ namespace RelayRunner.Application
             {
                 LoadSecrets();
 
-                // load the cache
+                // TODO: Delete when CosmosDB is enabled
                 Config.CacheDal = new DataAccessLayer.InMemoryDal();
 
                 // create the cosmos data access layer

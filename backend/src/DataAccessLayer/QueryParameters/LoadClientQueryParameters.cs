@@ -27,28 +27,12 @@ namespace RelayRunner.Middleware
         }
 
         /// <summary>
-        /// Validate this object
-        /// </summary>
-        /// <returns>list of validation errors or empty list</returns>
-        public List<ValidationError> Validate()
-        {
-            List<ValidationError> errors = new List<ValidationError>();
-
-            if (!string.IsNullOrWhiteSpace(Q) && Q.Length < 2)
-            {
-                errors.Add(new ValidationError { Target = "q", Message = ValidationError.GetErrorMessage("Q") });
-            }
-
-            return errors;
-        }
-
-        /// <summary>
         /// Get the cache key for this request
         /// </summary>
         /// <returns>cache key</returns>
         public string GetKey()
         {
-            return $"/api/loadClient/{(string.IsNullOrWhiteSpace(Q) ? string.Empty : Q.ToUpperInvariant().Trim())}";
+            return $"/api/loadClients/{(string.IsNullOrWhiteSpace(Q) ? string.Empty : Q.ToUpperInvariant().Trim())}";
         }
     }
 }

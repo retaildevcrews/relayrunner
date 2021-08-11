@@ -1,5 +1,35 @@
 [
-  {"name":"Load-Client-001","id":"1","partitionKey":"1","version":"5.0","region":"california","zone":"colorado","scheduler":"nev","status":"ready","metrics":"prometheus","dateCreated":"2019"},
-  {"name":"Load-Client-002","id":"2","partitionKey":"2","version":"5.0","region":"california","zone":"colorado","scheduler":"nev","status":"unresponsive","metrics":"prometheus","dateCreated":"2021"},
-  {"name":"Load-Client-003","id":"3","partitionKey":"3","version":"5.0","region":"california","zone":"colorado","scheduler":"nev","status":"busy","metrics":"prometheus","dateCreated":"2020"}
+  {
+    "partitionKey": "loadClient",
+    "entityType": "loadClient",
+    "version": "5.0",
+    "id": "1",
+    "region": "california",
+    "zone": "colorado",
+    "prometheus": true,
+    "startupArgs": "files",
+    "startTime": "2017-07-21T17:32:28Z"
+  },
+  {
+    "partitionKey": "loadClient",
+    "entityType": "loadClient",
+    "version": "5.0",
+    "id": "2",
+    "region": "california",
+    "zone": "colorado",
+    "prometheus": false,
+    "startupArgs": "files",
+    "startTime": "2017-07-21T17:32:28Z"
+  },
+  {
+    "partitionKey": "loadClient",
+    "entityType": "loadClient",
+    "version": "5.0",
+    "id": "3",
+    "region": "california",
+    "zone": "colorado",
+    "prometheus": true,
+    "startupArgs": "files",  
+    "startTime": "2017-07-21T17:32:28Z"
+  }
 ]

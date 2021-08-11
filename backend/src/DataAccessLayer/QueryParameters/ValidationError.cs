@@ -69,14 +69,14 @@ namespace RelayRunner.Middleware.Validation
 
             if (path.StartsWith("/api/generic?") || path.StartsWith("/api/generic/?"))
             {
-                category = "LoadClients";
-                subCategory = "LoadClients";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Query";
             }
             else if (path.StartsWith("/api/generic/"))
             {
-                category = "LoadClients";
-                subCategory = "LoadClients";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Direct";
 
                 if (context.Request.Method == "DELETE")
@@ -90,8 +90,8 @@ namespace RelayRunner.Middleware.Validation
             }
             else if (path.StartsWith("/api/generic"))
             {
-                category = "LoadClients";
-                subCategory = "LoadClients";
+                category = "LoadClient";
+                subCategory = "LoadClient";
                 mode = "Query";
             }
             else if (path.StartsWith("/healthz"))

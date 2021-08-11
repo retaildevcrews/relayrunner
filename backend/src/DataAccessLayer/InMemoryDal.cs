@@ -4,25 +4,24 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Database.Model;
 using Microsoft.Azure.Cosmos;
 using RelayRunner.Middleware;
 
-/// <summary>
-/// This code is used to support performance testing
-///
-/// This loads the Database data into memory which removes the roundtrip to Cosmos
-/// This provides higher performance and less variability which allows us to establish
-/// baseline performance metrics
-/// </summary>
 namespace RelayRunner.Application.DataAccessLayer
 {
+    /// <summary>
+    /// This code is used to support performance testing
+    ///
+    /// This loads the Database data into memory which removes the roundtrip to Cosmos
+    /// This provides higher performance and less variability which allows us to establish
+    /// baseline performance metrics
+    /// </summary>
     public class InMemoryDal : IDAL
     {
-        private const string LoadClientSQL = "select g.name, g.id, g.partitionKey, g.region, g.zone, g.scheduler, g.metrics, g.status, g.dateCreated from g";
+        private const string LoadClientSQL = "select lc.partitionKey, lc.entityType, lc.version, lc.id, lc.region, lc.zone, lc.prometheus, lc.startupArgs, lc.startTime from lc";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InMemoryDal"/> class.
@@ -38,27 +37,27 @@ namespace RelayRunner.Application.DataAccessLayer
             LoadLoadClients(settings);
         }
 
-        public static List<LoadClients> LoadClients { get; set; }
+        public static List<LoadClient> LoadClients { get; set; }
 
         // O(1) dictionary for retriving by ID
-        public static Dictionary<string, LoadClients> LoadClientsIndex { get; set; } = new Dictionary<string, LoadClients>();
+        public static Dictionary<string, LoadClient> LoadClientsIndex { get; set; } = new Dictionary<string, LoadClient>();
 
         /// <summary>
         /// Get Load Client by ID
         /// </summary>
         /// <param name="id">ID</param>
-        /// <returns>LoadClients</returns>
-        public async Task<LoadClients> GetLoadClientAsync(string id)
+        /// <returns>LoadClient</returns>
+        public async Task<LoadClient> GetLoadClientAsync(string id)
         {
-            return await Task<LoadClients>.Factory.StartNew(() => { return GetLoadClient(id); }).ConfigureAwait(false);
+            return await Task<LoadClient>.Factory.StartNew(() => { return GetLoadClient(id); }).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get LoadClients By ID
+        /// Get LoadClient By ID
         /// </summary>
         /// <param name="id">ID</param>
-        /// <returns>LoadClients</returns>
-        public LoadClients GetLoadClient(string id)
+        /// <returns>LoadClient</returns>
+        public LoadClient GetLoadClient(string id)
         {
             if (LoadClientsIndex.ContainsKey(id))
             {
@@ -75,7 +74,7 @@ namespace RelayRunner.Application.DataAccessLayer
         /// <returns>Cosmos query string</returns>
         public string GetLoadClientIds(LoadClientQueryParameters loadClientQueryParameters)
         {
-            List<LoadClients> cache;
+            List<LoadClient> cache;
             string ids = string.Empty;
 
             if (loadClientQueryParameters == null)
@@ -89,7 +88,7 @@ namespace RelayRunner.Application.DataAccessLayer
 
             // TODO: depends internal object id
 
-            foreach (LoadClients g in cache)
+            foreach (LoadClient g in cache)
             {
                 ids += $"'{g.Id}',";
             }
@@ -107,8 +106,8 @@ namespace RelayRunner.Application.DataAccessLayer
         /// Get list of LoadClients based on query parameters
         /// </summary>
         /// <param name="loadClientQueryParameters">query params</param>
-        /// <returns>List of LoadClients</returns>
-        public List<LoadClients> GetLoadClients(LoadClientQueryParameters loadClientQueryParameters)
+        /// <returns>List of LoadClient</returns>
+        public List<LoadClient> GetLoadClients(LoadClientQueryParameters loadClientQueryParameters)
         {
             if (loadClientQueryParameters == null)
             {
@@ -122,11 +121,11 @@ namespace RelayRunner.Application.DataAccessLayer
         /// Get List of LoadClients by search params
         /// </summary>
         /// <param name="q">match property</param>
-        /// <returns>List of LoadClients</returns>
-        public List<LoadClients> GetLoadClients(string q)
+        /// <returns>List of LoadClient</returns>
+        public List<LoadClient> GetLoadClients(string q)
         {
-            List<LoadClients> res = new List<LoadClients>();
-            foreach (LoadClients l in LoadClients)
+            List<LoadClient> res = new List<LoadClient>();
+            foreach (LoadClient l in LoadClients)
             {
                 res.Add(l);
             }
@@ -138,10 +137,10 @@ namespace RelayRunner.Application.DataAccessLayer
         /// Get list of LoadClients based on query parameters
         /// </summary>
         /// <param name="loadClientQueryParameters">query params</param>
-        /// <returns>List of LoadClients</returns>
-        public Task<IEnumerable<LoadClients>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
+        /// <returns>List of LoadClient</returns>
+        public Task<IEnumerable<LoadClient>> GetLoadClientsAsync(LoadClientQueryParameters loadClientQueryParameters)
         {
-            return Task<IEnumerable<LoadClients>>.Factory.StartNew(() =>
+            return Task<IEnumerable<LoadClient>>.Factory.StartNew(() =>
             {
                 return GetLoadClients(loadClientQueryParameters);
             });
@@ -152,9 +151,9 @@ namespace RelayRunner.Application.DataAccessLayer
         ///
         /// Do not store in index or WebV tests will break
         /// </summary>
-        /// <param name="loadClient">LoadClients to upsert</param>
-        /// <returns>LoadClients</returns>
-        public async Task<LoadClients> UpsertLoadClientsAsync(LoadClients loadClient)
+        /// <param name="loadClient">LoadClient to upsert</param>
+        /// <returns>LoadClient</returns>
+        public async Task<LoadClient> UpsertLoadClientsAsync(LoadClient loadClient)
         {
             // TODO: depends on internal object id
             {
@@ -174,28 +173,7 @@ namespace RelayRunner.Application.DataAccessLayer
             }
         }
 
-        /// <summary>
-        /// Delete the loadClient from temporary storage
-        /// </summary>
-        /// <param name="id">LoadClients ID</param>
-        /// <returns>void</returns>
-        public async Task DeleteLoadClientAsync(string id)
-        {
-            await Task.Run(() =>
-            {
-                if (LoadClientsIndex.ContainsKey(id))
-                {
-                    LoadClientsIndex.Remove(id);
-                }
-            }).ConfigureAwait(false);
-        }
-
-        public Task<LoadClients> UpsertLoadClientAsync(LoadClients loadClient)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<LoadClients>> GetLoadClientAsync(LoadClientQueryParameters loadClientQueryParameters)
+        public Task<IEnumerable<LoadClient>> GetLoadClientsAsync()
         {
             throw new NotImplementedException();
         }
@@ -205,12 +183,12 @@ namespace RelayRunner.Application.DataAccessLayer
             if (LoadClients?.Count == null)
             {
                 // load the data from the json file
-                LoadClients = JsonSerializer.Deserialize<List<LoadClients>>(File.ReadAllText("src/data/loadClients.json"), settings);
+                LoadClients = JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText("src/data/loadClients.json"), settings);
             }
 
             if (LoadClientsIndex.Count == 0)
             {
-                foreach (LoadClients l in LoadClients)
+                foreach (LoadClient l in LoadClients)
                 {
                     // Loads an O(1) dictionary for retrieving by ID
                     // Could also use a binary search to reduce memory usage

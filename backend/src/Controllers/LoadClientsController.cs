@@ -23,7 +23,7 @@ namespace RelayRunner.Application.Controllers
         private static readonly NgsaLog Logger = new NgsaLog
         {
             Name = typeof(LoadClientsController).FullName,
-            ErrorMessage = "LoadClientControllerException",
+            ErrorMessage = "LoadClientsControllerException",
             NotFoundError = "LoadClients Not Found",
         };
 
@@ -38,44 +38,29 @@ namespace RelayRunner.Application.Controllers
         }
 
         /// <summary>
-        /// Returns a JSON array of LoadClients objects
+        /// Returns a JSON array of LoadClient objects
         /// </summary>
-        /// <param name="loadClientQueryParameters">query parameters</param>
         /// <returns>IActionResult</returns>
         [HttpGet]
-        public async Task<IActionResult> GetLoadClientsAsync([FromQuery] LoadClientQueryParameters loadClientQueryParameters)
+        public async Task<IActionResult> GetLoadClientsAsync()
         {
-            if (loadClientQueryParameters == null)
-            {
-                throw new ArgumentNullException(nameof(loadClientQueryParameters));
-            }
-
-            List<Middleware.Validation.ValidationError> list = loadClientQueryParameters.Validate();
-
-            if (list.Count > 0)
-            {
-                Logger.LogWarning(nameof(GetLoadClientsAsync), NgsaLog.MessageInvalidQueryString, NgsaLog.LogEvent400, HttpContext);
-
-                return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
-            }
-
             IActionResult res;
 
             if (App.Config.AppType == AppType.WebAPI)
             {
-                res = await DataService.Read<List<LoadClients>>(Request).ConfigureAwait(false);
+                res = await DataService.Read<List<LoadClient>>(Request).ConfigureAwait(false);
             }
             else
             {
                 // get the result
-                res = await ResultHandler.Handle(dal.GetLoadClientsAsync(loadClientQueryParameters), Logger).ConfigureAwait(false);
+                res = await ResultHandler.Handle(dal.GetLoadClientsAsync(), Logger).ConfigureAwait(false);
             }
 
             return res;
         }
 
          /// <summary>
-         /// Returns a single JSON LoadClients by idParameter
+         /// Returns a single JSON LoadClient by idParameter
          /// </summary>
          /// <param name="id">ID</param>
          /// <returns>IActionResult</returns>
@@ -100,7 +85,7 @@ namespace RelayRunner.Application.Controllers
 
              if (App.Config.AppType == AppType.WebAPI)
              {
-                 res = await DataService.Read<LoadClients>(Request).ConfigureAwait(false);
+                 res = await DataService.Read<LoadClient>(Request).ConfigureAwait(false);
              }
              else
              {
@@ -109,131 +94,5 @@ namespace RelayRunner.Application.Controllers
 
              return res;
          }
-
-        // TODO: Configure COSMOS and id format
-
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> UpsertLoadClientAsync([FromRoute] string id)
-        // {
-        //     try
-        //     {
-        //         List<Middleware.Validation.ValidationError> list = LoadClientQueryParameters.ValidateId(id);
-
-        //        // TODO: update based on id format
-
-        //         if (list.Count > 0 || !id.StartsWith("zz"))
-        //         {
-        //             Logger.LogWarning(nameof(UpsertLoadClientAsync), "Invalid Load Client Id", NgsaLog.LogEvent400, HttpContext);
-
-        //             return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
-        //         }
-
-        //         // duplicate the load client for upsert
-
-        //         // TODO: based on id format tbd
-
-        //         //LoadClients gOrig = App.Config.CacheDal.GetLoadClients(id.Replace("zz", "tt"));
-        //         //LoadClients g = gOrig.DuplicateForUpsert();
-
-        //         IActionResult res;
-
-        //         if (App.Config.AppType == AppType.WebAPI)
-        //         {
-        //             res = await DataService.Post(Request, g).ConfigureAwait(false);
-        //         }
-        //         else
-        //         {
-        //             await App.Config.CacheDal.UpsertLoadClientsAsync(g);
-
-        //             // upsert into Cosmos
-        //             if (!App.Config.InMemory)
-        //             {
-        //                 try
-        //                 {
-        //                     await App.Config.CosmosDal.UpsertLoadClientAsync(g).ConfigureAwait(false);
-        //                 }
-        //                 catch (CosmosException ce)
-        //                 {
-        //                     Logger.LogError("UpsertLoadClientsAsync", ce.ActivityId, new LogEventId((int)ce.StatusCode, "CosmosException"), ex: ce);
-
-        //                     return ResultHandler.CreateResult(Logger.ErrorMessage, ce.StatusCode);
-        //                 }
-        //                 catch (Exception ex)
-        //                 {
-        //                     // log and return 500
-        //                     Logger.LogError("UpsertLoadClientsAsync", "Exception", NgsaLog.LogEvent500, ex: ex);
-        //                     return ResultHandler.CreateResult("Internal Server Error", HttpStatusCode.InternalServerError);
-        //                 }
-        //             }
-
-        //             res = Ok(g);
-        //         }
-
-        //         return res;
-        //     }
-        //     catch
-        //     {
-        //         return NotFound($"LoadClients ID Not Found: {id}");
-        //     }
-        // }
-
-        // Configure Cosmos
-
-         /// <summary>
-         /// Delete a LoadClient by id
-         /// </summary>
-         /// <param name="id">ID to delete</param>
-         /// <returns>IActionResult</returns>
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteLoadClientAsync([FromRoute] string id)
-        // {
-        //     List<Middleware.Validation.ValidationError> list = LoadClientQueryParameters.ValidateId(id);
-
-        //    // TODO: update once decide id format
-        //     if (list.Count > 0 || !id.StartsWith("zz"))
-        //     {
-        //         Logger.LogWarning(nameof(UpsertLoadClientAsync), "Invalid LoadClients Id", NgsaLog.LogEvent400, HttpContext);
-
-        //         return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
-        //     }
-
-        //     IActionResult res;
-
-        //     if (App.Config.AppType == AppType.WebAPI)
-        //     {
-        //         res = await DataService.Delete(Request).ConfigureAwait(false);
-        //     }
-        //     else
-        //     {
-        //         await App.Config.CacheDal.DeleteLoadClientAsync(id);
-        //         res = NoContent();
-
-        //         if (!App.Config.InMemory)
-        //         {
-        //             try
-        //             {
-        //                 // Delete from Cosmos
-        //                 await App.Config.CosmosDal.DeleteLoadClientAsync(id).ConfigureAwait(false);
-        //             }
-        //             catch (CosmosException ce)
-        //             {
-        //                 // log and return Cosmos status code
-        //                 if (ce.StatusCode != HttpStatusCode.NotFound)
-        //                 {
-        //                     Logger.LogError("DeleteLoadClientAsync", ce.ActivityId, new LogEventId((int)ce.StatusCode, "CosmosException"), ex: ce);
-        //                     return ResultHandler.CreateResult(Logger.ErrorMessage, ce.StatusCode);
-        //                 }
-        //             }
-        //             catch (Exception ex)
-        //             {
-        //                 // log and return 500
-        //                 Logger.LogError("DeleteLoadClientAsync", "Exception", NgsaLog.LogEvent500, ex: ex);
-        //                 return ResultHandler.CreateResult("Internal Server Error", HttpStatusCode.InternalServerError);
-        //             }
-        //         }
-        //     }
-
-        //     return res;
-        // }
      }
  }

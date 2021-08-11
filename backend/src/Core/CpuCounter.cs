@@ -14,8 +14,6 @@ namespace RelayRunner.Application
     /// </summary>
     public class CpuCounter : IDisposable
     {
-        public const string CapacityHeader = "X-Load-Feedback";
-
         private static readonly Process Proc = Process.GetCurrentProcess();
         private static long lastTicks = Environment.TickCount64;
         private static long lastCpu = Proc.TotalProcessorTime.Ticks;

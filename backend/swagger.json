@@ -23,26 +23,26 @@
                 },
                 "example": [
                   {
-                    "name": "Load-Client-ID-001",
-                    "id": "1",
+                    "partitionKey": "loadClient",
+                    "entityType": "loadClient",
                     "version": "5.0",
+                    "id": "1",
                     "region": "california",
                     "zone": "colorado",
-                    "scheduler": "nev",
-                    "currstatus": "ready",
-                    "metrics": "prometheus",
-                    "dateCreated": "2019"
+                    "prometheus": true,
+                    "startupArgs": "files",  
+                    "startTime": "2017-07-21T17:32:28Z"
                   },
                   {
-                    "name": "Load-Client-ID-002",
-                    "id": "2",
+                    "partitionKey": "loadClient",
+                    "entityType": "loadClient",
                     "version": "5.0",
+                    "id": "2",
                     "region": "california",
                     "zone": "colorado",
-                    "scheduler": "nev",
-                    "currstatus": "unresponsive",
-                    "metrics": "prometheus",
-                    "dateCreated": "2021"
+                    "prometheus": false,
+                    "startupArgs": "files",  
+                    "startTime": "2017-07-21T17:32:28Z"
                   }
                 ]
               }
@@ -53,12 +53,11 @@
     },
     "{urlPrefix}/api/loadClients/{Id}": {
       "get": {
-        "tags": [ "Load Client" ],
+        "tags": [ "LoadClient" ],
         "summary": "Get Load Client by ID",
-        "description": "Get a single `Load Client` document by Id",
+        "description": "Get a single `LoadClient` document by Id",
         "parameters": [
           {
-            "name": "Id",
             "in": "path",
             "description": "`valid: integer`<br><br>example: 3",
             "required": true,
@@ -72,7 +71,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Array of `Load Client` documents or empty array if not found",
+            "description": "Array of `LoadClient` documents or empty array if not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -83,15 +82,15 @@
                 },
                 "example": [
                   {
-                    "name": "Load-Client-ID-003",
-                    "id": "3",
+                    "partitionKey": "loadClient",
+                    "entityType": "loadClient",
                     "version": "5.0",
+                    "id": "3",
                     "region": "california",
                     "zone": "colorado",
-                    "scheduler": "nev",
-                    "currstatus": "busy",
-                    "metrics": "prometheus",
-                    "dateCreated": "2020"
+                    "prometheus": true,
+                    "startupArgs": "files",  
+                    "startTime": "2017-07-21T17:32:28Z"
                   }
                 ]
               }
@@ -172,13 +171,16 @@
       "LoadClient": {
         "type": "object",
         "properties": {
-          "name": {
+          "partitionKey": {
+            "type":  "string" 
+          } ,
+          "entityType": {
+            "type":  "string" 
+          } ,
+          "version": {
             "type": "string"
           },
           "id": {
-            "type": "string"
-          },
-          "version": {
             "type": "string"
           },
           "region": {
@@ -187,17 +189,14 @@
           "zone": {
             "type": "string"
           },
-          "scheduler": {
+          "prometheus": {
+            "type": "boolean"
+          },
+          "startArgs": {
             "type": "string"
           },
-          "currstatus": {
-            "type": "string"
-          },
-          "metrics": {
-            "type": "string"
-          },
-          "dateCreated": {
-            "type": "string"
+          "startTime": {
+            "type": "date-time"
           }
         },
         "additionalProperties": false
