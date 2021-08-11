@@ -4,7 +4,6 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
 using System.IO;
 using System.Threading;
 using Microsoft.AspNetCore;
@@ -72,11 +71,9 @@ namespace RelayRunner.Application
 
                 if (!cmd.Contains("--version") &&
                     (cmd.Contains("-h") ||
-                    cmd.Contains("--help") ||
-                    cmd.Contains("--dry-run")))
+                    cmd.Contains("--help")))
                 {
                     const string file = "ascii-art.txt";
-
                     try
                     {
                         if (File.Exists(file))
@@ -85,7 +82,7 @@ namespace RelayRunner.Application
 
                             if (!string.IsNullOrWhiteSpace(txt))
                             {
-                                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                                Console.ForegroundColor = ConsoleColor.DarkCyan;
                                 Console.WriteLine(txt);
                                 Console.ResetColor();
                             }
