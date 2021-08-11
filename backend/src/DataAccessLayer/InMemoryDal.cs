@@ -34,7 +34,8 @@ namespace RelayRunner.Application.DataAccessLayer
             };
 
             // load the data
-            LoadLoadClients(settings);
+            string loadClientsPath = "src/data/loadClients.json";
+            SetLoadClientsFromFile(settings, loadClientsPath);
         }
 
         public static List<LoadClient> LoadClients { get; set; }
@@ -91,7 +92,7 @@ namespace RelayRunner.Application.DataAccessLayer
             return Task<IEnumerable<LoadClient>>.Factory.StartNew(GetLoadClients);
         }
 
-        private static void LoadLoadClients(JsonSerializerOptions settings)
+        private static void SetLoadClientsFromFile(JsonSerializerOptions settings, string path)
         {
             if (LoadClients?.Count != null)
             {
@@ -99,7 +100,7 @@ namespace RelayRunner.Application.DataAccessLayer
             }
 
             // load the data from the json file
-            LoadClients = JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText("src/data/loadClients.json"), settings);
+            LoadClients = JsonSerializer.Deserialize<List<LoadClient>>(File.ReadAllText(path), settings);
             if (LoadClients == null)
             {
                 return;
