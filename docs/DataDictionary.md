@@ -129,7 +129,7 @@ These are used for configuring a testing scenario.  `LoadTestConfig` will contai
 
 #### 2.3.3 LoadResult
 
-**This entity is still TBD**
+This entity is still TBD
 
 | Property        |    Type        | Description             | Required  | Notes      |
 | :-------------- | :------------- | :---------------------- | :-------- | :----------|
