@@ -11,21 +11,11 @@ namespace RelayRunner.Middleware
     /// </summary>
     public static class NgsaLoggerExtensions
     {
-        public static ILoggingBuilder AddNgsaLogger(this ILoggingBuilder builder)
-        {
-            return builder.AddNgsaLogger(new NgsaLoggerConfiguration());
-        }
-
         public static ILoggingBuilder AddNgsaLogger(this ILoggingBuilder builder, Action<NgsaLoggerConfiguration> configure)
         {
             NgsaLoggerConfiguration config = new NgsaLoggerConfiguration();
             configure(config);
 
-            return builder.AddNgsaLogger(config);
-        }
-
-        public static ILoggingBuilder AddNgsaLogger(this ILoggingBuilder builder, NgsaLoggerConfiguration config)
-        {
             builder.AddProvider(new NgsaLoggerProvider(config));
             return builder;
         }

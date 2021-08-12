@@ -23,7 +23,6 @@ namespace RelayRunner.Middleware
     {
         private static Histogram requestHistogram = null;
         private static Summary requestSummary = null;
-        private static Gauge cpuGauge = null;
 
         // next action to Invoke
         private readonly RequestDelegate next;
@@ -63,15 +62,6 @@ namespace RelayRunner.Middleware
                     SuppressInitialValue = true,
                     MaxAge = TimeSpan.FromMinutes(5),
                     Objectives = new List<QuantileEpsilonPair> { new QuantileEpsilonPair(.9, .0), new QuantileEpsilonPair(.95, .0), new QuantileEpsilonPair(.99, .0), new QuantileEpsilonPair(1.0, .0) },
-                    LabelNames = new string[] { "code", "mode" },
-                });
-
-            cpuGauge = Metrics.CreateGauge(
-                "RelayRunnerCpuPercent",
-                "CPU Percent Used",
-                new GaugeConfiguration
-                {
-                    SuppressInitialValue = true,
                     LabelNames = new string[] { "code", "mode" },
                 });
         }
@@ -210,7 +200,6 @@ namespace RelayRunner.Middleware
             {
                 requestHistogram.WithLabels(GetPrometheusCode(context.Response.StatusCode), mode).Observe(duration);
                 requestSummary.WithLabels(GetPrometheusCode(context.Response.StatusCode), mode).Observe(duration);
-                cpuGauge.Set(CpuCounter.CpuPercent);
             }
         }
 

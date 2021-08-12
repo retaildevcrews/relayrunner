@@ -32,9 +32,6 @@ namespace RelayRunner.Application
         {
             NgsaLog logger = new NgsaLog { Name = typeof(App).FullName };
 
-            // start collecting CPU usage
-            CpuCounter.Start();
-
             try
             {
                 SetConfig(config);

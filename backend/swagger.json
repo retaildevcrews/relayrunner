@@ -59,7 +59,7 @@
         "parameters": [
           {
             "in": "path",
-            "description": "`valid: integer`<br><br>example: 3",
+            "description": "valid integer",
             "required": true,
             "style": "simple",
             "explode": false,
