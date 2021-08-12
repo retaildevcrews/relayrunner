@@ -33,6 +33,8 @@ This entity is the parent of several objects and defines common fields
 | :-------------- | :-------------- | :--------------------------------- | :----------|
 | PartitionKey    |     String      | Calculated value used for CosmosDB to determine how to allocate and use partitions  | Initial implementation will use `EntityType` to keep all objects of a similar type in the same partition |
 | EntityType      |     String      | Entity type used for filtering  | |
+| Id              |   String   | GUID used to retrieve the object directly | Yes | |
+| Name            |   String   | Friendly name so that users may more easily identify a given entity | No | |
 
 `Table 02: Base Definition for Data Entities`
 
@@ -52,17 +54,18 @@ This is an object that represents an instance of LodeRunner and it's initial sta
 
 ##### LoadClient
 
-| Property        |      Type       | Description                        | Notes      |
-| :-------------- | :-------------- | :--------------------------------- | :----------|
-| PartitionKey    |     String      | | In the current model this value will always be empty for LoadClient and not stored |
-| EntityType      |     String      | Entity type used for filtering  | |
-| Version         |     String      | Version of LodeRunner being used   | | 
-| Id              |     String      | Unique Id generated at start-up to differentiate clients located in the same Region and Zone | |
-| Region          |     String      | The region in which the client is deployed | |
-| Zone            |     String      | The zone in which the client is deployed | |
-| Prometheus      |     Boolean     | Indicates whether or not this instance of LodeRunner is providing Prometheus metrics | |
-| StartupArgs     |     String      | String of arguments passed to LodeRunner at start-up | |
-| StartTime       |     DateTime    | The date and time this instance was started | |
+| Property        |      Type       | Description                        | Required | Notes      |
+| :-------------- | :-------------- | :--------------------------------- | :------- | :--------- |
+| PartitionKey    |     String      |                                    |  Yes     | In the current model this value will always be empty for LoadClient and not stored |
+| EntityType      |     String      | Entity type used for filtering     |  Yes     |            |
+| Version         |     String      | Version of LodeRunner being used   |  Yes     |            |
+| Id              |     String      | Unique Id generated at start-up to differentiate clients located in the same Region and Zone | Yes | |
+| Name            |   String   | Friendly name so that users may more easily identify a given LoadClient | No | |
+| Region          |     String      | The region in which the client is deployed | Yes | |
+| Zone            |     String      | The zone in which the client is deployed | Yes | |
+| Prometheus      |     Boolean     | Indicates whether or not this instance of LodeRunner is providing Prometheus metrics | No | default is `false` |
+| StartupArgs     |     String      | String of arguments passed to LodeRunner at start-up | Yes | |
+| StartTime       |     DateTime    | The date and time this instance was started | Yes | |
 
 `Table 03: Load Client Properties`
 
@@ -72,15 +75,17 @@ This object is primarily for conveying the curent status, time of that status, a
 
 ##### ClientStatus
 
-| Property        |      Type       | Description                        | Notes      |
-| :-------------- | :-------------- | :--------------------------------- | :----------|
-| PartitionKey    |     String      | This value should be populated for `ClientStatus` objects and documents |  |
-| EntityType      |     String      | Entity type used for filtering  | [`ClientStatus`, `LoadTestConfig`, `TestRun`] |
-| LastUpdated     |     DateTime    | This shows the date and time the status was last updated | 
-| StateDuration   |     Int         | The number of seconds since the last change in state for the client | |
-| Status          |     string      | Current status of load client      | [`Starting`, `Ready`, `Testing`, `Terminating`] |
-| Message         |     string      | Additional information conveyed as part of the status update | |
-| LoadClient      |   `LoadClient`  | A nested object holding the information about the particular client in this status message | |
+| Property        |    Type    | Description                        | Required | Notes      |
+| :-------------- | :--------- | :--------------------------------- | :------- | :--------- |
+| PartitionKey    |   String   | This value should be populated for `ClientStatus` objects and documents |  Yes | |
+| EntityType      |   String   | Entity type used for filtering     |    Yes   | [`ClientStatus`, `LoadTestConfig`, `TestRun`] |
+| Id              |   String   | GUID used to retrieve the object directly | Yes | |
+| Name            |   String   | Friendly name so that users may more easily identify a given entity | No | |
+| LastUpdated     |   DateTime | This shows the date and time the status was last updated | Yes | |
+| StateDuration   |     Int    | The number of seconds since the last change in state for the client | Yes | |
+| Status          |   String   | Current status of load client      |    Yes   | [`Starting`, `Ready`, `Testing`, `Terminating`] |
+| Message         |   String   | Additional information conveyed as part of the status update | No | |
+| LoadClient      | `LoadClient` | A nested object holding the information about the particular client in this status message | Yes | |
 
 `Table 04: ClientStatus Properties`
 
@@ -94,13 +99,15 @@ These are used for configuring a testing scenario.  `LoadTestConfig` will contai
 | :-------------- | :--------- | :---------------------- | :-------- | :----------|
 | PartitionKey    |   String   | This value should be populated for `LoadTestConfig` objects and documents | Yes | |
 | EntityType      |   String   | Entity type used for filtering  | Yes | [`ClientStatus`, `LoadTestConfig`, `TestRun`] |
-| Files           |   String[]   | List of files to test | Yes | match `--files` CLI flag |
+| Id              |   String   | GUID used to retrieve the object directly. | Yes | |
+| Name            |   String   | Friendly name so that users may more easily identify configs | No | |
+| Files           |  String[]  | List of files to test   |   Yes     | match `--files` CLI flag |
 | StrictJson      |   Boolean  | Use strict json when parsing (default: `False`) | No | match to `--strict-json` CLI flag |
 | BaseURL         |   String   | Base url for files (default is empty) | No | match to `--base-url` CLI flag |
 | VerboseErrors   |   Boolean  | Displays validation error messages | No | match to `--verbose-errors` CLI flag |
 | Randomize       |   Boolean  | Requires `RunLoop` to be true.  Dictates whether to process a load file top to bottom (default: `false`) or randomly | No | match to `--random` CLI flag |
 | Timeout         |    Int     | Request timeout in seconds (default: 30) | No | match to `--timeout` CLI flag |
-| Server          |   String[]   | Server(s) to test (default is empty) | Yes | match to `--server` CLI flag |
+| Server          |  String[]  | Server(s) to test (default is empty) | Yes | match to `--server` CLI flag |
 | Tag             |   String   | Tag for log | No | match to `--tag` CLI flag |
 | Sleep           |   String   | Sleep (ms) between each request (default: 0) | No | match to `--sleep` CLI flag |
 | RunLoop         |   Boolean  | Run test in an infinite loop (default: False) | No | match to `--run-loop` CLI flag |
@@ -117,7 +124,9 @@ These are used for configuring a testing scenario.  `LoadTestConfig` will contai
 | Property        |    Type        | Description             | Required  | Notes      |
 | :-------------- | :------------- | :---------------------- | :-------- | :----------|
 | PartitionKey    |     String     | This value should be populated for `TestRun` objects and documents | Yes | |
-| EntityType      |     String     | Entity type used for filtering  | Yes | [`ClientStatus`, `LoadTestConfig`, `TestRun`] | 
+| EntityType      |     String     | Entity type used for filtering  | Yes | [`ClientStatus`, `LoadTestConfig`, `TestRun`] |
+| Id              |   String   | GUID used to retrieve the object directly. | Yes | |
+| Name            |   String   | Friendly name so that users may more easily identify TestRuns | No | |
 | LoadTestConfig  | LoadTestConfig | Contains a full copy of the `LoadTestConfig` object to use for the test run | Yes | |
 | LoadClients     | LoadClient[]   | List of available load clients to use for the test run | Yes | |
 | CreatedTime     |   DateTime     | Time the TestRun was created | Yes | |
