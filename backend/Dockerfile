@@ -1,23 +1,34 @@
-### build the backend
-FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:14
+### Build and Test the App
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 
-RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb
-RUN dpkg -i dumb-init_*.deb
+### copy the source and tests
+COPY . /src
 
-ENV NODE_ENV production
-WORKDIR /usr/src/app
+WORKDIR /src
 
-# copy app 
-COPY --chown=node:node . .
+# build the app
+RUN dotnet publish -c Release -o /app
 
-# install dependencies
-RUN npm ci --only=production
+###########################################################
 
+### Build the runtime container
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS release
+
+### if port is changed, also update value in Config
 EXPOSE 8080
+WORKDIR /app
 
-USER node 
+### create a user
+### dotnet needs a home directory
+RUN addgroup -S relayrunner && \
+    adduser -S relayrunner -G relayrunner && \
+    mkdir -p /home/relayrunner && \
+    chown -R relayrunner:relayrunner /home/relayrunner
 
-# start server
-CMD ["dumb-init", "node", "server.js"]
+### run as relayrunner user
+USER relayrunner
 
-STOPSIGNAL SIGQUIT
+### copy the app
+COPY --from=build /app .
+
+ENTRYPOINT [ "dotnet",  "aspnetapp.dll" ]
