@@ -72,7 +72,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(NgsaAppDuration_bucket[1m])) by (category)",
+          "expr": "sum(rate(RelayRunnerDuration_bucket[1m])) by (category)",
           "interval": "",
           "legendFormat": "{{category}}",
           "refId": "A"
@@ -190,7 +190,7 @@
       "pluginVersion": "7.5.6",
       "targets": [
         {
-          "expr": "sum(rate(NgsaAppDuration_count{mode != \"Metrics\"}[1m]))",
+          "expr": "sum(rate(RelayRunnerDuration_count{mode != \"Metrics\"}[1m]))",
           "instant": false,
           "interval": "",
           "legendFormat": "",
@@ -199,7 +199,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "ngsa.app",
+      "title": "relayrunner",
       "type": "stat"
     },
     {
@@ -317,7 +317,7 @@
       "reverseYBuckets": false,
       "targets": [
         {
-          "expr": "sum(increase(NgsaAppDuration_bucket[1m])) by (le)",
+          "expr": "sum(increase(RelayRunnerDuration_bucket[1m])) by (le)",
           "format": "heatmap",
           "instant": false,
           "interval": "5m",
@@ -406,7 +406,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(rate(NgsaAppDuration_bucket{code != \"OK\"}[1m])) by (category)",
+          "expr": "sum(rate(RelayRunnerDuration_bucket{code != \"OK\"}[1m])) by (category)",
           "interval": "",
           "legendFormat": "{{category}}",
           "refId": "A"
@@ -480,7 +480,7 @@
     ]
   },
   "timezone": "",
-  "title": "ngsa",
-  "uid": "ngsa",
+  "title": "relayrunner",
+  "uid": "relayrunner",
   "version": 2
 }
