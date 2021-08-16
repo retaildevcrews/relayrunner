@@ -2,12 +2,14 @@ name: Build RelayRunner-PR
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, reopened, synchronize, closed]
 
     paths:
       - 'Dockerfile'
       - '**.js'
       - '**.css'
+      - '*.csproj'
+      - '**.cs'
       - '.github/workflows/relayrunner-pr.yml'
 
 jobs:
