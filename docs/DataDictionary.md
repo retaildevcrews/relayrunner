@@ -80,9 +80,8 @@ This object is primarily for conveying the curent status, time of that status, a
 | PartitionKey    |   String   | This value should be populated for `ClientStatus` objects and documents |  Yes | |
 | EntityType      |   String   | Entity type used for filtering     |    Yes   | [`ClientStatus`, `LoadTestConfig`, `TestRun`] |
 | Id              |   String   | GUID used to retrieve the object directly | Yes | |
-| Name            |   String   | Friendly name so that users may more easily identify a given entity | No | |
 | LastUpdated     |   DateTime | This shows the date and time the status was last updated | Yes | |
-| StateDuration   |     Int    | The number of seconds since the last change in state for the client | Yes | |
+| StatusDuration   |     Int    | The number of seconds since the last change in status for the client | Yes | |
 | Status          |   String   | Current status of load client      |    Yes   | [`Starting`, `Ready`, `Testing`, `Terminating`] |
 | Message         |   String   | Additional information conveyed as part of the status update | No | |
 | LoadClient      | `LoadClient` | A nested object holding the information about the particular client in this status message | Yes | |
