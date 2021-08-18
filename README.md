@@ -116,7 +116,7 @@ Conveys the current status, time of that status, and the associated LoadClient's
 
 - The TTL is set to 300 seconds
 
-```json
+```javascript
 {
     "id": "5",
     "partitionKey": "ClientStatus",
