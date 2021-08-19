@@ -32,7 +32,7 @@ else
     az cosmosdb sql database create -a $RR_COSMOS_ACCOUNT -n $RR_COSMOS_DB -g $RR_RG --subscription $RR_SUBSCRIPTION
     # Create CosmosDB container
     echo "Creating CosmosDB container, ${RR_COSMOS_COL}..."
-    az cosmosdb sql container create -a $RR_COSMOS_ACCOUNT -d $RR_COSMOS_DB -n $RR_COSMOS_COL -p "/partitionKey" -g $RR_RG --max-throughput 4000 --subscription $RR_SUBSCRIPTION --ttl 300
+    az cosmosdb sql container create -a $RR_COSMOS_ACCOUNT -d $RR_COSMOS_DB -n $RR_COSMOS_COL -p "/partitionKey" -g $RR_RG --max-throughput 4000 --subscription $RR_SUBSCRIPTION --ttl -1
     # Get document endpoint
     RR_COSMOS_ENDPOINT=$(az cosmosdb show -n $RR_COSMOS_ACCOUNT -g $RR_RG --subscription $RR_SUBSCRIPTION --query "documentEndpoint")
 

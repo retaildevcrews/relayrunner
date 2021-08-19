@@ -114,7 +114,8 @@ Run tests on Client components and functions using `npm test`
 
 Conveys the current status, time of that status, and the associated LoadClient's initial start-up configuration.
 
-- The TTL is set to 300 seconds
+- TTL for container is set to no default (-1)
+- TTL for clientStatus items is set to 60 seconds
 
 ```javascript
 {
