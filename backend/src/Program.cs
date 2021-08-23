@@ -41,25 +41,14 @@ namespace RelayRunner.Application
         // load secrets from volume
         private static void LoadSecrets()
         {
-            // TODO: Remove when CosmosDB is setup
-            Config.Secrets = new Secrets
+            Config.Secrets = Secrets.GetSecretsFromVolume(Config.SecretsVolume);
+            // set the Cosmos server name for logging
+            Config.CosmosName = Config.Secrets.CosmosServer.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase).Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase);
+            int ndx = Config.CosmosName.IndexOf('.', StringComparison.OrdinalIgnoreCase);
+            if (ndx > 0)
             {
-                CosmosCollection = "loadClients",
-                CosmosDatabase = "relayRunner",
-                CosmosKey = "in-memory",
-                CosmosServer = "in-memory",
-            };
-            Config.CosmosName = "in-memory";
-
-            // TODO: Enable when CosmosDB is setup
-            // Config.Secrets = Secrets.GetSecretsFromVolume(Config.SecretsVolume);
-            // // set the Cosmos server name for logging
-            // Config.CosmosName = Config.Secrets.CosmosServer.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase).Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase);
-            // int ndx = Config.CosmosName.IndexOf('.', StringComparison.OrdinalIgnoreCase);
-            // if (ndx > 0)
-            // {
-            //     Config.CosmosName = Config.CosmosName.Remove(ndx);
-            // }
+                Config.CosmosName = Config.CosmosName.Remove(ndx);
+            }
         }
 
         // display Ascii Art

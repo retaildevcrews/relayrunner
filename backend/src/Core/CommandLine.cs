@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -161,30 +162,29 @@ namespace RelayRunner.Application
                     }
                 }
 
-                // TODO: Enable once CosmosDB is setup
                 // validate secrets volume
-                // if (appType == AppType.App)
-                // {
-                //     if (string.IsNullOrWhiteSpace(secrets))
-                //     {
-                //         msg += "--secrets-volume cannot be empty\n";
-                //     }
-                //     else
-                //     {
-                //         try
-                //         {
-                //             // validate secrets-volume exists
-                //             if (!Directory.Exists(secrets))
-                //             {
-                //                 msg += $"--secrets-volume ({secrets}) does not exist\n";
-                //             }
-                //         }
-                //         catch (Exception ex)
-                //         {
-                //             msg += $"--secrets-volume exception: {ex.Message}\n";
-                //         }
-                //     }
-                // }
+                if (appType == AppType.App)
+                {
+                    if (string.IsNullOrWhiteSpace(secrets))
+                    {
+                        msg += "--secrets-volume cannot be empty\n";
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // validate secrets-volume exists
+                            if (!Directory.Exists(secrets))
+                            {
+                                msg += $"--secrets-volume ({secrets}) does not exist\n";
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            msg += $"--secrets-volume exception: {ex.Message}\n";
+                        }
+                    }
+                }
             }
             catch
             {
@@ -346,14 +346,8 @@ namespace RelayRunner.Application
             {
                 LoadSecrets();
 
-                // TODO: Delete when CosmosDB is enabled
-                Config.CacheDal = new DataAccessLayer.InMemoryDal();
-
                 // create the cosmos data access layer
-                // TODO: Remove when in-memory is no longer required for setup/pre-CosmosDB
-                Config.CosmosDal = Config.CacheDal;
-                // TODO: Enable when CosmosDB is setup
-                // Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
+                Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
             }
 
             SetLoggerConfig();

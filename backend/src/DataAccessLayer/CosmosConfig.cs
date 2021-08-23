@@ -15,7 +15,9 @@ namespace RelayRunner.Application.DataAccessLayer
         private CosmosClientOptions cosmosClientOptions;
 
         public CosmosClient Client { get; set; }
-        public Container Container { get; set; }
+        public Container SourceContainer { get; set; }
+        public Container LeaseContainer { get; set; }
+        public ChangeFeedProcessor ChangeFeedProcessor { get; set; }
 
         // default values for Cosmos Options
         public int Timeout { get; set; } = 30;
@@ -26,6 +28,7 @@ namespace RelayRunner.Application.DataAccessLayer
         public string CosmosKey { get; set; }
         public string CosmosDatabase { get; set; }
         public string CosmosCollection { get; set; }
+        public string CosmosLease { get; set; }
 
 
         // default protocol is tcp, default connection mode is direct

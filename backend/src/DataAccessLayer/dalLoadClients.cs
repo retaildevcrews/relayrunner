@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using RelayRunner.Model;
@@ -36,7 +35,7 @@ namespace RelayRunner.Application.DataAccessLayer
             // ComputePartitionKey will throw an ArgumentException if the loadClientId isn't valid
             // get a load client by ID
 
-            LoadClient g = await cosmosDetails.Container
+            LoadClient g = await cosmosDetails.SourceContainer
                 .ReadItemAsync<LoadClient>(loadClientId, new PartitionKey(LoadClient.ComputePartitionKey(loadClientId)))
                 .ConfigureAwait(false);
 
@@ -49,7 +48,7 @@ namespace RelayRunner.Application.DataAccessLayer
             QueryDefinition sql = new QueryDefinition("select * from loadClients");
 
             // run query
-            FeedIterator<LoadClient> query = cosmosDetails.Container.GetItemQueryIterator<LoadClient>(sql);
+            FeedIterator<LoadClient> query = cosmosDetails.SourceContainer.GetItemQueryIterator<LoadClient>(sql);
 
             // return results
             return await InternalCosmosDbResults(query).ConfigureAwait(false);

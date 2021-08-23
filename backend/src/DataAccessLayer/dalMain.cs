@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.Caching;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using RelayRunner.Model;
@@ -35,6 +35,7 @@ namespace RelayRunner.Application.DataAccessLayer
             cosmosDetails = new CosmosConfig
             {
                 CosmosCollection = secrets.CosmosCollection,
+                CosmosLease = secrets.CosmosLease,
                 CosmosDatabase = secrets.CosmosDatabase,
                 CosmosKey = secrets.CosmosKey,
                 CosmosUrl = secrets.CosmosServer,
@@ -42,9 +43,45 @@ namespace RelayRunner.Application.DataAccessLayer
                 Timeout = config.Timeout,
             };
 
-            // create the CosmosDB client and container
-            cosmosDetails.Client = OpenAndTestCosmosClient(secrets.CosmosServer, secrets.CosmosKey, secrets.CosmosDatabase, secrets.CosmosCollection).GetAwaiter().GetResult();
-            cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
+            // create the CosmosDB client and source container
+            cosmosDetails.Client = new CosmosClient(secrets.CosmosServer, secrets.CosmosKey, cosmosDetails.CosmosClientOptions);
+            cosmosDetails.SourceContainer = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
+            cosmosDetails.LeaseContainer = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosLease);
+            cosmosDetails.ChangeFeedProcessor = StartChangeFeedProcessorAsync(cosmosDetails).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Start the Change Feed Processor to listen for changes and process them with the HandleChangesAsync implementation
+        /// </summary>
+        /// <param name="cosmosDetails">Cosmos details</param>
+        /// <returns>ChangeFeedProcessor</returns>
+        private static async Task<ChangeFeedProcessor> StartChangeFeedProcessorAsync(CosmosConfig cosmosDetails)
+        {
+            ChangeFeedProcessor changeFeedProcessor = cosmosDetails.SourceContainer
+                .GetChangeFeedProcessorBuilder<ClientStatus>(processorName: "clientStatusProcessor", onChangesDelegate: HandleChangesAsync)
+                .WithInstanceName("clientStatusProcessorInstance")
+                .WithLeaseContainer(cosmosDetails.LeaseContainer)
+                .Build();
+
+            Console.WriteLine("Starting Change Feed Processor...");
+            await changeFeedProcessor.StartAsync();
+            Console.WriteLine("Change Feed Processor started.");
+            return changeFeedProcessor;
+        }
+
+        /// <summary>
+        /// The delegate receives batches of changes as they are generated in the change feed and can process them
+        /// </summary>
+        private static async Task HandleChangesAsync(IReadOnlyCollection<ClientStatus> changes, CancellationToken cancellationToken)
+        {
+            Console.WriteLine("Started handling changes...");
+            foreach (ClientStatus item in changes)
+            {
+                Console.WriteLine($"Detected operation for item with id {item.Id}, last updated at {item.LastUpdated}.");
+                await Task.Delay(10);
+            }
+
+            Console.WriteLine("Finished handling changes.");
         }
 
         /// <summary>
@@ -66,45 +103,6 @@ namespace RelayRunner.Application.DataAccessLayer
             }
 
             return results;
-        }
-
-        /// <summary>
-        /// Open and test the Cosmos Client / Container / Query
-        /// </summary>
-        /// <param name="cosmosServer">Cosmos URL</param>
-        /// <param name="cosmosKey">Cosmos Key</param>
-        /// <param name="cosmosDatabase">Cosmos Database</param>
-        /// <param name="cosmosCollection">Cosmos Collection</param>
-        /// <returns>An open and validated CosmosClient</returns>
-        private async Task<CosmosClient> OpenAndTestCosmosClient(string cosmosServer, string cosmosKey, string cosmosDatabase, string cosmosCollection)
-        {
-            // validate required parameters
-            if (cosmosServer == null)
-            {
-                throw new ArgumentNullException(nameof(cosmosServer));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosKey))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosKey not set correctly {cosmosKey}"));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosDatabase))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosDatabase not set correctly {cosmosDatabase}"));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosCollection))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosCollection not set correctly {cosmosCollection}"));
-            }
-
-            // open and test a new client / container
-            CosmosClient c = new CosmosClient(cosmosServer, cosmosKey, cosmosDetails.CosmosClientOptions);
-            Container con = c.GetContainer(cosmosDatabase, cosmosCollection);
-            await con.ReadItemAsync<dynamic>("action", new PartitionKey("0")).ConfigureAwait(false);
-
-            return c;
         }
 
         // implement IDisposable

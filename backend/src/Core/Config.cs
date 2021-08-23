@@ -28,7 +28,6 @@ namespace RelayRunner.Application
         public int Retries { get; set; } = 10;
         public int Timeout { get; set; } = 10;
         public LogLevel RequestLogLevel { get; set; } = LogLevel.Information;
-        public InMemoryDal CacheDal { get; set; }
         public IDAL CosmosDal { get; set; }
         public string UrlPrefix { get; set; }
 
@@ -44,7 +43,6 @@ namespace RelayRunner.Application
             Port = config.Port;
             Retries = config.Retries;
             Timeout = config.Timeout;
-            CacheDal = config.CacheDal;
             CosmosDal = config.CosmosDal;
             UrlPrefix = string.IsNullOrWhiteSpace(config.UrlPrefix) ? string.Empty : config.UrlPrefix;
 
