@@ -63,7 +63,7 @@ jobs:
             # wait up to 30 seconds for web server to start
             while true
             do
-                if curl localhost:80 ; then
+                if curl localhost:8080 ; then
                     echo -e "\n web server is running"
                     break
                 fi
