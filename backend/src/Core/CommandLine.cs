@@ -150,7 +150,6 @@ namespace RelayRunner.Application
                     }
                 }
 
-
                 if (string.IsNullOrWhiteSpace(secrets))
                 {
                     msg += "--secrets-volume cannot be empty\n";

@@ -16,7 +16,6 @@ namespace RelayRunner.Application
         public string CosmosKey { get; set; }
         public string CosmosDatabase { get; set; }
         public string CosmosCollection { get; set; }
-        public string CosmosLease { get; set; }
 
         /// <summary>
         /// Get the secrets from the k8s volume
@@ -41,7 +40,6 @@ namespace RelayRunner.Application
             {
                 Volume = volume,
                 CosmosCollection = GetSecretFromFile(volume, "CosmosCollection"),
-                CosmosLease = GetSecretFromFile(volume, "CosmosLease"),
                 CosmosDatabase = GetSecretFromFile(volume, "CosmosDatabase"),
                 CosmosKey = GetSecretFromFile(volume, "CosmosKey"),
                 CosmosServer = GetSecretFromFile(volume, "CosmosUrl"),
@@ -63,11 +61,6 @@ namespace RelayRunner.Application
             if (string.IsNullOrWhiteSpace(sec.CosmosCollection))
             {
                 throw new Exception($"CosmosCollection cannot be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(sec.CosmosLease))
-            {
-                throw new Exception($"CosmosLease cannot be empty");
             }
 
             if (string.IsNullOrWhiteSpace(sec.CosmosDatabase))
