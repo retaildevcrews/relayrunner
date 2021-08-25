@@ -6,21 +6,19 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents.ChangeFeedProcessor;
 using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
 using ChangeFeedProcessorBuilder = Microsoft.Azure.Documents.ChangeFeedProcessor.ChangeFeedProcessorBuilder;
-using IChangeFeedObserver = Microsoft.Azure.Documents.ChangeFeedProcessor.FeedProcessing.IChangeFeedObserver;
 
 namespace RelayRunner.Application.ChangeFeed
 {
     public class Processor
     {
-        public static async Task<IChangeFeedProcessor> RunAsync(string hostName, DocumentCollectionInfo feedCollectionInfo, DocumentCollectionInfo leaseCollectionInfo, IChangeFeedObserver observer)
+        public static async Task<IChangeFeedProcessor> RunAsync(string hostName, DocumentCollectionInfo feedCollectionInfo, DocumentCollectionInfo leaseCollectionInfo)
         {
-            ObserverFactory observerFactory = new ObserverFactory(observer);
             var builder = new ChangeFeedProcessorBuilder();
             var processor = await builder
                 .WithHostName(hostName)
                 .WithFeedCollection(feedCollectionInfo)
                 .WithLeaseCollection(leaseCollectionInfo)
-                .WithObserverFactory(observerFactory)
+                .WithObserver<CustomObserver>() // TODO: way to pass in app based, CustomObserver?
                 .BuildAsync();
 
             Console.WriteLine("Starting Change Feed Processor....");

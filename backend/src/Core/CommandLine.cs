@@ -73,8 +73,7 @@ namespace RelayRunner.Application
                     MasterKey = Config.Secrets.CosmosKey,
                 };
 
-                CustomObserver observer = new ();
-                IChangeFeedProcessor processor = await Processor.RunAsync($"Host - {Guid.NewGuid()}", feedCollectionInfo, leaseCollectionInfo, observer);
+                IChangeFeedProcessor processor = await Processor.RunAsync($"Host - {Guid.NewGuid()}", feedCollectionInfo, leaseCollectionInfo);
 
                 // this doesn't return except on ctl-c or sigterm
                 await w.ConfigureAwait(false);
