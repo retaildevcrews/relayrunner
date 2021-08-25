@@ -13,7 +13,7 @@ Below are the primary types of data for the RelayRunner API (RRAPI).  Those are 
 | Type Name       |  Description    |  Notes                             |     RRAPI  | LodeRunner |
 | :-------------- | :-------------- | :--------------------------------- | :----------| :----------|
 | BaseEntity      | Used as the parent for the data classes  | | xxxx | xxxx |
-| ClientStatus    | This object is used to convey the state of any given LodeRunner client that is configured to use the same data store. | Status documents will be placed in the dabase by LodeRunner and read by RRAPI.  A TTL of **1 minute will** be given to the records so that if the client doesn't regulary update status will not be visible to the RRAPI or the RelayRunner UI (RRUI). | xRxx | CRUD |
+| ClientStatus    | This object is used to convey the state of any given LodeRunner client that is configured to use the same data store. | Status documents will be placed in the dabase by LodeRunner and read by RRAPI.  A TTL of **60 seconds will** be given to the records so that if the client doesn't regulary update status will not be visible to the RRAPI or the RelayRunner UI (RRUI). | xRxx | CRUD |
 | LoadClient      | Information about the LodeRunner instance | | xRxx | CRUD |
 | LoadTestConfig  | Used to define the test execution context for the LodeRunner clients. | | CRUD | xRUx |
 | TestRun         | This is the point in time copy of a load test that serves as a historical record.  It will contain a LoadResults object and have a reference to it's original LoadTest. | | CRUD | xRUx |

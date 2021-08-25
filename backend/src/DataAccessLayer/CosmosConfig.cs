@@ -27,7 +27,6 @@ namespace RelayRunner.Application.DataAccessLayer
         public string CosmosDatabase { get; set; }
         public string CosmosCollection { get; set; }
 
-
         // default protocol is tcp, default connection mode is direct
         public CosmosClientOptions CosmosClientOptions
         {

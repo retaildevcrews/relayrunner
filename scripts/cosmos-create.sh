@@ -13,6 +13,7 @@ else
     # Set CosmosDB values
     RR_COSMOS_ACCOUNT="${RR_NAME}-cosmos"
     RR_COSMOS_DB="relayRunner"
+    RR_COSMOS_LEASE="clientStatusLease"
     RR_COSMOS_COL="clientStatus"
 
     # Check if CosmosDB account name already exists
@@ -30,9 +31,12 @@ else
     # Create CosmosDB database
     echo "Creating CosmosDB database, ${RR_COSMOS_DB}..."
     az cosmosdb sql database create -a $RR_COSMOS_ACCOUNT -n $RR_COSMOS_DB -g $RR_RG --subscription $RR_SUBSCRIPTION
+    # Create lease container for change feed processor
+    echo "Creating lease container for change feed processor, ${RR_COSMOS_LEASE}..."
+    az cosmosdb sql container create -a $RR_COSMOS_ACCOUNT -d $RR_COSMOS_DB -n $RR_COSMOS_LEASE -p "/id" -g $RR_RG --subscription $RR_SUBSCRIPTION
     # Create CosmosDB container
     echo "Creating CosmosDB container, ${RR_COSMOS_COL}..."
-    az cosmosdb sql container create -a $RR_COSMOS_ACCOUNT -d $RR_COSMOS_DB -n $RR_COSMOS_COL -p "/partitionKey" -g $RR_RG --max-throughput 4000 --subscription $RR_SUBSCRIPTION --ttl 300
+    az cosmosdb sql container create -a $RR_COSMOS_ACCOUNT -d $RR_COSMOS_DB -n $RR_COSMOS_COL -p "/partitionKey" -g $RR_RG --max-throughput 4000 --subscription $RR_SUBSCRIPTION --ttl -1
     # Get document endpoint
     RR_COSMOS_ENDPOINT=$(az cosmosdb show -n $RR_COSMOS_ACCOUNT -g $RR_RG --subscription $RR_SUBSCRIPTION --query "documentEndpoint")
 

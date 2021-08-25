@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
 using RelayRunner.Model;
@@ -46,7 +45,7 @@ namespace RelayRunner.Application.DataAccessLayer
         public async Task<IEnumerable<LoadClient>> GetLoadClientsAsync()
         {
             // create query
-            QueryDefinition sql = new QueryDefinition("select * from loadClients");
+            QueryDefinition sql = new ("select * from loadClients");
 
             // run query
             FeedIterator<LoadClient> query = cosmosDetails.Container.GetItemQueryIterator<LoadClient>(sql);

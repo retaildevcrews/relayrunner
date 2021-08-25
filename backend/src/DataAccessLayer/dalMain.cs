@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
-using RelayRunner.Model;
 
 namespace RelayRunner.Application.DataAccessLayer
 {
@@ -16,7 +14,7 @@ namespace RelayRunner.Application.DataAccessLayer
     /// </summary>
     public partial class CosmosDal : IDAL, IDisposable
     {
-        private readonly MemoryCache cache = new MemoryCache("cache");
+        private readonly MemoryCache cache = new ("cache");
         private readonly CosmosConfig cosmosDetails;
         private bool disposedValue;
 
@@ -42,8 +40,8 @@ namespace RelayRunner.Application.DataAccessLayer
                 Timeout = config.Timeout,
             };
 
-            // create the CosmosDB client and container
-            cosmosDetails.Client = OpenAndTestCosmosClient(secrets.CosmosServer, secrets.CosmosKey, secrets.CosmosDatabase, secrets.CosmosCollection).GetAwaiter().GetResult();
+            // create the CosmosDB client and source container
+            cosmosDetails.Client = new CosmosClient(secrets.CosmosServer, secrets.CosmosKey, cosmosDetails.CosmosClientOptions);
             cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
         }
 
@@ -55,7 +53,7 @@ namespace RelayRunner.Application.DataAccessLayer
         /// <returns>IEnumerable T</returns>
         private static async Task<IEnumerable<T>> InternalCosmosDbResults<T>(FeedIterator<T> query)
         {
-            List<T> results = new List<T>();
+            List<T> results = new ();
 
             while (query.HasMoreResults)
             {
@@ -66,45 +64,6 @@ namespace RelayRunner.Application.DataAccessLayer
             }
 
             return results;
-        }
-
-        /// <summary>
-        /// Open and test the Cosmos Client / Container / Query
-        /// </summary>
-        /// <param name="cosmosServer">Cosmos URL</param>
-        /// <param name="cosmosKey">Cosmos Key</param>
-        /// <param name="cosmosDatabase">Cosmos Database</param>
-        /// <param name="cosmosCollection">Cosmos Collection</param>
-        /// <returns>An open and validated CosmosClient</returns>
-        private async Task<CosmosClient> OpenAndTestCosmosClient(string cosmosServer, string cosmosKey, string cosmosDatabase, string cosmosCollection)
-        {
-            // validate required parameters
-            if (cosmosServer == null)
-            {
-                throw new ArgumentNullException(nameof(cosmosServer));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosKey))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosKey not set correctly {cosmosKey}"));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosDatabase))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosDatabase not set correctly {cosmosDatabase}"));
-            }
-
-            if (string.IsNullOrWhiteSpace(cosmosCollection))
-            {
-                throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, $"CosmosCollection not set correctly {cosmosCollection}"));
-            }
-
-            // open and test a new client / container
-            CosmosClient c = new CosmosClient(cosmosServer, cosmosKey, cosmosDetails.CosmosClientOptions);
-            Container con = c.GetContainer(cosmosDatabase, cosmosCollection);
-            await con.ReadItemAsync<dynamic>("action", new PartitionKey("0")).ConfigureAwait(false);
-
-            return c;
         }
 
         // implement IDisposable

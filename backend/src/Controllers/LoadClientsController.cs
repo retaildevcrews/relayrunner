@@ -44,15 +44,7 @@ namespace RelayRunner.Application.Controllers
         {
             IActionResult res;
 
-            if (App.Config.AppType == AppType.WebAPI)
-            {
-                res = await DataService.Read<List<LoadClient>>(Request).ConfigureAwait(false);
-            }
-            else
-            {
-                // get the result
-                res = await ResultHandler.Handle(dal.GetLoadClientsAsync(), Logger).ConfigureAwait(false);
-            }
+            res = await ResultHandler.Handle(dal.GetLoadClientsAsync(), Logger).ConfigureAwait(false);
 
             return res;
         }
@@ -81,14 +73,7 @@ namespace RelayRunner.Application.Controllers
 
              IActionResult res;
 
-             if (App.Config.AppType == AppType.WebAPI)
-             {
-                 res = await DataService.Read<LoadClient>(Request).ConfigureAwait(false);
-             }
-             else
-             {
-                 res = await ResultHandler.Handle(dal.GetLoadClientByIdAsync(loadClientId), Logger).ConfigureAwait(false);
-             }
+             res = await ResultHandler.Handle(dal.GetLoadClientByIdAsync(loadClientId), Logger).ConfigureAwait(false);
 
              return res;
          }

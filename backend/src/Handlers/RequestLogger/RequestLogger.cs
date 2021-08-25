@@ -66,7 +66,6 @@ namespace RelayRunner.Middleware
                 });
         }
 
-        public static string DataService { get; set; } = string.Empty;
         public static string CosmosName { get; set; } = string.Empty;
         public static string CosmosQueryId { get; set; } = string.Empty;
         public static double CosmosRUs { get; set; } = 0;
@@ -185,11 +184,6 @@ namespace RelayRunner.Middleware
                 if (CosmosRUs > 0)
                 {
                     log.Add("CosmosRUs", CosmosRUs);
-                }
-
-                if (!string.IsNullOrWhiteSpace(DataService))
-                {
-                    log.Add("DataService", DataService);
                 }
 
                 // write the results to the console
