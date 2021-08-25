@@ -35,7 +35,7 @@ namespace RelayRunner.Application.DataAccessLayer
             // ComputePartitionKey will throw an ArgumentException if the loadClientId isn't valid
             // get a load client by ID
 
-            LoadClient g = await cosmosDetails.SourceContainer
+            LoadClient g = await cosmosDetails.Container
                 .ReadItemAsync<LoadClient>(loadClientId, new PartitionKey(LoadClient.ComputePartitionKey(loadClientId)))
                 .ConfigureAwait(false);
 
@@ -45,10 +45,10 @@ namespace RelayRunner.Application.DataAccessLayer
         public async Task<IEnumerable<LoadClient>> GetLoadClientsAsync()
         {
             // create query
-            QueryDefinition sql = new QueryDefinition("select * from loadClients");
+            QueryDefinition sql = new ("select * from loadClients");
 
             // run query
-            FeedIterator<LoadClient> query = cosmosDetails.SourceContainer.GetItemQueryIterator<LoadClient>(sql);
+            FeedIterator<LoadClient> query = cosmosDetails.Container.GetItemQueryIterator<LoadClient>(sql);
 
             // return results
             return await InternalCosmosDbResults(query).ConfigureAwait(false);

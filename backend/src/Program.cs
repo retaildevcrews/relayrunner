@@ -42,6 +42,7 @@ namespace RelayRunner.Application
         private static void LoadSecrets()
         {
             Config.Secrets = Secrets.GetSecretsFromVolume(Config.SecretsVolume);
+
             // set the Cosmos server name for logging
             Config.CosmosName = Config.Secrets.CosmosServer.Replace("https://", string.Empty, StringComparison.OrdinalIgnoreCase).Replace("http://", string.Empty, StringComparison.OrdinalIgnoreCase);
             int ndx = Config.CosmosName.IndexOf('.', StringComparison.OrdinalIgnoreCase);
@@ -56,7 +57,7 @@ namespace RelayRunner.Application
         {
             if (args != null)
             {
-                ReadOnlySpan<string> cmd = new ReadOnlySpan<string>(args);
+                ReadOnlySpan<string> cmd = new (args);
 
                 if (!cmd.Contains("--version") &&
                     (cmd.Contains("-h") ||
@@ -88,7 +89,7 @@ namespace RelayRunner.Application
         // Create a CancellationTokenSource that cancels on ctl-c or sigterm
         private static CancellationTokenSource SetupSigTermHandler(IWebHost host, NgsaLog logger)
         {
-            CancellationTokenSource ctCancel = new CancellationTokenSource();
+            CancellationTokenSource ctCancel = new ();
 
             Console.CancelKeyPress += async (sender, e) =>
             {

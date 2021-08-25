@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Caching;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
-using RelayRunner.Model;
 
 namespace RelayRunner.Application.DataAccessLayer
 {
@@ -16,7 +14,7 @@ namespace RelayRunner.Application.DataAccessLayer
     /// </summary>
     public partial class CosmosDal : IDAL, IDisposable
     {
-        private readonly MemoryCache cache = new MemoryCache("cache");
+        private readonly MemoryCache cache = new ("cache");
         private readonly CosmosConfig cosmosDetails;
         private bool disposedValue;
 
@@ -35,7 +33,6 @@ namespace RelayRunner.Application.DataAccessLayer
             cosmosDetails = new CosmosConfig
             {
                 CosmosCollection = secrets.CosmosCollection,
-                CosmosLease = secrets.CosmosLease,
                 CosmosDatabase = secrets.CosmosDatabase,
                 CosmosKey = secrets.CosmosKey,
                 CosmosUrl = secrets.CosmosServer,
@@ -45,43 +42,7 @@ namespace RelayRunner.Application.DataAccessLayer
 
             // create the CosmosDB client and source container
             cosmosDetails.Client = new CosmosClient(secrets.CosmosServer, secrets.CosmosKey, cosmosDetails.CosmosClientOptions);
-            cosmosDetails.SourceContainer = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
-            cosmosDetails.LeaseContainer = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosLease);
-            cosmosDetails.ChangeFeedProcessor = StartChangeFeedProcessorAsync(cosmosDetails).GetAwaiter().GetResult();
-        }
-
-        /// <summary>
-        /// Start the Change Feed Processor to listen for changes and process them with the HandleChangesAsync implementation
-        /// </summary>
-        /// <param name="cosmosDetails">Cosmos details</param>
-        /// <returns>ChangeFeedProcessor</returns>
-        private static async Task<ChangeFeedProcessor> StartChangeFeedProcessorAsync(CosmosConfig cosmosDetails)
-        {
-            ChangeFeedProcessor changeFeedProcessor = cosmosDetails.SourceContainer
-                .GetChangeFeedProcessorBuilder<ClientStatus>(processorName: "clientStatusProcessor", onChangesDelegate: HandleChangesAsync)
-                .WithInstanceName("clientStatusProcessorInstance")
-                .WithLeaseContainer(cosmosDetails.LeaseContainer)
-                .Build();
-
-            Console.WriteLine("Starting Change Feed Processor...");
-            await changeFeedProcessor.StartAsync();
-            Console.WriteLine("Change Feed Processor started.");
-            return changeFeedProcessor;
-        }
-
-        /// <summary>
-        /// The delegate receives batches of changes as they are generated in the change feed and can process them
-        /// </summary>
-        private static async Task HandleChangesAsync(IReadOnlyCollection<ClientStatus> changes, CancellationToken cancellationToken)
-        {
-            Console.WriteLine("Started handling changes...");
-            foreach (ClientStatus item in changes)
-            {
-                Console.WriteLine($"Detected operation for item with id {item.Id}, last updated at {item.LastUpdated}.");
-                await Task.Delay(10);
-            }
-
-            Console.WriteLine("Finished handling changes.");
+            cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
         }
 
         /// <summary>
@@ -92,7 +53,7 @@ namespace RelayRunner.Application.DataAccessLayer
         /// <returns>IEnumerable T</returns>
         private static async Task<IEnumerable<T>> InternalCosmosDbResults<T>(FeedIterator<T> query)
         {
-            List<T> results = new List<T>();
+            List<T> results = new ();
 
             while (query.HasMoreResults)
             {

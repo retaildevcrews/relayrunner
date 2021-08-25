@@ -10,7 +10,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Documents.ChangeFeedProcessor;
+using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
 using Microsoft.Extensions.Logging;
+using RelayRunner.Application.ChangeFeed;
 using RelayRunner.Middleware;
 
 namespace RelayRunner.Application
@@ -21,7 +24,7 @@ namespace RelayRunner.Application
     public sealed partial class App
     {
         // capture parse errors from env vars
-        private static readonly List<string> EnvVarErrors = new List<string>();
+        private static readonly List<string> EnvVarErrors = new ();
 
         /// <summary>
         /// Run the app
@@ -30,7 +33,7 @@ namespace RelayRunner.Application
         /// <returns>status</returns>
         public static async Task<int> RunApp(Config config)
         {
-            NgsaLog logger = new NgsaLog { Name = typeof(App).FullName };
+            NgsaLog logger = new () { Name = typeof(App).FullName };
 
             try
             {
@@ -53,6 +56,25 @@ namespace RelayRunner.Application
                 // start the webserver
                 Task w = host.RunAsync();
 
+                DocumentCollectionInfo feedCollectionInfo = new ()
+                {
+                    DatabaseName = Config.Secrets.CosmosDatabase,
+                    CollectionName = Config.Secrets.CosmosCollection,
+                    Uri = new Uri(Config.Secrets.CosmosServer),
+                    MasterKey = Config.Secrets.CosmosKey,
+                };
+
+                DocumentCollectionInfo leaseCollectionInfo = new ()
+                {
+                    DatabaseName = Config.Secrets.CosmosDatabase,
+                    CollectionName = Config.Secrets.CosmosLease,
+                    Uri = new Uri(Config.Secrets.CosmosServer),
+                    MasterKey = Config.Secrets.CosmosKey,
+                };
+
+                CustomObserver observer = new ();
+                IChangeFeedProcessor processor = await Processor.RunAsync($"Host - {Guid.NewGuid()}", feedCollectionInfo, leaseCollectionInfo, observer);
+
                 // this doesn't return except on ctl-c or sigterm
                 await w.ConfigureAwait(false);
 
@@ -74,7 +96,7 @@ namespace RelayRunner.Application
         /// <returns>RootCommand</returns>
         public static RootCommand BuildRootCommand()
         {
-            RootCommand root = new RootCommand
+            RootCommand root = new ()
             {
                 Name = "RelayRunner.Application",
                 Description = "RelayRunner Validation App",
@@ -260,7 +282,7 @@ namespace RelayRunner.Application
                 }
             }
 
-            Option<int> opt = new Option<int>(names, () => value, description);
+            Option<int> opt = new (names, () => value, description);
 
             opt.AddValidator((res) =>
             {
