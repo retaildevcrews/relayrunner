@@ -24,6 +24,7 @@ namespace RelayRunner.Application
     public sealed partial class App
     {
         // capture parse errors from env vars
+        private const string ChangeFeedLeaseName = "RRAPI";
         private static readonly List<string> EnvVarErrors = new ();
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace RelayRunner.Application
                 DocumentCollectionInfo leaseCollectionInfo = new ()
                 {
                     DatabaseName = Config.Secrets.CosmosDatabase,
-                    CollectionName = Config.Secrets.CosmosLease,
+                    CollectionName = ChangeFeedLeaseName,
                     Uri = new Uri(Config.Secrets.CosmosServer),
                     MasterKey = Config.Secrets.CosmosKey,
                 };
@@ -104,12 +105,10 @@ namespace RelayRunner.Application
             };
 
             // add the options
-            root.AddOption(EnvVarOption(new string[] { "--app-type", "-a" }, "Application Type", AppType.App));
             root.AddOption(EnvVarOption(new string[] { "--url-prefix" }, "URL prefix for ingress mapping", string.Empty));
             root.AddOption(EnvVarOption(new string[] { "--port" }, "Listen Port", 8080, 1, (64 * 1024) - 1));
             root.AddOption(EnvVarOption(new string[] { "--retries" }, "Cosmos 429 retries", 10, 0));
             root.AddOption(EnvVarOption(new string[] { "--timeout" }, "Request timeout", 10, 1));
-            root.AddOption(EnvVarOption(new string[] { "--data-service", "-s" }, "Data Service URL", string.Empty));
             root.AddOption(EnvVarOption(new string[] { "--secrets-volume", "-v" }, "Secrets Volume Path", "secrets"));
             root.AddOption(EnvVarOption(new string[] { "--log-level", "-l" }, "Log Level", LogLevel.Error));
             root.AddOption(EnvVarOption(new string[] { "--request-log-level", "-q" }, "Request Log Level", LogLevel.Information));
@@ -133,9 +132,7 @@ namespace RelayRunner.Application
             try
             {
                 // get the values to validate
-                AppType appType = result.Children.FirstOrDefault(c => c.Symbol.Name == "app-type") is OptionResult appTypeRes ? appTypeRes.GetValueOrDefault<AppType>() : AppType.App;
                 string secrets = result.Children.FirstOrDefault(c => c.Symbol.Name == "secrets-volume") is OptionResult secretsRes ? secretsRes.GetValueOrDefault<string>() : string.Empty;
-                string dataService = result.Children.FirstOrDefault(c => c.Symbol.Name == "data-service") is OptionResult dsRes ? dsRes.GetValueOrDefault<string>() : string.Empty;
                 string urlPrefix = result.Children.FirstOrDefault(c => c.Symbol.Name == "urlPrefix") is OptionResult urlRes ? urlRes.GetValueOrDefault<string>() : string.Empty;
 
                 // validate url-prefix
@@ -154,57 +151,24 @@ namespace RelayRunner.Application
                     }
                 }
 
-                // validate data-service
-                if (appType == AppType.WebAPI)
+
+                if (string.IsNullOrWhiteSpace(secrets))
                 {
-                    if (string.IsNullOrWhiteSpace(dataService))
-                    {
-                        msg += "--data-service cannot be empty\n";
-                    }
-                    else
-                    {
-                        string ds = dataService.ToLowerInvariant().Trim();
-
-                        if (!ds.StartsWith("http://") &&
-                            !ds.StartsWith("https://") &&
-                            !ds.Contains(' ') &&
-                            !ds.Contains('\t') &&
-                            !ds.Contains('\n') &&
-                            !ds.Contains('\r'))
-                        {
-                            msg += "--data-service is invalid";
-                        }
-
-                        ds = ds.Replace("http://", string.Empty).Replace("https://", string.Empty);
-
-                        if (string.IsNullOrEmpty(ds))
-                        {
-                            msg += "--data-service is invalid";
-                        }
-                    }
+                    msg += "--secrets-volume cannot be empty\n";
                 }
-
-                // validate secrets volume
-                if (appType == AppType.App)
+                else
                 {
-                    if (string.IsNullOrWhiteSpace(secrets))
+                    try
                     {
-                        msg += "--secrets-volume cannot be empty\n";
+                        // validate secrets-volume exists
+                        if (!Directory.Exists(secrets))
+                        {
+                            msg += $"--secrets-volume ({secrets}) does not exist\n";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            // validate secrets-volume exists
-                            if (!Directory.Exists(secrets))
-                            {
-                                msg += $"--secrets-volume ({secrets}) does not exist\n";
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            msg += $"--secrets-volume exception: {ex.Message}\n";
-                        }
+                        msg += $"--secrets-volume exception: {ex.Message}\n";
                     }
                 }
             }
@@ -379,7 +343,6 @@ namespace RelayRunner.Application
         private static void SetLoggerConfig()
         {
             RequestLogger.CosmosName = Config.CosmosName;
-            RequestLogger.DataService = Config.DataService.Replace("http://", string.Empty).Replace("https://", string.Empty);
             NgsaLog.LogLevel = Config.LogLevel;
         }
     }
