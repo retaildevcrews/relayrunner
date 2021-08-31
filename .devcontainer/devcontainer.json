@@ -46,5 +46,9 @@
 	],
 	// Run Bash script in .devcontainer directory
 	// Use 'onCreateCommand' to run commands on container creation.
-	"onCreateCommand": "/bin/bash ./.devcontainer/on-create.sh"
+	"onCreateCommand": "/bin/bash ./.devcontainer/on-create.sh",
+	// Use 'postCreateCommand' to run commands after container creation.
+	"postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh",
+	// Use 'postStartCommand' to run commands after container start
+	"postStartCommand": "/bin bash ./.devcontainer/post-start.sh"
 }

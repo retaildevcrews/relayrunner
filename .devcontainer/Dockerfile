@@ -14,9 +14,3 @@ ARG USERNAME=vscode
 # upgrade packages
 # you can improve startup time by runing in post-create.sh
 # RUN apt upgrade -
-
-# get install script and install node
-# [Choice] Node.js version: 16, 14, 12
-ARG VARIANT=14
-RUN curl -sL https://deb.nodesource.com/setup_${VARIANT}.x | sudo -E bash - && \
-    sudo apt-get install -y nodejs
