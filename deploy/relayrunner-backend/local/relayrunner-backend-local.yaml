@@ -9,7 +9,7 @@ metadata:
 spec:
   containers:
   - name: app
-    image: ghcr.io/retaildevcrews/relayrunner:backend
+    image: k3d-registry.localhost:5000/relayrunner-backend:local
     imagePullPolicy: Always
 
 ---

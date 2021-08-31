@@ -1,6 +1,4 @@
-.PHONY: help all create delete deploy check clean test load-test reset-prometheus reset-grafana jumpbox target
-
-K8S ?= "kind"
+.PHONY: help all create delete deploy check clean rrapi rrui rrprod ngsa lr reset-prometheus reset-grafana jumpbox
 
 help :
 	@echo "Usage:"
@@ -8,101 +6,180 @@ help :
 	@echo "   make create           - create a kind cluster"
 	@echo "   make delete           - delete the kind cluster"
 	@echo "   make deploy           - deploy the apps to the cluster"
-	@echo "   make check            - check the endpoints with curl"
-	@echo "   make clean            - delete the apps from the cluster"
-	@echo "   make test             - run a LodeRunner test (generates warnings)"
-	@echo "   make load-test        - run a 60 second load test"
+	@echo "   make check            - curl endpoints cluster"
+	@echo "   make clean            - delete deployments"
+	@echo "   make rrapi            - build and deploy a local relayrunner backend docker image"
+	@echo "   make rrui             - build and deploy a local relayrunner client docker image"
+	@echo "   make rrprod           - deploy relayrunner images from registry"
+	@echo "   make ngsa             - build and deploy a local ngsa-app docker image"
+	@echo "   make lr               - build and deploy a local loderunner docker image"
 	@echo "   make reset-prometheus - reset the Prometheus volume (existing data is deleted)"
 	@echo "   make reset-grafana    - reset the Grafana volume (existing data is deleted)"
 	@echo "   make jumpbox          - deploy a 'jumpbox' pod"
 
-all : delete create deploy jumpbox check
+all : create deploy jumpbox check
 
 delete :
 	# delete the cluster (if exists)
 	@# this will fail harmlessly if the cluster does not exist
-	@kind delete cluster
+	-k3d cluster delete
 
-create :
+create : delete
 	# create the cluster and wait for ready
 	@# this will fail harmlessly if the cluster exists
-	@# default cluster name is kind
+	@# default cluster name is k3d
 
-	@kind create cluster --config deploy/kind/kind.yaml
+	@k3d cluster create --registry-use k3d-registry.localhost:5000 --config deploy/k3d.yaml --k3s-server-arg "--no-deploy=traefik" --k3s-server-arg "--no-deploy=servicelb"
 
 	# wait for cluster to be ready
 	@kubectl wait node --for condition=ready --all --timeout=60s
+	@sleep 5
+	@kubectl wait pod -A --all --for condition=ready --timeout=60s
 
 deploy :
-	# deploy the app
+	# deploy ngsa-app
 	@# continue on most errors
 	-kubectl apply -f deploy/ngsa-memory
+
+	# deploy loderunner after the ngsa-app starts
+	@kubectl wait pod ngsa-memory --for condition=ready --timeout=30s
+	-kubectl apply -f deploy/loderunner
+
+	# Create backend image from codebase
+	@docker build ./backend -t k3d-registry.localhost:5000/relayrunner-backend:local
+	# Load new backend image to k3d registry
+	@docker push k3d-registry.localhost:5000/relayrunner-backend:local
+	# deploy local relayrunner backend
+	-kubectl apply -f deploy/relayrunner-backend/local
+
+	# Create client image from codebase
+	@docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/relayrunner-client:local
+	# Load new client image to k3d registry
+	@docker push k3d-registry.localhost:5000/relayrunner-client:local
+	# deploy local relayrunner client
+	-kubectl apply -f deploy/relayrunner-client/local
 
 	# deploy prometheus and grafana
 	-kubectl apply -f deploy/prometheus
 	-kubectl apply -f deploy/grafana
 
-	# deploy fluent bit
+	# deploy fluentbit
 	-kubectl create secret generic log-secrets --from-literal=WorkspaceId=dev --from-literal=SharedKey=dev
 	-kubectl apply -f deploy/fluentbit/account.yaml
 	-kubectl apply -f deploy/fluentbit/log.yaml
 	-kubectl apply -f deploy/fluentbit/stdout-config.yaml
 	-kubectl apply -f deploy/fluentbit/fluentbit-pod.yaml
 
-	# deploy LodeRunner after the app starts
-	@kubectl wait pod ngsa-memory --for condition=ready --timeout=30s
-	-kubectl apply -f deploy/loderunner
-
-	# deploy RelayRunner backend after the app starts
-	@kubectl wait pod loderunner --for condition=ready --timeout=30s
-	-kubectl apply -f deploy/relayrunner-backend
-
-	# deploy RelayRunner client after the backend server starts
-	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
-	-kubectl apply -f deploy/relayrunner-client
-
-	# wait for the pods to start
-	@kubectl wait pod -n monitoring --for condition=ready --all --timeout=30s
-	@kubectl wait pod fluentb --for condition=ready --timeout=30s
-	@kubectl wait pod loderunner --for condition=ready --timeout=30s
-	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
-	@kubectl wait pod relayrunner-client --for condition=ready --timeout=30s
+	# wait for pods to start
+	@kubectl wait pod -A --all --for condition=ready --timeout=60s
 
 	# display pod status
-	@kubectl get po -A | grep "default\|monitoring"
+	-kubectl get po -A | grep "default\|monitoring"
 
 check :
 	# curl all of the endpoints
+	@echo "\nchecking ngsa-memory..."
 	@curl localhost:30080/version
-	@echo "\n"
+	@echo "\n\nchecking loderunner..."
 	@curl localhost:30088/version
-	@echo "\n"
+	@echo "\n\nchecking prometheus..."
 	@curl localhost:30000
+	@echo "\nchecking grafana..."
 	@curl localhost:32000
+	@echo "\nchecking relayrunner client..."
 	@curl localhost:32080
-	@curl localhost:32088/graphql
+	@echo "\n\nchecking relayrunner backend..."
+	@curl localhost:32088/version
 
 clean :
 	# delete the deployment
 	@# continue on error
-	-kubectl delete -f deploy/relayrunner-client --ignore-not-found=true
-	-kubectl delete -f deploy/relayrunner-backend --ignore-not-found=true
 	-kubectl delete -f deploy/loderunner --ignore-not-found=true
 	-kubectl delete -f deploy/ngsa-memory --ignore-not-found=true
 	-kubectl delete ns monitoring --ignore-not-found=true
 	-kubectl delete -f deploy/fluentbit/fluentbit-pod.yaml --ignore-not-found=true
+	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
+	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
 	-kubectl delete secret log-secrets --ignore-not-found=true
 
 	# show running pods
 	@kubectl get po -A
 
-test :
-	# run a single test
-	webv -s http://localhost:30080 -f baseline.json
+rrapi:
+	# build the local image and load into k3d
+	docker build ./backend -t k3d-registry.localhost:5000/relayrunner-backend:local
+	docker push k3d-registry.localhost:5000/relayrunner-backend:local
 
-load-test :
-	# run a 60 second load test
-	webv -s http://localhost:30080 -f benchmark.json -r -l 1 --duration 60
+	# delete/deploy the local relayrunner backend
+	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
+	kubectl apply -f deploy/relayrunner-backend/local
+
+	@kubectl get po
+
+	# display the relayrunner version
+	-http localhost:32088/version
+
+rrui:
+	# build the local image and load into k3d
+	docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/relayrunner-client:local
+	docker push k3d-registry.localhost:5000/relayrunner-client:local
+
+	# delete/deploy local relayrunner client
+	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
+	kubectl apply -f deploy/relayrunner-client/local
+
+	@kubectl get po
+
+rrprod:
+	# delete local backend relayrunner pod and deploy image from ghcr
+	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
+	kubectl apply -f deploy/relayrunner-backend
+
+	# delete local client relayrunner pod and deploy image from ghcr
+	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
+	kubectl apply -f deploy/relayrunner-client
+
+	@kubectl get po
+
+	# display the relayrunner version
+	-http localhost:32088/version
+
+ngsa :
+	# build the local image of ngsa-app and load into k3d
+	docker build ../ngsa-app -t k3d-registry.localhost:5000/ngsa-app:local
+	docker push k3d-registry.localhost:5000/ngsa-app:local
+
+	# delete loderunner
+	-kubectl delete -f deploy/loderunner --ignore-not-found=true
+
+	# delete/deploy the ngsa-app
+	-kubectl delete -f deploy/ngsa-memory --ignore-not-found=true
+	kubectl apply -f deploy/ngsa-local
+
+	# deploy loderunner after app starts
+	@kubectl wait pod ngsa-memory --for condition=ready --timeout=30s
+	@sleep 5
+	kubectl apply -f deploy/loderunner
+	@kubectl wait pod loderunner --for condition=ready --timeout=30s
+
+	@kubectl get po
+
+	# display the ngsa-app version
+	-http localhost:30080/version
+
+lr :
+	# build the local image of loderunner and load into k3d
+	docker build ../loderunner -t k3d-registry.localhost:5000/ngsa-lr:local
+	docker push k3d-registry.localhost:5000/ngsa-lr:local
+	
+	# delete / create loderunner
+	-kubectl delete -f deploy/loderunner --ignore-not-found=true
+	kubectl apply -f deploy/loderunner-local
+	kubectl wait pod loderunner --for condition=ready --timeout=30s
+	@kubectl get po
+
+	# display the current version
+	-http localhost:30088/version
 
 reset-prometheus :
 	# remove and create the /prometheus volume
@@ -118,15 +195,13 @@ reset-grafana :
 	@sudo chown -R 472:472 /grafana
 
 jumpbox :
-	@# start a jumpbox pod
+	# start a jumpbox pod
 	@-kubectl delete pod jumpbox --ignore-not-found=true
 
-	@kubectl run jumpbox --image=alpine --restart=Always -- /bin/sh -c "trap : TERM INT; sleep 9999999999d & wait"
+	@kubectl run jumpbox --image=ghcr.io/retaildevcrews/alpine --restart=Always -- /bin/sh -c "trap : TERM INT; sleep 9999999999d & wait"
 	@kubectl wait pod jumpbox --for condition=ready --timeout=30s
-	@kubectl exec jumpbox -- /bin/sh -c "apk update && apk add bash curl httpie" > /dev/null
-	@kubectl exec jumpbox -- /bin/sh -c "echo \"alias ls='ls --color=auto'\" >> /root/.profile && echo \"alias ll='ls -lF'\" >> /root/.profile && echo \"alias la='ls -alF'\" >> /root/.profile && echo 'cd /root' >> /root/.profile" > /dev/null
 
-	#
+	# Run an interactive bash shell in the jumpbox
+	# kj
 	# use kje <command>
 	# kje http ngsa-memory:8080/version
-	# kje bash -l

@@ -1,31 +1,38 @@
 {
-	"name": "relayrunner",
-	"remoteUser": "runner",
-	"image": "johee/akdc-kind:nodejs",
-	"runArgs": [
-		"--init",
-		"--privileged"
-	],
+	"name": "RelayRunner",
+	"dockerFile": "Dockerfile",
+
+	// do not change these if you want Docker in Docker support
+	"runArgs": [ "--init", "--privileged" ],
+	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker-host.sock,type=bind" ],
 	"overrideCommand": false,
-	"settings": { },
+
+	// some base images require a specific user name
+	"remoteUser": "vscode",
+
+	// set container specific settings
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "zsh"
+	},
+
 	"forwardPorts": [
 		30000,
 		30080,
 		30088,
 		32000,
 		32080,
-    32088
+		32088
 	],
 
 	// add labels
 	"portsAttributes": {
+		"6443": {"label": "k3d" },
 		"30000": { "label": "Prometheus" },
 		"30080": { "label": "Ngsa-Memory" },
 		"30088": { "label": "LodeRunner" },
 		"32000": { "label": "Grafana" },
 		"32080": { "label": "RelayRunner-Client" },
 		"32088": { "label": "RelayRunner-Backend" },
-		"30081": { "label": "Kind"}
 	},
 
 	// Install extensions
@@ -38,5 +45,10 @@
 		"jebbs.plantuml"
 	],
 	// Run Bash script in .devcontainer directory
-	"postCreateCommand": "/bin/bash ./.devcontainer/post-install.sh"
+	// Use 'onCreateCommand' to run commands on container creation.
+	"onCreateCommand": "/bin/bash ./.devcontainer/on-create.sh",
+	// Use 'postCreateCommand' to run commands after container creation.
+	"postCreateCommand": "/bin/bash ./.devcontainer/post-create.sh",
+	// Use 'postStartCommand' to run commands after container start
+	"postStartCommand": "/bin bash ./.devcontainer/post-start.sh"
 }
