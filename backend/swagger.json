@@ -5,44 +5,54 @@
     "version": "1.0"
   },
   "paths": {
-    "{urlPrefix}/api/loadClients": {
+    "{urlPrefix}/api/clients": {
       "get": {
-        "tags": [ "LoadClients" ],
-        "summary": "Search LoadClients",
-        "description": "Returns an array of `LoadClient` documents",
+        "tags": [ "Clients" ],
+        "summary": "Get Clients",
+        "description": "Returns an array of `Client` documents",
         "responses": {
           "200": {
-            "description": "Array of `Load Client` documents or empty array if not found",
+            "description": "Array of `Client` documents or empty array if not found",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/LoadClient"
+                    "$ref": "#/components/schemas/Client"
                   }
                 },
                 "example": [
                   {
-                    "partitionKey": "loadClient",
-                    "entityType": "loadClient",
-                    "version": "5.0",
-                    "id": "1",
-                    "region": "california",
-                    "zone": "colorado",
-                    "prometheus": true,
-                    "startupArgs": "files",  
-                    "startTime": "2017-07-21T17:32:28Z"
+                    "entityType": "Client",
+                    "loadClientId": "7abcc308-14c4-43eb-b1ee-e351f4db2a08",
+                    "name": "Central - az - central - us - 2",
+                    "version": "0.3.0 - 717 - 1030",
+                    "region": "Central",
+                    "zone": "az-central-us",
+                    "prometheus": false,
+                    "startupArgs": "--delay - start - 1--secrets - volume secrets",
+                    "startTime": "2021-08-26T23:49:28.3828277Z",
+                    "clientStatusId": "c7975154-c88f-4188-8ca7-dba13ae7c9b2",
+                    "lastUpdated": "2021-08-26T23:49:56.6804331Z",
+                    "statusDuration": 1,
+                    "status": "Terminating",
+                    "message": "Terminating - A task was canceled."
                   },
                   {
-                    "partitionKey": "loadClient",
-                    "entityType": "loadClient",
-                    "version": "5.0",
-                    "id": "2",
-                    "region": "california",
-                    "zone": "colorado",
+                    "entityType": "Client",
+                    "loadClientId": "9c65a8b8-e1f7-44d0-98b1-0c5960ceac2f",
+                    "name": "Central - az - central - us - 2",
+                    "version": "0.3.0 - 717 - 1030",
+                    "region": "Central",
+                    "zone": "az-central-us",
                     "prometheus": false,
-                    "startupArgs": "files",  
-                    "startTime": "2017-07-21T17:32:28Z"
+                    "startupArgs": "--delay - start - 1--secrets - volume secrets",
+                    "startTime": "2021-08-27T16:14:29.3745704Z",
+                    "clientStatusId": "b6f3e9f3-6a22-4978-9bfa-fc62cf6cfbe0",
+                    "lastUpdated": "2021-08-27T16:14:34.5804522Z",
+                    "statusDuration": 1,
+                    "status": "Ready",
+                    "message": "Ready - test ready"
                   }
                 ]
               }
@@ -51,47 +61,48 @@
         }
       }
     },
-    "{urlPrefix}/api/loadClients/{loadClientId}": {
+    "{urlPrefix}/api/clients/{clientStatusId}": {
       "get": {
-        "tags": [ "LoadClient" ],
-        "summary": "Get Load Client by ID",
-        "description": "Get a single `LoadClient` document by Id",
+        "tags": [ "Clients" ],
+        "summary": "Get Client by ClientStatus ID",
+        "description": "Get a single `Client` document by clientStatusId",
         "parameters": [
           {
             "in": "path",
-            "name":  "loadClientId",
-            "description": "Numeric ID of load client to get",
+            "name":  "clientStatusId",
+            "description": "ClientStatus ID of Client to get",
             "required": true,
             "style": "simple",
             "explode": false,
             "schema": {
               "type": "string"
-            },
-            "example": "3"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Array of `LoadClient` documents or empty array if not found",
+            "description": "`Client`",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LoadClient"
-                  }
+                  "$ref": "#/components/schemas/Client"
                 },
                 "example": [
                   {
-                    "partitionKey": "loadClient",
-                    "entityType": "loadClient",
-                    "version": "5.0",
-                    "id": "3",
-                    "region": "california",
-                    "zone": "colorado",
-                    "prometheus": true,
-                    "startupArgs": "files",  
-                    "startTime": "2017-07-21T17:32:28Z"
+                    "entityType": "Client",
+                    "loadClientId": "9c65a8b8-e1f7-44d0-98b1-0c5960ceac2f",
+                    "name": "Central - az - central - us - 2",
+                    "version": "0.3.0 - 717 - 1030",
+                    "region": "Central",
+                    "zone": "az-central-us",
+                    "prometheus": false,
+                    "startupArgs": "--delay - start - 1--secrets - volume secrets",
+                    "startTime": "2021-08-27T16:14:29.3745704Z",
+                    "clientStatusId": "b6f3e9f3-6a22-4978-9bfa-fc62cf6cfbe0",
+                    "lastUpdated": "2021-08-27T16:14:34.5804522Z",
+                    "statusDuration": 1,
+                    "status": "Ready",
+                    "message": "Ready - test ready"
                   }
                 ]
               }
@@ -140,18 +151,18 @@
                   "instance": "0",
                   "version": "1.0.0502.0026",
                   "checks": {
-                    "getLoadClientById:responseTime": {
+                    "getClientByClientStatusId:responseTime": {
                       "status": "pass",
-                      "componentId": "getLoadClientById",
+                      "componentId": "getClientByClientStatusId",
                       "componentType": "datastore",
                       "observedUnit": "ms",
                       "observedValue": 1.4,
                       "targetValue": 400,
                       "time": "2020-03-02T01:49:17Z"
                     },
-                    "searchLoadClient:responseTime": {
+                    "searchClient:responseTime": {
                       "status": "pass",
-                      "componentId": "searchLoadClient",
+                      "componentId": "searchClient",
                       "componentType": "datastore",
                       "observedUnit": "ms",
                       "observedValue": 38.11,
@@ -169,19 +180,19 @@
   },
   "components": {
     "schemas": {
-      "LoadClient": {
+      "Client": {
         "type": "object",
         "properties": {
-          "partitionKey": {
-            "type":  "string" 
-          } ,
           "entityType": {
-            "type":  "string" 
+            "type": "string" 
           } ,
-          "version": {
+          "loadClientId": {
             "type": "string"
           },
-          "id": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
             "type": "string"
           },
           "region": {
@@ -198,6 +209,21 @@
           },
           "startTime": {
             "type": "date-time"
+          },
+          "clientStatusId": {
+            "type": "string"
+          },
+          "lastUpdated": {
+            "type": "date-time"
+          },
+          "statusDuration": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
         },
         "additionalProperties": false

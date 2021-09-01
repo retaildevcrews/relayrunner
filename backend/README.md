@@ -43,10 +43,10 @@ Open a new bash shell
 # test the application
 
 # test using httpie (installed automatically in Codespaces)
-http localhost:8080/api/loadClients
+http localhost:8080/api/clients
 
 # test using curl
-curl localhost:8080/api/loadClients
+curl localhost:8080/api/clients
 
 ```
 
