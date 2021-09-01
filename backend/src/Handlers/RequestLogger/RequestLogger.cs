@@ -141,7 +141,7 @@ namespace RelayRunner.Middleware
                 (App.Config.RequestLogLevel == LogLevel.Warning && context.Response.StatusCode >= 400) ||
                 context.Response.StatusCode >= 500))
             {
-                Dictionary<string, object> log = new Dictionary<string, object>
+                Dictionary<string, object> log = new ()
                 {
                     { "Date", dt },
                     { "LogName", "RelayRunner.RequestLog" },

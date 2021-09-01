@@ -1,12 +1,7 @@
 #should return 200
-GET http://localhost:8080/api/loadClients HTTP/1.1
-
-###
-
-# should return 200
-GET http://localhost:8080/api/loadClients/1 HTTP/1.1
+GET http://localhost:8080/api/clients HTTP/1.1
 
 ###
 
 # should return 404
-GET http://localhost:8080/api/loadClients/z HTTP/1.1
+GET http://localhost:8080/api/clients/z HTTP/1.1

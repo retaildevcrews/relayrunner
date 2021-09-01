@@ -68,13 +68,13 @@ namespace RelayRunner.Application
         }
 
         /// <summary>
-        /// Get LoadClient by Id Healthcheck
+        /// Get Client by ClientStatus Id Healthcheck
         /// </summary>
         /// <returns>HealthzCheck</returns>
-        private async Task<HealthzCheck> GetLoadClientByIdAsync(string loadClientId, Dictionary<string, object> data = null)
+        private async Task<HealthzCheck> GetClientByClientStatusIdAsync(string clientStatusId, Dictionary<string, object> data = null)
         {
-            const string name = "getLoadClientById";
-            string path = "/api/loadClients/" + loadClientId;
+            const string name = "getClientByClientStatusId";
+            string path = "/api/clients/" + clientStatusId;
 
             stopwatch.Restart();
 
@@ -82,7 +82,7 @@ namespace RelayRunner.Application
             {
                 if (App.Config.AppType == AppType.App)
                 {
-                    _ = await dal.GetLoadClientByIdAsync(loadClientId).ConfigureAwait(false);
+                    _ = await dal.GetClientByClientStatusIdAsync(clientStatusId).ConfigureAwait(false);
                 }
 
                 return BuildHealthzCheck(path, MaxResponseTime / 2, null, data, name);
@@ -97,14 +97,14 @@ namespace RelayRunner.Application
         }
 
         /// <summary>
-        /// Get LoadClients Healthcheck
+        /// Get Clients Healthcheck
         /// </summary>
         /// <returns>HealthzCheck</returns>
-        private async Task<HealthzCheck> GetLoadClientsAsync(Dictionary<string, object> data = null)
+        private async Task<HealthzCheck> GetClientsAsync(Dictionary<string, object> data = null)
         {
-            const string name = "getLoadClients";
+            const string name = "getClients";
 
-            string path = "/api/loadClients";
+            string path = "/api/clients";
 
             stopwatch.Restart();
 
@@ -112,7 +112,7 @@ namespace RelayRunner.Application
             {
                 if (App.Config.AppType == AppType.App)
                 {
-                    _ = (await dal.GetLoadClientsAsync().ConfigureAwait(false)).ToList<LoadClient>();
+                    _ = (await dal.GetClientsAsync().ConfigureAwait(false)).ToList();
                 }
 
                 return BuildHealthzCheck(path, MaxResponseTime, null, data, name);

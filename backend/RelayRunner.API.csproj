@@ -73,9 +73,5 @@
 	  </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="src\data\loadClients.json" />
-  </ItemGroup>
-
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

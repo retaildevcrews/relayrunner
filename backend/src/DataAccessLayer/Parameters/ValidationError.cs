@@ -30,7 +30,7 @@ namespace RelayRunner.Middleware.Validation
         {
             return fieldName.ToUpperInvariant() switch
             {
-                "LOADCLIENTID" => "The parameter 'loadClientId' should be an integer greater than or equal to 0",
+                "CLIENTSTATUSID" => "The parameter 'cientStatusId' should be a non-empty string",
                 _ => $"Unknown parameter: {fieldName}",
             };
         }
@@ -46,9 +46,9 @@ namespace RelayRunner.Middleware.Validation
 
             path = path.ToLowerInvariant();
 
-            if (path.StartsWith("/api/loadClients/"))
+            if (path.StartsWith("/api/clients/"))
             {
-                s += "#load-clients-direct-read";
+                s += "#clients-direct-read";
             }
 
             return s;
@@ -60,16 +60,16 @@ namespace RelayRunner.Middleware.Validation
 
             string path = RequestLogger.GetPathAndQuerystring(context.Request).ToLowerInvariant();
 
-            if (path.StartsWith("/api/loadClients/"))
+            if (path.StartsWith("/api/clients/"))
             {
-                category = "LoadClient";
-                subCategory = "LoadClient";
+                category = "Client";
+                subCategory = "Client";
                 mode = "Direct";
             }
-            else if (path.StartsWith("/api/loadClients"))
+            else if (path.StartsWith("/api/clients"))
             {
-                category = "LoadClient";
-                subCategory = "LoadClient";
+                category = "Client";
+                subCategory = "Client";
                 mode = "Static";
             }
             else if (path.StartsWith("/healthz"))

@@ -7,22 +7,22 @@ using RelayRunner.Middleware.Validation;
 namespace RelayRunner.Middleware
 {
     /// <summary>
-    /// Query string parameters for LoadClients controller
+    /// Query string parameters for Clients controller
     /// </summary>
-    public sealed class LoadClientParameters
+    public sealed class ClientParameters
     {
         /// <summary>
         /// Validate Id
         /// </summary>
-        /// <param name="loadClientId">id to validate</param>
+        /// <param name="clientStatusId">id to validate</param>
         /// <returns>empty list on valid</returns>
-        public static List<ValidationError> ValidateLoadClientId(string loadClientId)
+        public static List<ValidationError> ValidateClientStatusId(string clientStatusId)
         {
             List<ValidationError> errors = new List<ValidationError>();
 
-            if (!int.TryParse(loadClientId, out int i) || i < 0)
+            if (string.IsNullOrWhiteSpace(clientStatusId))
             {
-                errors.Add(new ValidationError() { Target = "loadClientId", Message = ValidationError.GetErrorMessage("loadClientId") });
+                errors.Add(new ValidationError() { Target = "clientStatusId", Message = ValidationError.GetErrorMessage("clientStatusId") });
             }
 
             return errors;
