@@ -80,10 +80,7 @@ namespace RelayRunner.Application
 
             try
             {
-                if (App.Config.AppType == AppType.App)
-                {
-                    _ = await dal.GetClientByClientStatusIdAsync(clientStatusId).ConfigureAwait(false);
-                }
+                _ = await dal.GetClientByClientStatusIdAsync(clientStatusId).ConfigureAwait(false);
 
                 return BuildHealthzCheck(path, MaxResponseTime / 2, null, data, name);
             }
@@ -110,10 +107,7 @@ namespace RelayRunner.Application
 
             try
             {
-                if (App.Config.AppType == AppType.App)
-                {
-                    _ = (await dal.GetClientsAsync().ConfigureAwait(false)).ToList();
-                }
+                _ = (await dal.GetClientsAsync().ConfigureAwait(false)).ToList();
 
                 return BuildHealthzCheck(path, MaxResponseTime, null, data, name);
             }

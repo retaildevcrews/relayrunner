@@ -326,13 +326,10 @@ namespace RelayRunner.Application
             Config.SetConfig(config);
 
             // create data access layer
-            if (Config.AppType == AppType.App)
-            {
-                LoadSecrets();
+            LoadSecrets();
 
-                // create the cosmos data access layer
-                Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
-            }
+            // create the cosmos data access layer
+            Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
 
             SetLoggerConfig();
         }

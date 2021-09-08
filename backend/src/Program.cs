@@ -112,7 +112,7 @@ namespace RelayRunner.Application
         // Log startup messages
         private static void LogStartup(NgsaLog logger)
         {
-            logger.LogInformation($"RelayRunner.{Config.AppType} Started", VersionExtension.Version);
+            logger.LogInformation($"RelayRunner API Started", VersionExtension.Version);
         }
 
         // Build the web host
