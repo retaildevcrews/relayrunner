@@ -6,18 +6,11 @@ using RelayRunner.Application.DataAccessLayer;
 
 namespace RelayRunner.Application
 {
-    public enum AppType
-    {
-        App,
-        WebAPI,
-    }
-
     /// <summary>
     /// Configurations for App
     /// </summary>
     public class Config
     {
-        public AppType AppType { get; set; } = AppType.App;
         public string DataService { get; set; } = string.Empty;
         public string SecretsVolume { get; set; } = "secrets";
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
@@ -37,7 +30,6 @@ namespace RelayRunner.Application
         /// <param name="config">Config</param>
         public void SetConfig(Config config)
         {
-            AppType = config.AppType;
             IsLogLevelSet = config.IsLogLevelSet;
             Secrets = config.Secrets;
             Port = config.Port;
