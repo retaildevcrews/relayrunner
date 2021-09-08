@@ -13,7 +13,7 @@ namespace RelayRunner.Middleware
 {
     public class NgsaLog
     {
-        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions
+        private static readonly JsonSerializerOptions Options = new ()
         {
             IgnoreNullValues = true,
         };
@@ -22,9 +22,9 @@ namespace RelayRunner.Middleware
         public static string Zone { get; set; } = string.Empty;
         public static string Region { get; set; } = string.Empty;
 
-        public static LogEventId LogEvent400 { get; } = new LogEventId((int)HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.ToString());
-        public static LogEventId LogEvent404 { get; } = new LogEventId((int)HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString());
-        public static LogEventId LogEvent500 { get; } = new LogEventId((int)HttpStatusCode.InternalServerError, "Exception");
+        public static LogEventId LogEvent400 { get; } = new ((int)HttpStatusCode.BadRequest, HttpStatusCode.BadRequest.ToString());
+        public static LogEventId LogEvent404 { get; } = new ((int)HttpStatusCode.NotFound, HttpStatusCode.NotFound.ToString());
+        public static LogEventId LogEvent500 { get; } = new ((int)HttpStatusCode.InternalServerError, "Exception");
 
         public string Name { get; set; } = string.Empty;
         public string ErrorMessage { get; set; } = string.Empty;
@@ -122,7 +122,7 @@ namespace RelayRunner.Middleware
         // convert log to dictionary
         private Dictionary<string, object> GetDictionary(string method, string message, LogLevel logLevel, LogEventId eventId = null, HttpContext context = null, Dictionary<string, object> dictionary = null)
         {
-            Dictionary<string, object> data = new Dictionary<string, object>
+            Dictionary<string, object> data = new ()
             {
                 { "Date", DateTime.UtcNow },
                 { "LogName", Name },

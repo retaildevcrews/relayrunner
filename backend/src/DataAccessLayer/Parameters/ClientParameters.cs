@@ -18,7 +18,7 @@ namespace RelayRunner.Middleware
         /// <returns>empty list on valid</returns>
         public static List<ValidationError> ValidateClientStatusId(string clientStatusId)
         {
-            List<ValidationError> errors = new List<ValidationError>();
+            List<ValidationError> errors = new ();
 
             if (string.IsNullOrWhiteSpace(clientStatusId))
             {

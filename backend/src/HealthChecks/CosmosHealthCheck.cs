@@ -68,7 +68,7 @@ namespace RelayRunner.Application
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             // dictionary
-            Dictionary<string, object> data = new Dictionary<string, object>();
+            Dictionary<string, object> data = new ();
 
             try
             {

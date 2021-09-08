@@ -73,7 +73,7 @@ namespace RelayRunner.Application.Controllers
         /// <returns>JsonResult</returns>
         public static JsonResult CreateResult(string message, HttpStatusCode statusCode)
         {
-            JsonResult res = new JsonResult(new ErrorResult { Error = statusCode, Message = message })
+            JsonResult res = new (new ErrorResult { Error = statusCode, Message = message })
             {
                 StatusCode = (int)statusCode,
             };
@@ -89,7 +89,7 @@ namespace RelayRunner.Application.Controllers
         /// <returns>JsonResult</returns>
         public static JsonResult CreateResult(List<ValidationError> errorList, string path)
         {
-            Dictionary<string, object> data = new Dictionary<string, object>
+            Dictionary<string, object> data = new ()
             {
                 { "type", ValidationError.GetErrorLink(path) },
                 { "title", "Parameter validation error" },
@@ -99,7 +99,7 @@ namespace RelayRunner.Application.Controllers
                 { "validationErrors", errorList },
             };
 
-            JsonResult res = new JsonResult(data)
+            JsonResult res = new (data)
             {
                 StatusCode = (int)HttpStatusCode.BadRequest,
                 ContentType = "application/problem+json",
