@@ -45,29 +45,7 @@ namespace RelayRunner.Application.DataAccessLayer
             cosmosDetails.Container = cosmosDetails.Client.GetContainer(secrets.CosmosDatabase, secrets.CosmosCollection);
         }
 
-        /// <summary>
-        /// Return the generic Cosmos DB results
-        /// </summary>
-        /// <typeparam name="T">generic type</typeparam>
-        /// <param name="query">Cosmos Query</param>
-        /// <returns>IEnumerable T</returns>
-        private static async Task<IEnumerable<T>> InternalCosmosDbResults<T>(FeedIterator<T> query)
-        {
-            List<T> results = new ();
-
-            while (query.HasMoreResults)
-            {
-                foreach (T doc in await query.ReadNextAsync().ConfigureAwait(false))
-                {
-                    results.Add(doc);
-                }
-            }
-
-            return results;
-        }
-
         // implement IDisposable
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.OrderingRules", "SA1202:Elements should be ordered by access", Justification = "clarity")]
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
