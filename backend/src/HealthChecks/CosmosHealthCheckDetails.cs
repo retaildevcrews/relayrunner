@@ -18,7 +18,7 @@ namespace RelayRunner.Application
     public partial class CosmosHealthCheck : IHealthCheck
     {
         private const int MaxResponseTime = 200;
-        private readonly Stopwatch stopwatch = new Stopwatch();
+        private readonly Stopwatch stopwatch = new ();
 
         /// <summary>
         /// Build the response
@@ -34,7 +34,7 @@ namespace RelayRunner.Application
             stopwatch.Stop();
 
             // create the result
-            HealthzCheck result = new HealthzCheck
+            HealthzCheck result = new ()
             {
                 Endpoint = uri,
                 Status = HealthStatus.Healthy,

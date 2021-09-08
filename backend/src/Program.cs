@@ -19,7 +19,7 @@ namespace RelayRunner.Application
     public sealed partial class App
     {
         // App configuration values
-        public static Config Config { get; } = new Config();
+        public static Config Config { get; } = new ();
 
         /// <summary>
         /// Main entry point

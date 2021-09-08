@@ -13,7 +13,7 @@ namespace RelayRunner.Middleware
     {
         public static ILoggingBuilder AddNgsaLogger(this ILoggingBuilder builder, Action<NgsaLoggerConfiguration> configure)
         {
-            NgsaLoggerConfiguration config = new NgsaLoggerConfiguration();
+            NgsaLoggerConfiguration config = new ();
             configure(config);
 
             builder.AddProvider(new NgsaLoggerProvider(config));

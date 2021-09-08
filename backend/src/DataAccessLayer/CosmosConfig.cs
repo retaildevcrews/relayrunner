@@ -34,7 +34,7 @@ namespace RelayRunner.Application.DataAccessLayer
             {
                 if (cosmosClientOptions == null)
                 {
-                    cosmosClientOptions = new CosmosClientOptions
+                    cosmosClientOptions = new ()
                     {
                         RequestTimeout = TimeSpan.FromSeconds(Timeout),
                         MaxRetryAttemptsOnRateLimitedRequests = Retries,
