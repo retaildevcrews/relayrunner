@@ -5,8 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
-using RelayRunner.Model;
-using RelayRunner.Model.Enum;
+using RelayRunner.Models;
+using RelayRunner.Models.Enum;
 
 namespace RelayRunner.Application.DataAccessLayer
 {

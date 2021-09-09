@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application
 {

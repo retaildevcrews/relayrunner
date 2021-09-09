@@ -9,7 +9,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents;
 using Newtonsoft.Json;
 using RelayRunner.Middleware;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application.Data
 {
