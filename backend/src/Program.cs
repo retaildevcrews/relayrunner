@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Documents.ChangeFeedProcessor;
+using Microsoft.Azure.Documents.ChangeFeedProcessor.PartitionManagement;
 using Microsoft.Extensions.Logging;
 using RelayRunner.Middleware;
 
@@ -18,8 +21,12 @@ namespace RelayRunner.Application
     /// </summary>
     public sealed partial class App
     {
+        // capture parse errors from env vars
+        private static readonly List<string> EnvVarErrors = new ();
+
         // App configuration values
         public static Config Config { get; } = new ();
+        private static IChangeFeedProcessor ChangeFeedProcessor { get; set; }
 
         /// <summary>
         /// Main entry point
@@ -38,6 +45,68 @@ namespace RelayRunner.Application
             return root.Invoke(args);
         }
 
+        /// <summary>
+        /// Run the app
+        /// </summary>
+        /// <param name="config">command line config</param>
+        /// <returns>status</returns>
+        public static async Task<int> RunApp(Config config)
+        {
+            NgsaLog logger = new () { Name = typeof(App).FullName };
+
+            try
+            {
+                // copy command line values
+                Config.SetConfig(config);
+
+                // load secrets from volume
+                LoadSecrets();
+
+                // create the cosmos data access layer
+                Config.CosmosDal = new DataAccessLayer.CosmosDal(Config.Secrets, Config);
+
+                // create cache with initial values
+                Config.Cache = new Data.Cache(Config);
+
+                // set the logger config
+                RequestLogger.CosmosName = Config.CosmosName;
+                NgsaLog.LogLevel = Config.LogLevel;
+
+                // build the host
+                IWebHost host = BuildHost();
+
+                if (host == null)
+                {
+                    return -1;
+                }
+
+                // setup sigterm handler
+                CancellationTokenSource ctCancel = SetupSigTermHandler(host, logger);
+
+                // start the webserver
+                Task w = host.RunAsync();
+
+                // log startup messages
+                logger.LogInformation($"RelayRunner Backend Started", VersionExtension.Version);
+
+                // start CosmosDB Change Feed Processor
+                ChangeFeedProcessor = await RunChangeFeedProcessor();
+
+                // this doesn't return except on ctl-c or sigterm
+                await w.ConfigureAwait(false);
+
+                // if not cancelled, app exit -1
+                return ctCancel.IsCancellationRequested ? 0 : -1;
+            }
+            catch (Exception ex)
+            {
+                // end app on error
+                logger.LogError(nameof(RunApp), "Exception", ex: ex);
+
+                return -1;
+            }
+        }
+
         // load secrets from volume
         private static void LoadSecrets()
         {
@@ -50,69 +119,6 @@ namespace RelayRunner.Application
             {
                 Config.CosmosName = Config.CosmosName.Remove(ndx);
             }
-        }
-
-        // display Ascii Art
-        private static void DisplayAsciiArt(string[] args)
-        {
-            if (args != null)
-            {
-                ReadOnlySpan<string> cmd = new (args);
-
-                if (!cmd.Contains("--version") &&
-                    (cmd.Contains("-h") ||
-                    cmd.Contains("--help")))
-                {
-                    const string file = "ascii-art.txt";
-                    try
-                    {
-                        if (File.Exists(file))
-                        {
-                            string txt = File.ReadAllText(file);
-
-                            if (!string.IsNullOrWhiteSpace(txt))
-                            {
-                                Console.ForegroundColor = ConsoleColor.DarkCyan;
-                                Console.WriteLine(txt);
-                                Console.ResetColor();
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        // ignore any errors
-                    }
-                }
-            }
-        }
-
-        // Create a CancellationTokenSource that cancels on ctl-c or sigterm
-        private static CancellationTokenSource SetupSigTermHandler(IWebHost host, NgsaLog logger)
-        {
-            CancellationTokenSource ctCancel = new ();
-
-            Console.CancelKeyPress += async (sender, e) =>
-            {
-                e.Cancel = true;
-                ctCancel.Cancel();
-
-                logger.LogInformation("Shutdown", "Shutting Down ...");
-
-                // trigger graceful shutdown for the webhost
-                // force shutdown after timeout, defined in UseShutdownTimeout within BuildHost() method
-                await host.StopAsync().ConfigureAwait(false);
-
-                // end the app
-                Environment.Exit(0);
-            };
-
-            return ctCancel;
-        }
-
-        // Log startup messages
-        private static void LogStartup(NgsaLog logger)
-        {
-            logger.LogInformation($"RelayRunner API Started", VersionExtension.Version);
         }
 
         // Build the web host
@@ -143,6 +149,52 @@ namespace RelayRunner.Application
 
             // build the host
             return builder.Build();
+        }
+
+        // Create a CancellationTokenSource that cancels on ctl-c or sigterm
+        private static CancellationTokenSource SetupSigTermHandler(IWebHost host, NgsaLog logger)
+        {
+            CancellationTokenSource ctCancel = new ();
+
+            Console.CancelKeyPress += async (sender, e) =>
+            {
+                e.Cancel = true;
+                ctCancel.Cancel();
+
+                logger.LogInformation("Shutdown", "Shutting Down ...");
+
+                // trigger graceful shutdown for the webhost
+                // force shutdown after timeout, defined in UseShutdownTimeout within BuildHost() method
+                await host.StopAsync().ConfigureAwait(false);
+
+                // end the app
+                Environment.Exit(0);
+            };
+
+            return ctCancel;
+        }
+
+        private static async Task<IChangeFeedProcessor> RunChangeFeedProcessor()
+        {
+            const string ChangeFeedLeaseName = "RRAPI";
+
+            DocumentCollectionInfo feedCollectionInfo = new ()
+            {
+                DatabaseName = Config.Secrets.CosmosDatabase,
+                CollectionName = Config.Secrets.CosmosCollection,
+                Uri = new Uri(Config.Secrets.CosmosServer),
+                MasterKey = Config.Secrets.CosmosKey,
+            };
+
+            DocumentCollectionInfo leaseCollectionInfo = new ()
+            {
+                DatabaseName = Config.Secrets.CosmosDatabase,
+                CollectionName = ChangeFeedLeaseName,
+                Uri = new Uri(Config.Secrets.CosmosServer),
+                MasterKey = Config.Secrets.CosmosKey,
+            };
+
+            return await ChangeFeed.Processor.RunAsync($"Host - {Guid.NewGuid()}", feedCollectionInfo, leaseCollectionInfo);
         }
     }
 }
