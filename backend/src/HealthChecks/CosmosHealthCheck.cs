@@ -79,8 +79,8 @@ namespace RelayRunner.Application
                 data.Add("Version", Middleware.VersionExtension.Version);
 
                 // Run each health check
-                await GetClientByClientStatusIdAsync("1", data).ConfigureAwait(false);
-                await GetClientsAsync(data).ConfigureAwait(false);
+                await GetClientStatusesAsync().ConfigureAwait(false);
+                await GetClientStatusByClientStatusIdAsync("0").ConfigureAwait(false);
 
                 // overall health is the worst status
                 foreach (object d in data.Values)
