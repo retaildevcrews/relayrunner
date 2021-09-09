@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Extensions.Logging;
+using RelayRunner.Application.Data;
 using RelayRunner.Application.DataAccessLayer;
 
 namespace RelayRunner.Application
@@ -11,7 +12,6 @@ namespace RelayRunner.Application
     /// </summary>
     public class Config
     {
-        public string DataService { get; set; } = string.Empty;
         public string SecretsVolume { get; set; } = "secrets";
         public LogLevel LogLevel { get; set; } = LogLevel.Warning;
         public string CosmosName { get; set; } = string.Empty;
@@ -22,6 +22,7 @@ namespace RelayRunner.Application
         public int Timeout { get; set; } = 10;
         public LogLevel RequestLogLevel { get; set; } = LogLevel.Information;
         public IDAL CosmosDal { get; set; }
+        public ICache Cache { get; set; }
         public string UrlPrefix { get; set; }
 
         /// <summary>
@@ -36,6 +37,7 @@ namespace RelayRunner.Application
             Retries = config.Retries;
             Timeout = config.Timeout;
             CosmosDal = config.CosmosDal;
+            Cache = config.Cache;
             UrlPrefix = string.IsNullOrWhiteSpace(config.UrlPrefix) ? string.Empty : config.UrlPrefix;
 
             // remove trailing / if present
@@ -49,7 +51,6 @@ namespace RelayRunner.Application
             RequestLogLevel = config.RequestLogLevel <= LogLevel.Information ? LogLevel.Information : config.RequestLogLevel;
 
             // clean up string values
-            DataService = config.DataService == "n/a" ? string.Empty : config.DataService;
             SecretsVolume = string.IsNullOrWhiteSpace(config.SecretsVolume) ? string.Empty : config.SecretsVolume.Trim();
             CosmosName = string.IsNullOrWhiteSpace(config.CosmosName) ? string.Empty : config.CosmosName.Trim();
         }
