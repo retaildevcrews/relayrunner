@@ -3,9 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RelayRunner.Application.DataAccessLayer;
+using RelayRunner.Application.Data;
 using RelayRunner.Middleware;
 using RelayRunner.Model;
 
@@ -25,14 +24,14 @@ namespace RelayRunner.Application.Controllers
             NotFoundError = "Clients Not Found",
         };
 
-        private readonly IDAL dal;
+        private readonly ICache cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ClientsController"/> class.
         /// </summary>
         public ClientsController()
         {
-            dal = App.Config.CosmosDal;
+            cache = App.Config.Cache;
         }
 
         /// <summary>
@@ -40,13 +39,10 @@ namespace RelayRunner.Application.Controllers
         /// </summary>
         /// <returns>IActionResult</returns>
         [HttpGet]
-        public async Task<IActionResult> GetClientsAsync()
+        public IActionResult GetClients()
         {
-            IActionResult res;
-
-            res = await ResultHandler.Handle(dal.GetClientsAsync(), Logger).ConfigureAwait(false);
-
-            return res;
+            List<Client> clients = (List<Client>)cache.GetClients();
+            return Cache.HandleCacheResult<IEnumerable<Client>>(clients, Logger);
         }
 
          /// <summary>
@@ -55,27 +51,25 @@ namespace RelayRunner.Application.Controllers
          /// <param name="clientStatusId">clientStatusId</param>
          /// <returns>IActionResult</returns>
         [HttpGet("{clientStatusId}")]
-        public async Task<IActionResult> GetClientByClientStatusIdAsync([FromRoute] string clientStatusId)
-         {
-             if (string.IsNullOrWhiteSpace(clientStatusId))
-             {
-                 throw new ArgumentNullException(nameof(clientStatusId));
-             }
+        public IActionResult GetClientByClientStatusId([FromRoute] string clientStatusId)
+        {
+            if (string.IsNullOrWhiteSpace(clientStatusId))
+            {
+                throw new ArgumentNullException(nameof(clientStatusId));
+            }
 
-             List<Middleware.Validation.ValidationError> list = ClientParameters.ValidateClientStatusId(clientStatusId);
+            List<Middleware.Validation.ValidationError> list = ClientParameters.ValidateClientStatusId(clientStatusId);
 
-             if (list.Count > 0)
-             {
-                 Logger.LogWarning(nameof(GetClientByClientStatusIdAsync), "Invalid Client Status Id", NgsaLog.LogEvent400, HttpContext);
+            if (list.Count > 0)
+            {
+                Logger.LogWarning(nameof(GetClientByClientStatusId), "Invalid Client Status Id", NgsaLog.LogEvent400, HttpContext);
 
-                 return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
-             }
+                return ResultHandler.CreateResult(list, RequestLogger.GetPathAndQuerystring(Request));
+            }
 
-             IActionResult res;
+            Client client = cache.GetClientByClientStatusId(clientStatusId);
 
-             res = await ResultHandler.Handle(dal.GetClientByClientStatusIdAsync(clientStatusId), Logger).ConfigureAwait(false);
-
-             return res;
-         }
+            return Cache.HandleCacheResult(client, Logger);
+        }
      }
  }
