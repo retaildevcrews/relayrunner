@@ -20,7 +20,7 @@ namespace RelayRunner.Application.DataAccessLayer
         /// Uses the CosmosDB single document read API which is 1 RU if less than 1K doc size
         /// </summary>
         /// <returns>array of Clients</returns>
-        public async Task<IEnumerable<Client>> GetClientsAsync()
+        public async Task<IEnumerable<ClientStatus>> GetClientStatusesAsync()
         {
             // create query
             QueryDefinition sql = new QueryDefinition("select * from clientStatus cs where cs.entityType = @entityType").WithParameter("@entityType", EntityType.ClientStatus.ToString());
@@ -28,14 +28,14 @@ namespace RelayRunner.Application.DataAccessLayer
             // run query
             FeedIterator<ClientStatus> query = cosmosDetails.Container.GetItemQueryIterator<ClientStatus>(sql);
 
-            // query results
-            List<Client> results = new ();
+            // get results
+            List<ClientStatus> results = new ();
 
             while (query.HasMoreResults)
             {
                 foreach (ClientStatus clientStatus in await query.ReadNextAsync().ConfigureAwait(false))
                 {
-                    results.Add(new Client(clientStatus));
+                    results.Add(clientStatus);
                 }
             }
 
@@ -51,7 +51,7 @@ namespace RelayRunner.Application.DataAccessLayer
         /// </summary>
         /// <param name="clientStatusId">ClientStatus ID</param>
         /// <returns>Client object</returns>
-        public async Task<Client> GetClientByClientStatusIdAsync(string clientStatusId)
+        public async Task<ClientStatus> GetClientStatusByClientStatusIdAsync(string clientStatusId)
         {
             if (string.IsNullOrWhiteSpace(clientStatusId))
             {
@@ -63,11 +63,9 @@ namespace RelayRunner.Application.DataAccessLayer
             // ComputePartitionKey will throw an ArgumentException if the clientStatusId isn't valid
             // get a load client by ID
 
-            ClientStatus g = await cosmosDetails.Container
+            return await cosmosDetails.Container
                 .ReadItemAsync<ClientStatus>(clientStatusId, new PartitionKey(ClientStatus.ComputePartitionKey()))
                 .ConfigureAwait(false);
-
-            return new Client(g);
         }
     }
 }

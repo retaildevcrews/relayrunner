@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos;
+using RelayRunner.Middleware;
 
 namespace RelayRunner.Application.DataAccessLayer
 {
@@ -14,7 +15,6 @@ namespace RelayRunner.Application.DataAccessLayer
     /// </summary>
     public partial class CosmosDal : IDAL, IDisposable
     {
-        private readonly MemoryCache cache = new ("cache");
         private readonly CosmosConfig cosmosDetails;
         private bool disposedValue;
 
@@ -59,10 +59,7 @@ namespace RelayRunner.Application.DataAccessLayer
             {
                 if (disposing)
                 {
-                    if (cache != null)
-                    {
-                        cache.Dispose();
-                    }
+                    // Add cleanup code
                 }
 
                 disposedValue = true;

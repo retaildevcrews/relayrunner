@@ -12,7 +12,7 @@ namespace RelayRunner.Application.DataAccessLayer
     /// </summary>
     public interface IDAL
     {
-        Task<IEnumerable<Client>> GetClientsAsync();
-        Task<Client> GetClientByClientStatusIdAsync(string clientStatusId);
+        Task<IEnumerable<ClientStatus>> GetClientStatusesAsync();
+        Task<ClientStatus> GetClientStatusByClientStatusIdAsync(string clientStatusId);
     }
 }
