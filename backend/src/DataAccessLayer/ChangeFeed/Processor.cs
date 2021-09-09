@@ -18,7 +18,7 @@ namespace RelayRunner.Application.ChangeFeed
                 .WithHostName(hostName)
                 .WithFeedCollection(feedCollectionInfo)
                 .WithLeaseCollection(leaseCollectionInfo)
-                .WithObserver<CustomObserver>() // TODO: way to pass in app based, CustomObserver?
+                .WithObserver<CustomObserver>()
                 .BuildAsync();
 
             Console.WriteLine("Starting Change Feed Processor....");

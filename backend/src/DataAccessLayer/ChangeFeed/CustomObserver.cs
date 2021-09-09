@@ -32,6 +32,7 @@ namespace RelayRunner.Application.ChangeFeed
                 {
                     case "ClientStatus":
                         Console.WriteLine("Processing entityType, ClientStatus");
+                        App.Config.Cache.ProcessClientStatusChange(document);
                         break;
                     default:
                         Console.WriteLine("Unable to process unaccounted entityType, {0}", entityType);
