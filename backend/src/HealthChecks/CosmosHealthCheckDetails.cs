@@ -70,7 +70,7 @@ namespace RelayRunner.Application
         /// Get Client by ClientStatus Id Healthcheck
         /// </summary>
         /// <returns>HealthzCheck</returns>
-        private async Task<HealthzCheck> GetClientByClientStatusIdAsync(string clientStatusId, Dictionary<string, object> data = null)
+        private async Task<HealthzCheck> GetClientStatusByClientStatusIdAsync(string clientStatusId, Dictionary<string, object> data = null)
         {
             const string name = "getClientByClientStatusId";
             string path = "/api/clients/" + clientStatusId;
@@ -79,7 +79,7 @@ namespace RelayRunner.Application
 
             try
             {
-                _ = await dal.GetClientByClientStatusIdAsync(clientStatusId).ConfigureAwait(false);
+                _ = await dal.GetClientStatusByClientStatusIdAsync(clientStatusId).ConfigureAwait(false);
 
                 return BuildHealthzCheck(path, MaxResponseTime / 2, null, data, name);
             }
@@ -96,7 +96,7 @@ namespace RelayRunner.Application
         /// Get Clients Healthcheck
         /// </summary>
         /// <returns>HealthzCheck</returns>
-        private async Task<HealthzCheck> GetClientsAsync(Dictionary<string, object> data = null)
+        private async Task<HealthzCheck> GetClientStatusesAsync(Dictionary<string, object> data = null)
         {
             const string name = "getClients";
 
@@ -106,7 +106,7 @@ namespace RelayRunner.Application
 
             try
             {
-                _ = (await dal.GetClientsAsync().ConfigureAwait(false)).ToList();
+                _ = (await dal.GetClientStatusesAsync().ConfigureAwait(false)).ToList();
 
                 return BuildHealthzCheck(path, MaxResponseTime, null, data, name);
             }
