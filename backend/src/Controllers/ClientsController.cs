@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using RelayRunner.Application.Data;
 using RelayRunner.Middleware;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application.Controllers
 {

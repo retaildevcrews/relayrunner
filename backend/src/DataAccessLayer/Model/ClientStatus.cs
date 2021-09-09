@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using RelayRunner.Model.Enum;
+using RelayRunner.Models.Enum;
 
-namespace RelayRunner.Model
+namespace RelayRunner.Models
 {
     public class ClientStatus
     {

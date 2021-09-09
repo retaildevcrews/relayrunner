@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using RelayRunner.Application.DataAccessLayer;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application.Controllers
 {

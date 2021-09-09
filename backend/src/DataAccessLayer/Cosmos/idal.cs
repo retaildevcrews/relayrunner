@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application.DataAccessLayer
 {

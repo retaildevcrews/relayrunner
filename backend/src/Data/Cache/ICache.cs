@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using Microsoft.Azure.Documents;
-using RelayRunner.Model;
+using RelayRunner.Models;
 
 namespace RelayRunner.Application.Data
 {
