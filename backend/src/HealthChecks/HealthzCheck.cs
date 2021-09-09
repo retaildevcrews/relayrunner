@@ -5,7 +5,7 @@ using System;
 using System.Globalization;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace RelayRunner.Application.Model
+namespace RelayRunner.Model
 {
     /// <summary>
     /// Health Check that supports dotnet IHeathCheck
