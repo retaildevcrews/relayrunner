@@ -114,6 +114,10 @@ rrapi:
 	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
 	kubectl apply -f deploy/relayrunner-backend/local
 
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
+
 	@kubectl get po
 
 	# display the relayrunner version
@@ -128,21 +132,39 @@ rrui:
 	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
 	kubectl apply -f deploy/relayrunner-client/local
 
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod relayrunner-client --for condition=ready --timeout=30s
+
 	@kubectl get po
+
+	# hit the relayrunner client endpoint
+	-http -h localhost:32080
 
 rrprod:
 	# delete local backend relayrunner pod and deploy image from ghcr
 	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
 	kubectl apply -f deploy/relayrunner-backend
 
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
+
 	# delete local client relayrunner pod and deploy image from ghcr
 	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
 	kubectl apply -f deploy/relayrunner-client
+
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod relayrunner-client --for condition=ready --timeout=30s
 
 	@kubectl get po
 
 	# display the relayrunner version
 	-http localhost:32088/version
+
+	# hit the relayrunner client endpoint
+	-http -h localhost:32080
 
 ngsa :
 	# build the local image of ngsa-app and load into k3d

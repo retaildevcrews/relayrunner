@@ -11,6 +11,11 @@ spec:
   - name: app
     image: ghcr.io/retaildevcrews/relayrunner:client
     imagePullPolicy: Always
+    readinessProbe:
+      initialDelaySeconds: 5
+      httpGet:
+        path: /
+        port: 80
 
 ---
 
@@ -26,5 +31,4 @@ spec:
     app: relayrunner-client
   ports:
     - port: 80
-      targetPort: 80
       nodePort: 32080
