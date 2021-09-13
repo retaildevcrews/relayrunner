@@ -11,6 +11,9 @@ spec:
   - name: app
     image: k3d-registry.localhost:5000/relayrunner-backend:local
     imagePullPolicy: Always
+    env:
+    - name: "ASPNETCORE_ENVIRONMENT"
+      value: "Development"
     readinessProbe:
       initialDelaySeconds: 5
       httpGet:
