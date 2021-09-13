@@ -28,7 +28,7 @@ ports:
   - port: 32080:32080
     nodeFilters:
       - server[0]
-  - port: 32088:32880
+  - port: 32088:32088
     nodeFilters:
       - server[0]
 
