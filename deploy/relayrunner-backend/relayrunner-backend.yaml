@@ -11,6 +11,17 @@ spec:
   - name: app
     image: ghcr.io/retaildevcrews/relayrunner:backend
     imagePullPolicy: Always
+    readinessProbe:
+      initialDelaySeconds: 5
+      httpGet:
+        path: /version
+        port: 8080
+    livenessProbe:
+      initialDelaySeconds: 60
+      periodSeconds: 300
+      httpGet:
+        path: /healthz
+        port: 8080
 
 ---
 
@@ -25,6 +36,5 @@ spec:
   selector:
     app: relayrunner-backend
   ports:
-    - port: 8080
-      targetPort: 8080
-      nodePort: 32088
+  - port: 8080
+    nodePort: 32088
