@@ -92,24 +92,35 @@ namespace RelayRunner.Application
             });
 
             // add middleware handlers
-            app.UseRouting()
-                .UseEndpoints(ep =>
-                {
-                    ep.MapControllers();
-                    ep.MapMetrics();
-                })
-                .UseSwaggerUI(c =>
-                {
-                    if (!string.IsNullOrEmpty(App.Config.UrlPrefix))
-                    {
-                        swaggerPath = App.Config.UrlPrefix + swaggerPath;
-                    }
+            app.UseRouting();
 
-                    c.SwaggerEndpoint(swaggerPath, SwaggerTitle);
-                    c.RoutePrefix = string.Empty;
-                })
-                .UseSwaggerReplaceJson("swagger.json", App.Config.UrlPrefix)
-                .UseVersion();
+            if (env.IsDevelopment())
+            {
+                app.UseCors(builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            }
+
+            app.UseEndpoints(ep =>
+            {
+                ep.MapControllers();
+                ep.MapMetrics();
+            })
+            .UseSwaggerUI(c =>
+            {
+                if (!string.IsNullOrEmpty(App.Config.UrlPrefix))
+                {
+                    swaggerPath = App.Config.UrlPrefix + swaggerPath;
+                }
+
+                c.SwaggerEndpoint(swaggerPath, SwaggerTitle);
+                c.RoutePrefix = string.Empty;
+            })
+            .UseSwaggerReplaceJson("swagger.json", App.Config.UrlPrefix)
+            .UseVersion();
         }
 
         /// <summary>
@@ -118,6 +129,8 @@ namespace RelayRunner.Application
         /// <param name="services">The services in the web host</param>
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             // set json serialization defaults and api behavior
             services.AddControllers()
                 .AddJsonOptions(options =>
