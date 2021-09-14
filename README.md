@@ -80,17 +80,13 @@ In the project directory, you can run:
 
 ## Running the Client Application Locally
 
-1. Clone the Repo
-      `git clone https://github.com/retaildevcrews/relayrunner.git`
-
-2. Change into the client directory
-      `cd client`
-
-3. Install node dependencies
-      `npm clean-install`
-
-4. Start the client
-      `npm start`
+1. Clone the Repo `git clone https://github.com/retaildevcrews/relayrunner.git`
+2. Change into the relayrunner directory `cd relayrunner`
+3. Start the k3d cluster `make create`
+4. Deploy a pod with relayrunner-backend `make rrapi`
+5. Change into the client directory `cd client`
+6. Install node dependencies `npm clean-install`
+7. Start the client `npm start`
 
 ## Testing the Client Application
 
