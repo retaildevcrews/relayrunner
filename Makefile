@@ -8,9 +8,9 @@ help :
 	@echo "   make deploy           - deploy the apps to the cluster"
 	@echo "   make check            - curl endpoints cluster"
 	@echo "   make clean            - delete deployments"
-	@echo "   make rrapi            - build and deploy a local relayrunner backend docker image"
-	@echo "   make rrui             - build and deploy a local relayrunner client docker image"
-	@echo "   make rrprod           - deploy relayrunner images from registry"
+	@echo "   make beta             - deploy all loderunner images from registry"
+	@echo "   make lrapi            - build and deploy a local loderunner-api docker image"
+	@echo "   make lrui             - build and deploy a local loderunner-client docker image"
 	@echo "   make ngsa             - build and deploy a local ngsa-app docker image"
 	@echo "   make lr               - build and deploy a local loderunner docker image"
 	@echo "   make reset-prometheus - reset the Prometheus volume (existing data is deleted)"
@@ -43,21 +43,21 @@ deploy :
 
 	# deploy loderunner after the ngsa-app starts
 	@kubectl wait pod ngsa-memory --for condition=ready --timeout=30s
-	-kubectl apply -f deploy/loderunner
+	-kubectl apply -f deploy/loderunner-local
 
 	# Create backend image from codebase
-	@docker build ./backend -t k3d-registry.localhost:5000/relayrunner-backend:local
+	@docker build ./backend -t k3d-registry.localhost:5000/loderunner-api:local
 	# Load new backend image to k3d registry
-	@docker push k3d-registry.localhost:5000/relayrunner-backend:local
+	@docker push k3d-registry.localhost:5000/loderunner-api:local
 	# deploy local relayrunner backend
-	-kubectl apply -f deploy/relayrunner-backend/local
+	-kubectl apply -f deploy/loderunner-api/local
 
 	# Create client image from codebase
-	@docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/relayrunner-client:local
+	@docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/loderunner-ui:local
 	# Load new client image to k3d registry
-	@docker push k3d-registry.localhost:5000/relayrunner-client:local
+	@docker push k3d-registry.localhost:5000/loderunner-ui:local
 	# deploy local relayrunner client
-	-kubectl apply -f deploy/relayrunner-client/local
+	-kubectl apply -f deploy/loderunner-ui:local
 
 	# deploy prometheus and grafana
 	-kubectl apply -f deploy/prometheus
@@ -86,84 +86,94 @@ check :
 	@curl localhost:30000
 	@echo "\nchecking grafana..."
 	@curl localhost:32000
-	@echo "\nchecking relayrunner client..."
+	@echo "\nchecking loderunner ui..."
 	@curl localhost:32080
-	@echo "\n\nchecking relayrunner backend..."
+	@echo "\n\nchecking loderunner api..."
 	@curl localhost:32088/version
 
 clean :
 	# delete the deployment
 	@# continue on error
-	-kubectl delete -f deploy/loderunner --ignore-not-found=true
+	-kubectl delete -f deploy/loderunner-local --ignore-not-found=true
 	-kubectl delete -f deploy/ngsa-memory --ignore-not-found=true
 	-kubectl delete ns monitoring --ignore-not-found=true
 	-kubectl delete -f deploy/fluentbit/fluentbit-pod.yaml --ignore-not-found=true
-	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
-	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
+	-kubectl delete -f deploy/loderunner-ui/local --ignore-not-found=true
+	-kubectl delete -f deploy/loderunner-api/local --ignore-not-found=true
 	-kubectl delete secret log-secrets --ignore-not-found=true
 
 	# show running pods
 	@kubectl get po -A
 
-rrapi:
-	# build the local image and load into k3d
-	docker build ./backend -t k3d-registry.localhost:5000/relayrunner-backend:local
-	docker push k3d-registry.localhost:5000/relayrunner-backend:local
-
-	# delete/deploy the local relayrunner backend
-	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
-	kubectl apply -f deploy/relayrunner-backend/local
+beta:
+	# delete local backend pod and deploy image from ghcr
+	-kubectl delete -f deploy/loderunner-api/local --ignore-not-found=true
+	kubectl apply -f deploy/loderunner-api
 
 	# wait for pod to be ready
 	@sleep 5
-	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
+	@kubectl wait pod loderunner-api --for condition=ready --timeout=30s
 
+	# delete local client pod and deploy image from ghcr
+	-kubectl delete -f deploy/loderunner-ui/local --ignore-not-found=true
+	kubectl apply -f deploy/loderunner-ui
+
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod loderunner-ui --for condition=ready --timeout=30s
+
+	# delete local loderunner pod and deploy image from ghcr
+	-kubectl delete -f deploy/loderunner-local --ignore-not-found=true
+	kubectl apply -f deploy/loderunner
+
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod loderunner --for condition=ready --timeout=30s
 	@kubectl get po
 
-	# display the relayrunner version
+	# display the loderunner version
+	-http localhost:30088/version
+
+	# display the backend version
 	-http localhost:32088/version
 
-rrui:
-	# build the local image and load into k3d
-	docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/relayrunner-client:local
-	docker push k3d-registry.localhost:5000/relayrunner-client:local
-
-	# delete/deploy local relayrunner client
-	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
-	kubectl apply -f deploy/relayrunner-client/local
-
-	# wait for pod to be ready
-	@sleep 5
-	@kubectl wait pod relayrunner-client --for condition=ready --timeout=30s
-
-	@kubectl get po
-
-	# hit the relayrunner client endpoint
+	# hit the client endpoint
 	-http -h localhost:32080
 
-rrprod:
-	# delete local backend relayrunner pod and deploy image from ghcr
-	-kubectl delete -f deploy/relayrunner-backend/local --ignore-not-found=true
-	kubectl apply -f deploy/relayrunner-backend
+lrapi:
+	# build the local image and load into k3d
+	docker build ./backend -t k3d-registry.localhost:5000/loderunner-api:local
+	docker push k3d-registry.localhost:5000/loderunner-api:local
+
+	# delete/deploy the local backend
+	-kubectl delete -f deploy/loderunner-api/local --ignore-not-found=true
+	kubectl apply -f deploy/loderunner-api/local
 
 	# wait for pod to be ready
 	@sleep 5
-	@kubectl wait pod relayrunner-backend --for condition=ready --timeout=30s
-
-	# delete local client relayrunner pod and deploy image from ghcr
-	-kubectl delete -f deploy/relayrunner-client/local --ignore-not-found=true
-	kubectl apply -f deploy/relayrunner-client
-
-	# wait for pod to be ready
-	@sleep 5
-	@kubectl wait pod relayrunner-client --for condition=ready --timeout=30s
+	@kubectl wait pod loderunner-api --for condition=ready --timeout=30s
 
 	@kubectl get po
 
-	# display the relayrunner version
+	# display the version
 	-http localhost:32088/version
 
-	# hit the relayrunner client endpoint
+lrui:
+	# build the local image and load into k3d
+	docker build ./client --target nginx-dev -t k3d-registry.localhost:5000/loderunner-ui:local
+	docker push k3d-registry.localhost:5000/loderunner-ui:local
+
+	# delete/deploy local client
+	-kubectl delete -f deploy/loderunner-ui/local --ignore-not-found=true
+	kubectl apply -f deploy/loderunner-ui/local
+
+	# wait for pod to be ready
+	@sleep 5
+	@kubectl wait pod loderunner-ui --for condition=ready --timeout=30s
+
+	@kubectl get po
+
+	# hit the client endpoint
 	-http -h localhost:32080
 
 ngsa :
