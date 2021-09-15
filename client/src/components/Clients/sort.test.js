@@ -1,4 +1,4 @@
-import { sortByProperty } from ".";
+import { sortByProperty } from "./index";
 
 const testClients = [
   {
