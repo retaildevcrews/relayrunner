@@ -1,6 +1,6 @@
 import { sortByProperty } from ".";
 
-const testLoadClients = [
+const testClients = [
   {
     id: 1,
     dateCreated: 2018,
@@ -31,8 +31,8 @@ const sortedByDateClients = [
 ];
 
 test("sorting function sorts properly", () => {
-  const sortedById = testLoadClients.sort(sortByProperty("id"));
-  const sortedByDate = testLoadClients.sort(sortByProperty("dateCreated"));
-  expect(sortedById).toStrictEqual(testLoadClients);
+  const sortedById = testClients.sort(sortByProperty("id"));
+  const sortedByDate = testClients.sort(sortByProperty("dateCreated"));
+  expect(sortedById).toStrictEqual(testClients);
   expect(sortedByDate).toStrictEqual(sortedByDateClients);
 });
