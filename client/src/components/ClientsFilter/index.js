@@ -1,6 +1,17 @@
 import PropTypes from "prop-types";
 import { SORT_TYPES, STATUSES } from "./constants";
+import { CLIENT } from "../../models";
 import "./styles.css";
+
+const sortByProperty = (type) => (a, b) => {
+  const sortProperty = SORT_TYPES[type].key;
+  return a[sortProperty] - b[sortProperty];
+};
+
+const filterByStatus =
+  (filterStatus) =>
+  ({ [CLIENT.status]: clientStatus }) =>
+    filterStatus === "" || filterStatus === clientStatus;
 
 const ClientsFilter = ({ setFilterBy, setSortBy }) => {
   return (
@@ -28,4 +39,4 @@ ClientsFilter.propTypes = {
   setSortBy: PropTypes.func.isRequired,
 };
 
-export default ClientsFilter;
+export { ClientsFilter as default, sortByProperty, filterByStatus };

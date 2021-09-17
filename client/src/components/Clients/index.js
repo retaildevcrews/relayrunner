@@ -2,7 +2,10 @@ import { useContext, useState } from "react";
 import PropTypes from "prop-types";
 import { ClientContext } from "../../contexts";
 import { CLIENT } from "../../models";
-import ClientsFilter from "../ClientsFilter";
+import ClientsFilter, {
+  sortByProperty,
+  filterByStatus,
+} from "../ClientsFilter";
 import { SORT_TYPES } from "../ClientsFilter/constants";
 import "./styles.css";
 
@@ -11,16 +14,6 @@ const Clients = ({ openClientDetails }) => {
   const [filterBy, setFilterBy] = useState("");
   const [sortBy, setSortBy] = useState(SORT_TYPES.name.key);
   const [selectedClients, setSelectedClients] = useState({});
-
-  const sortByProperty = (type) => (a, b) => {
-    const sortProperty = SORT_TYPES[type].key;
-    return a[sortProperty] - b[sortProperty];
-  };
-
-  const filterByStatus =
-    (filterStatus) =>
-    ({ [CLIENT.status]: clientStatus }) =>
-      filterStatus === "" || filterStatus === clientStatus;
 
   function toggleClient(loadClientId) {
     setSelectedClients({
@@ -71,4 +64,4 @@ Clients.propTypes = {
   openClientDetails: PropTypes.func.isRequired,
 };
 
-export default Clients;
+export { Clients as default, sortByProperty, filterByStatus };
